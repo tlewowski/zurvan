@@ -1,6 +1,7 @@
 # Logs
 logs
 *.log
+results.txt
 
 # Runtime data
 pids

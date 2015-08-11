@@ -1,0 +1,25 @@
+{
+  "name": "Thoth",
+  "description": "A library for faking timers in Node.js",
+  "author": "Tomasz Lewowski",
+  "devDependencies": {
+    "grunt-mocha-test": "^0.12.7",
+    "mocha": "2.2.x",
+    "grunt": "~0.4.4",
+    "grunt-blanket": "~0.0.8",
+    "grunt-cli": "~0.1.13",
+    "grunt-contrib-clean": "~0.6.0",
+    "grunt-contrib-copy": "^0.7.0",
+    "grunt-contrib-jshint": "~0.10.0",
+    "grunt-coveralls": "~1.0.0",
+    "grunt-env": "~0.4.1"
+  },
+  "licenses": [
+    {
+      "type": "MIT"
+    }
+  ],
+  "scripts": {
+    "test": "grunt"
+  }
+}
