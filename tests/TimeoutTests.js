@@ -64,5 +64,34 @@ describe('Thoth', function() {
 	  
 	  Thoth.advanceTime(1500);
 	});
+	
+	/*
+	it('still executes async callbacks in order of dueTime', function(done) {
+	
+	  var calls = [];
+	  setTimeout(function() {
+	    calls.push(1);
+		setTimeout(function() {
+		  calls.push(2)
+		}, 50);
+	  }, 50);
+	
+	  setTimeout(function() {
+	    assert.deepEqual(calls, [1,2]);
+		done();
+	  }, 150);
+	  
+	  Thoth.advanceTime(150);
+	});*/
+	
+	it('expires timeouts one-by-one', function(done) {
+	  setTimeout(function() {
+	    setTimeout(function() {
+		  done();
+		}, 100);
+	  }, 100);
+	  
+	  Thoth.advanceTime(200);  
+	});
   });
 });

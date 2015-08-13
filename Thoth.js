@@ -42,13 +42,30 @@ Thoth.prototype.addTimer = function(callback, callAfter) {
 }
 
 Thoth.prototype.advanceTime = function(time) {
-  while(this.timers.length > 0 && this.timers[0].dueTime <= this.currentTime.milliseconds + time) {
-    var expired = this.timers.splice(0, 1);
-	var x = expired[0];
-    setImmediate(x.callback.call.bind(x.callback));
+  if(time < 0) {
+    throw new Error("Even Thoth cannot move back in time!");
   }
   
-  this.currentTime.milliseconds += time;
+  if(time === 0)
+    return;
+	
+  var targetTime = this.currentTime.milliseconds + time;
+  if(this.timers.length === 0) {
+    this.currentTime.milliseconds = targetTime;
+	return;
+  }
+
+  if(this.timers[0].dueTime <= targetTime) {
+    var expiredTimer = this.timers.splice(0, 1)[0];
+
+	this.currentTime.milliseconds = expiredTimer.dueTime;
+	var nextTimeStep = targetTime - expiredTimer.dueTime;
+	var that = this;
+    setImmediate(function() {
+	  expiredTimer.callback.call();
+	  that.advanceTime(nextTimeStep);
+	});
+  }
 };
 
 function createThoth() {
