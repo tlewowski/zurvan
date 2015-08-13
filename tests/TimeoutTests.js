@@ -11,6 +11,7 @@ describe('Thoth', function() {
 	});
 	
     it('expires timers at advancing time', function(done) {
+
 	  var calls = [];
 	  setTimeout(function() {
 	    assert.deepEqual(calls, [1]);
@@ -41,5 +42,27 @@ describe('Thoth', function() {
 	  Thoth.advanceTime(50);	  
 	});
 	
+	it('is called in async way in order of dueTime', function(done) {
+	  
+	  var calls = [];
+	  setTimeout(function() {
+	    calls.push(1);
+	  }, 50);
+	  
+	  setTimeout(function() {
+	    // tricky!
+	    // this shouldn't be executed in test, as happens after async done();
+		
+	    calls.push(2);
+		assert(false); 
+	  }, 1100);
+	  
+	  setTimeout(function() {
+	    assert.deepEqual(calls, [1]);
+	    done();
+	  }, 1000);
+	  
+	  Thoth.advanceTime(1500);
+	});
   });
 });

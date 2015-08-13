@@ -44,7 +44,8 @@ Thoth.prototype.addTimer = function(callback, callAfter) {
 Thoth.prototype.advanceTime = function(time) {
   while(this.timers.length > 0 && this.timers[0].dueTime <= this.currentTime.milliseconds + time) {
     var expired = this.timers.splice(0, 1);
-    expired[0].callback.call();
+	var x = expired[0];
+    setImmediate(x.callback.call.bind(x.callback));
   }
   
   this.currentTime.milliseconds += time;
