@@ -65,14 +65,14 @@ describe('Thoth', function() {
 	  Thoth.advanceTime(1500);
 	});
 	
-	/*
+	
 	it('still executes async callbacks in order of dueTime', function(done) {
 	
 	  var calls = [];
 	  setTimeout(function() {
 	    calls.push(1);
 		setTimeout(function() {
-		  calls.push(2)
+		  calls.push(2);
 		}, 50);
 	  }, 50);
 	
@@ -82,8 +82,28 @@ describe('Thoth', function() {
 	  }, 150);
 	  
 	  Thoth.advanceTime(150);
-	});*/
+	});
 	
+	/*it('executes async callbacks after all immediates (queue) is cleared', function(done) {
+	  var calls = [];
+	  setTimeout(function() {
+	    calls.push(1);
+	    setImmediate(function() {
+		  calls.push(2);
+		  setImmediate(function() {
+		    calls.push(3);
+		  });
+		});
+	  }, 50);
+	  
+	  setTimeout(function() {
+	    assert.deepEqual(calls, [1,2,3]);
+		done();
+	  }, 100);
+	  
+	  Thoth.advanceTime(100);
+	});
+	*/
 	it('expires timeouts one-by-one', function(done) {
 	  setTimeout(function() {
 	    setTimeout(function() {

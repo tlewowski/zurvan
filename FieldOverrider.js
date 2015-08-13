@@ -6,7 +6,7 @@ function FieldOverrider(objectRef, fieldName, newValue) {
 }
 
 FieldOverrider.prototype.restore = function() {
-  objectRef[fieldName] = oldValue;
+  this.objectRef[this.fieldName] = this.oldValue;
 }
 
 module.exports = FieldOverrider;
