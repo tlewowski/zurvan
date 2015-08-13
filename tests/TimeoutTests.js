@@ -24,6 +24,22 @@ describe('Thoth', function() {
 	  Thoth.advanceTime(1001);
 	});
 	
+	it('can pass arguments to timers', function(done) {
+	  var calls = [];
+	  
+	  setTimeout(function(a,b) {
+	    calls.push(a);
+		calls.push(b);
+		Thoth.advanceTime(1000);
+	  }, 50, 2, 5);
+	  
+	  setTimeout(function() {
+        assert.deepEqual(calls, [2, 5]);
+        done();		
+	  }, 1050);
+
+	  Thoth.advanceTime(50);	  
+	});
 	
   });
 });

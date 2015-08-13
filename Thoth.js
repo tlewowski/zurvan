@@ -5,6 +5,14 @@ function Timer(callback, dueTime) {
   this.dueTime = dueTime;
 }
 
+function Callback(f, args) {
+  this.f = f;
+  this.args = args;
+}
+
+Callback.prototype.call = function() {
+  this.f.apply(undefined, this.args);
+}
 
 function Thoth() {
   this.timers = [];
@@ -18,8 +26,10 @@ Thoth.prototype.stopTime = function() {
   this.timeoutOverrider = new FieldOverrider(global, "setTimeout", this.addTimer.bind(this));
 };
 
-Thoth.prototype.addTimer = function(callback, time) {
-  var timer = new Timer(callback, time + this.currentTime.milliseconds);
+Thoth.prototype.addTimer = function(callback, callAfter) {
+  var callback = new Callback(callback, [].splice.call(arguments, 2));
+  var dueTime = callAfter + this.currentTime.milliseconds;
+  var timer = new Timer(callback, dueTime);
   
   var i;
   for(i = 0; i < this.timers.length; ++i) {
@@ -29,11 +39,15 @@ Thoth.prototype.addTimer = function(callback, time) {
   }
   
   this.timers.splice(i, 0, timer);
-  
 }
 
 Thoth.prototype.advanceTime = function(time) {
-  this.timers.forEach(function(time){time.callback();});
+  while(this.timers.length > 0 && this.timers[0].dueTime <= this.currentTime.milliseconds + time) {
+    var expired = this.timers.splice(0, 1);
+    expired[0].callback.call();
+  }
+  
+  this.currentTime.milliseconds += time;
 };
 
 function createThoth() {
