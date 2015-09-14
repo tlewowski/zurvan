@@ -3,11 +3,13 @@ var Thoth = require("../Thoth");
 
 describe('Thoth', function() {
   describe('after capturing timers', function() {
-    before(function() {
+    beforeEach(function(done) {
 	  Thoth.stopTime();
+	  done();
 	});
-	after(function() {
+	afterEach(function(done) {
 	  Thoth.startTime();
+	  done();
 	});
 	
     it('expires timers at advancing time', function(done) {
@@ -42,7 +44,7 @@ describe('Thoth', function() {
 	  Thoth.advanceTime(50);	  
 	});
 	
-	it('is called in async way in order of dueTime', function(done) {
+	it('is called in order of dueTime', function(done) {
 	  
 	  var calls = [];
 	  setTimeout(function() {
@@ -50,11 +52,7 @@ describe('Thoth', function() {
 	  }, 50);
 	  
 	  setTimeout(function() {
-	    // tricky!
-	    // this shouldn't be executed in test, as happens after async done();
-		
 	    calls.push(2);
-		assert(false); 
 	  }, 1100);
 	  
 	  setTimeout(function() {
@@ -84,7 +82,7 @@ describe('Thoth', function() {
 	  Thoth.advanceTime(150);
 	});
 	
-	/*it('executes async callbacks after all immediates (queue) is cleared', function(done) {
+	it('executes async callbacks after all immediates (queue) is cleared', function(done) {
 	  var calls = [];
 	  setTimeout(function() {
 	    calls.push(1);
@@ -103,7 +101,7 @@ describe('Thoth', function() {
 	  
 	  Thoth.advanceTime(100);
 	});
-	*/
+	
 	it('expires timeouts one-by-one', function(done) {
 	  setTimeout(function() {
 	    setTimeout(function() {
@@ -113,5 +111,18 @@ describe('Thoth', function() {
 	  
 	  Thoth.advanceTime(200);  
 	});
+	
+	it('throws when time is advanced from two places simultaneously', function(done) {
+      setTimeout(function() {
+	    try {
+    	  Thoth.advanceTime(100);
+		}
+		catch(err) {
+		  done();
+		}
+	  }, 50);
+      
+	  Thoth.advanceTime(100);
+	})
   });
 });
