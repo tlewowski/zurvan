@@ -47,8 +47,7 @@ function Thoth() {
 
 Thoth.prototype.startTime = function() {
   this.timeoutOverrider.restore();
-  if(this.immediateInterceptor)
-    this.immediateInterceptor.restore();
+  this.immediateInterceptor.restore();
 	
   this.stopForwarding();  
   this.timers = [];
@@ -93,7 +92,7 @@ Thoth.prototype.advanceTime = function(timeToForward) {
   }
 
   if(this.isForwarding()) {
-      throw new Error("Cannot forward time from two places simultaneously");
+    throw new Error("Cannot forward time from two places simultaneously");
   }
 
   var that = this;
@@ -102,27 +101,22 @@ Thoth.prototype.advanceTime = function(timeToForward) {
   function advanceTimeHelper(time) {
     if(that.immediateInterceptor.areAwaiting()) {
       that.immediateInterceptor.enqueue(function() {
-	    advanceTimeHelper(time);
-	  });
-	  return;
+        advanceTimeHelper(time);
+      });
+      return;
     }
 
     if(time === 0)
       return;
 
     var targetTime = that.currentTime.milliseconds + time;
-    if(that.timers.length === 0) {
-      that.currentTime.milliseconds = targetTime;
-	  that.stopForwarding();
-  	  return;
-    }
 
     that.startForwarding();
-    if(that.timers[0].dueTime <= targetTime) {
+    if(that.timers.length > 0 && that.timers[0].dueTime <= targetTime) {
       var expiredTimer = that.timers.splice(0, 1)[0];
 
       that.currentTime.milliseconds = expiredTimer.dueTime;
-	  var nextTimeStep = targetTime - expiredTimer.dueTime;
+      var nextTimeStep = targetTime - expiredTimer.dueTime;
       if(nextTimeStep === 0)
 	    that.stopForwarding();
 	
@@ -130,6 +124,11 @@ Thoth.prototype.advanceTime = function(timeToForward) {
 	    expiredTimer.callback.call();
         advanceTimeHelper(nextTimeStep);
   	  });
+    }
+	else {
+      that.currentTime.milliseconds = targetTime;
+      that.stopForwarding();
+  	  return;	  
     }
   }
 };

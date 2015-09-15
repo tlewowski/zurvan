@@ -27,6 +27,25 @@ describe('Thoth', function() {
 	  Thoth.advanceTime(1001);
 	});
 	
+	it('throws on attempt to move time backwards', function(done) {
+	  assert.throws(function() {
+	    Thoth.advanceTime(-1);
+	  });
+	  done();
+	});
+	
+	it('does not expire timeout before advanceTime finishes', function(done) {
+	  var called = false;
+	  setTimeout(function() {
+	    called = true;
+	    done();
+	  }, 100);
+	  
+	  Thoth.advanceTime(50);
+	  assert(!called);
+	  Thoth.advanceTime(50);
+	});
+	
 	it('can pass arguments to timers', function(done) {
 	  var calls = [];
 	  
