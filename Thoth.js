@@ -16,22 +16,28 @@ Callback.prototype.call = function() {
 
 function ImmediateInterceptor() {
   this.immediateOverrider = new FieldOverrider(global, "setImmediate", this.addImmediate.bind(this));
-  this.immediates = [];
+  this.awaitingImmediates = 0;
+  this.enqueue = this.immediateOverrider.oldValue;
 }
 
 ImmediateInterceptor.prototype.addImmediate = function(callback) {
-  this.immediates.push(new Callback(callback, [].splice.call(arguments, 1)));
-}
-
-ImmediateInterceptor.prototype.flush = function() {
-  while(this.immediates.length > 0) {
-    this.immediates.splice(0,1)[0].call();
-  }
+  ++this.awaitingImmediates;
+  
+  var that = this;
+  var args = [].splice.call(arguments, 1);
+  this.enqueue(function() {
+    --that.awaitingImmediates;
+    callback.apply(undefined, args);
+  });
 }
 
 ImmediateInterceptor.prototype.restore = function() {
-  this.immediates = [];
+  this.awaitingImmediates = 0;
   this.immediateOverrider.restore();
+}
+
+ImmediateInterceptor.prototype.areAwaiting = function() {
+  return this.awaitingImmediates > 0;
 }
 
 function Thoth() {
@@ -51,6 +57,7 @@ Thoth.prototype.startTime = function() {
 
 Thoth.prototype.stopTime = function() {
   this.timeoutOverrider = new FieldOverrider(global, "setTimeout", this.addTimer.bind(this));
+  this.immediateInterceptor = new ImmediateInterceptor();
 };
 
 Thoth.prototype.startForwarding = function() {
@@ -93,10 +100,11 @@ Thoth.prototype.advanceTime = function(timeToForward) {
   advanceTimeHelper(timeToForward);
   
   function advanceTimeHelper(time) {
-  
-    if(that.immediateInterceptor) {
-      that.immediateInterceptor.flush();
-      that.immediateInterceptor.restore();    
+    if(that.immediateInterceptor.areAwaiting()) {
+      that.immediateInterceptor.enqueue(function() {
+	    advanceTimeHelper(time);
+	  });
+	  return;
     }
 
     if(time === 0)
@@ -118,14 +126,10 @@ Thoth.prototype.advanceTime = function(timeToForward) {
       if(nextTimeStep === 0)
 	    that.stopForwarding();
 	
-      setImmediate(function() {
+      that.immediateInterceptor.enqueue(function() {
 	    expiredTimer.callback.call();
-	    that.immediateInterceptor.flush();
-	    that.immediateInterceptor.restore();
-	    that.immediateInterceptor = undefined;
         advanceTimeHelper(nextTimeStep);
   	  });
-	  that.immediateInterceptor = new ImmediateInterceptor();
     }
   }
 };

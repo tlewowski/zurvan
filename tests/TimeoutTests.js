@@ -86,6 +86,7 @@ describe('Thoth', function() {
 	  var calls = [];
 	  setTimeout(function() {
 	    calls.push(1);
+
 	    setImmediate(function() {
 		  calls.push(2);
 		  setImmediate(function() {
@@ -123,6 +124,44 @@ describe('Thoth', function() {
 	  }, 50);
       
 	  Thoth.advanceTime(100);
-	})
+	});
+	
+	it('immediates are called before timeouts', function(done) {
+	  var calls = [];
+	  setImmediate(function() {
+	    calls.push(1); 
+		setImmediate(function() {
+		  calls.push(4);
+        })
+	  });
+	  
+	  setTimeout(function() {
+	    calls.push(2);
+		setImmediate(function() {calls.push(3);});
+	    setTimeout(function() {
+		  assert.deepEqual([1, 4, 2, 3], calls);
+		  done();
+		}, 50);
+	  }, 50);
+	  
+	  Thoth.advanceTime(100);
+	});
+	
+	it('setTimeouts in setImmediates shall be taken into account when forwarding time', function(done) {
+	  var calls = [];
+	  setImmediate(function() {
+	    calls.push(1);
+		setTimeout(function() {
+		  calls.push(2);
+		}, 50);
+	  });
+	  
+	  setTimeout(function() {
+	    assert.deepEqual([1,2], calls);
+		done();
+	  }, 100);
+	  
+	  Thoth.advanceTime(100);
+	});
   });
 });
