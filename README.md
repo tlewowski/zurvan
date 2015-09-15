@@ -5,3 +5,5 @@
 [![Test Coverage](https://codeclimate.com/github/Lewerow/Thoth/badges/coverage.svg)](https://codeclimate.com/github/Lewerow/Thoth/coverage)
 
 [![Dependencies](https://david-dm.org/Lewerow/Thoth.svg)](https://github.com/Lewerow/Thoth/blob/master/package.json)
+
+[![devDependencies](https://david-dm.org/Lewerow/Thoth/dev-status.svg)](https://david-dm.org/Lewerow/Thoth#info=devDependencies)
