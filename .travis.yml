@@ -6,3 +6,6 @@ node_js:
 - '0.11'
 - '0.10'
 sudo: false
+addons:
+    code_climate:
+        repo_token: 2ee7cfe310b2af805dbb96e8d98c52757f9f99847714eb76eda3f39e4514bb0e
