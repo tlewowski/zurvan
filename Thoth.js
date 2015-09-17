@@ -1,10 +1,26 @@
 var FieldOverrider = require("./detail/FieldOverrider");
 var ImmediateInterceptor = require("./detail/ImmediateInterceptor");
 
-function Timer(callback, dueTime) {
+function Timer(callback, precall, timerRepository, currentTime, callDelay) {
   this.callback = callback;
-  this.dueTime = dueTime;
+  this.dueTime = currentTime + callDelay;
+  this.callDelay = callDelay;
+  this.precall = precall;
+  this.timerRepository = timerRepository;
 }
+
+Timer.prototype.expire = function() {
+  this.precall();
+  this.callback.call();
+};
+
+Timer.prototype.reschedule = function() {
+  this.dueTime += this.callDelay;
+  this.timerRepository.insertTimer(this);
+};
+
+Timer.prototype.ignore = function() {
+};
 
 function Callback(f, args) {
   this.f = f;
@@ -22,6 +38,7 @@ function Thoth() {
 
 Thoth.prototype.startTime = function() {
   this.timeoutOverrider.restore();
+  this.intervalOverrider.restore();
   this.immediateInterceptor.restore();
 	
   this.stopForwarding();  
@@ -30,7 +47,8 @@ Thoth.prototype.startTime = function() {
 };
 
 Thoth.prototype.stopTime = function() {
-  this.timeoutOverrider = new FieldOverrider(global, "setTimeout", this.addTimer.bind(this));
+  this.timeoutOverrider = new FieldOverrider(global, "setTimeout", this.addTimer.bind(this, Timer.prototype.ignore));
+  this.intervalOverrider = new FieldOverrider(global, "setInterval", this.addTimer.bind(this, Timer.prototype.reschedule));
   this.immediateInterceptor = new ImmediateInterceptor();
 };
 
@@ -46,11 +64,7 @@ Thoth.prototype.isForwarding = function() {
   return this.forwardingOngoing;
 };
 
-Thoth.prototype.addTimer = function(callbk, callAfter) {
-  var callback = new Callback(callbk, [].splice.call(arguments, 2));
-  var dueTime = callAfter + this.currentTime.milliseconds;
-  var timer = new Timer(callback, dueTime);
-  
+Thoth.prototype.insertTimer = function(timer) {
   var i;
   for(i = 0; i < this.timers.length; ++i) {
     if(this.timers[i].dueTime > timer.dueTime) {
@@ -58,7 +72,13 @@ Thoth.prototype.addTimer = function(callbk, callAfter) {
 	}
   }
   
-  this.timers.splice(i, 0, timer);
+  this.timers.splice(i, 0, timer);  
+};
+
+Thoth.prototype.addTimer = function(precall, callbk, callDelay) {
+  var callback = new Callback(callbk, [].splice.call(arguments, 3));
+  var timer = new Timer(callback, precall, this, this.currentTime.milliseconds, callDelay);
+  this.insertTimer(timer);
 };
 
 Thoth.prototype.advanceTime = function(timeToForward) {
@@ -88,16 +108,16 @@ Thoth.prototype.advanceTime = function(timeToForward) {
 
     that.startForwarding();
     if(that.timers.length > 0 && that.timers[0].dueTime <= targetTime) {
-      var expiredTimer = that.timers.splice(0, 1)[0];
+      var closestTimer = that.timers.splice(0, 1)[0];
 
-      that.currentTime.milliseconds = expiredTimer.dueTime;
-      var nextTimeStep = targetTime - expiredTimer.dueTime;
+      that.currentTime.milliseconds = closestTimer.dueTime;
+      var nextTimeStep = targetTime - closestTimer.dueTime;
       if(nextTimeStep === 0) {
 	    that.stopForwarding();
 	  }
 	  
       that.immediateInterceptor.enqueue(function() {
-	    expiredTimer.callback.call();
+	    closestTimer.expire();
         advanceTimeHelper(nextTimeStep);
   	  });
     }

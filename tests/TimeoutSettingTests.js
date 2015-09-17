@@ -13,7 +13,6 @@ describe('Thoth', function() {
 	});
 	
     it('expires timers at advancing time', function(done) {
-
 	  var calls = [];
 	  setTimeout(function() {
 	    assert.deepEqual(calls, [1]);
@@ -26,7 +25,7 @@ describe('Thoth', function() {
 	  
 	  Thoth.advanceTime(1001);
 	});
-	
+		
 	it('throws on attempt to move time backwards', function(done) {
 	  assert.throws(function() {
 	    Thoth.advanceTime(-1);
@@ -45,7 +44,38 @@ describe('Thoth', function() {
 	  assert(!called);
 	  Thoth.advanceTime(50);
 	});
+
+	it('calls intervals in cycle', function(done) {
+	  var calls = [];
+	  setInterval(function() {
+	    calls.push(1);
+	  }, 100);
+	  
+	  setTimeout(function() {
+	    assert.deepEqual([1,1,1,1], calls);
+		done();
+	  }, 410);
+	  
+	  Thoth.advanceTime(410);
+	});
 	
+	it('can call both timeouts and intervals', function(done) {
+	  var calls = [];
+	  setInterval(function() {
+	    calls.push(1);
+		setTimeout(function() {
+		  calls.push(2);
+		}, 10);
+	  }, 10)
+	  
+	  setTimeout(function() {
+	    assert.deepEqual([1,1,2,1,2,1,2], calls);
+		done();
+	  }, 41);
+	  
+	  Thoth.advanceTime(42);
+	});
+
 	it('can pass arguments to timers', function(done) {
 	  var calls = [];
 	  
