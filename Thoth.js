@@ -12,7 +12,7 @@ function Callback(f, args) {
 
 Callback.prototype.call = function() {
   this.f.apply(undefined, this.args);
-}
+};
 
 function ImmediateInterceptor() {
   this.immediateOverrider = new FieldOverrider(global, "setImmediate", this.addImmediate.bind(this));
@@ -29,16 +29,16 @@ ImmediateInterceptor.prototype.addImmediate = function(callback) {
     --that.awaitingImmediates;
     callback.apply(undefined, args);
   });
-}
+};
 
 ImmediateInterceptor.prototype.restore = function() {
   this.awaitingImmediates = 0;
   this.immediateOverrider.restore();
-}
+};
 
 ImmediateInterceptor.prototype.areAwaiting = function() {
   return this.awaitingImmediates > 0;
-}
+};
 
 function Thoth() {
   this.timers = [];
@@ -61,15 +61,15 @@ Thoth.prototype.stopTime = function() {
 
 Thoth.prototype.startForwarding = function() {
   this.forwardingOngoing = true;
-}
+};
 
 Thoth.prototype.stopForwarding = function() {
   this.forwardingOngoing = false;
-}
+};
 
 Thoth.prototype.isForwarding = function() {
   return this.forwardingOngoing;
-}
+};
 
 Thoth.prototype.addTimer = function(callback, callAfter) {
   var callback = new Callback(callback, [].splice.call(arguments, 2));
@@ -84,7 +84,7 @@ Thoth.prototype.addTimer = function(callback, callAfter) {
   }
   
   this.timers.splice(i, 0, timer);
-}
+};
 
 Thoth.prototype.advanceTime = function(timeToForward) {
   if(timeToForward < 0) {
@@ -96,7 +96,10 @@ Thoth.prototype.advanceTime = function(timeToForward) {
   }
 
   var that = this;
-  advanceTimeHelper(timeToForward);
+  
+  setImmediate(function() {
+    advanceTimeHelper(timeToForward);
+  });
   
   function advanceTimeHelper(time) {
     if(that.immediateInterceptor.areAwaiting()) {
@@ -106,9 +109,10 @@ Thoth.prototype.advanceTime = function(timeToForward) {
       return;
     }
 
-    if(time === 0)
+    if(time === 0) {
       return;
-
+	}
+	  
     var targetTime = that.currentTime.milliseconds + time;
 
     that.startForwarding();
@@ -117,9 +121,10 @@ Thoth.prototype.advanceTime = function(timeToForward) {
 
       that.currentTime.milliseconds = expiredTimer.dueTime;
       var nextTimeStep = targetTime - expiredTimer.dueTime;
-      if(nextTimeStep === 0)
+      if(nextTimeStep === 0) {
 	    that.stopForwarding();
-	
+	  }
+	  
       that.immediateInterceptor.enqueue(function() {
 	    expiredTimer.callback.call();
         advanceTimeHelper(nextTimeStep);

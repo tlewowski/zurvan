@@ -166,7 +166,7 @@ describe('Thoth', function() {
 	  Thoth.advanceTime(100);
 	});
 	
-	it('setTimeouts in setImmediates shall be taken into account when forwarding time', function(done) {
+	it('takes into account setTimeouts in setImmediates when forwarding time', function(done) {
 	  var calls = [];
 	  setImmediate(function() {
 	    calls.push(1);
@@ -181,6 +181,23 @@ describe('Thoth', function() {
 	  }, 100);
 	  
 	  Thoth.advanceTime(100);
+	});
+	
+	it('takes into account setTimout in process.nextTick when forwarding time', function(done) {
+	  var calls = [];
+	  process.nextTick(function() {
+	    calls.push(1);
+		setTimeout(function() {
+		  calls.push(2);
+		}, 10);
+	  });
+	  
+	  setTimeout(function() {
+	    assert.deepEqual([1,2], calls);
+		done();
+	  }, 20);
+	  
+	  Thoth.advanceTime(20);
 	});
   });
 });
