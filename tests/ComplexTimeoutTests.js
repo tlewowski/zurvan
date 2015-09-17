@@ -75,7 +75,7 @@ describe('Thoth', function() {
 	  
 	  Thoth.advanceTime(30);
 	});
-	
+	/*
 	it('supports arbitrary combination of sets/clears immediates/timeouts/intervals', function() {
 	  var calls = [];
 	  var knownHrtime;
@@ -126,6 +126,21 @@ describe('Thoth', function() {
 		  calls.push(100);
 		});
 	  }, 50);
+	  
+	  Thoth.advanceTime(200);
+	});*/
+	
+	it('can intersperse timeouts and immediates', function(done) {
+	  var calls = [];
+	  var immediate = setImmediate(function() {
+	    calls.push(1);
+	  });
+	  
+	  clearImmediate(immediate);
+	  setTimeout(function() {
+	    assert.deepEqual([], calls);
+		done();
+	  }, 200);
 	  
 	  Thoth.advanceTime(200);
 	});
