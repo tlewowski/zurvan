@@ -1,35 +1,6 @@
 var FieldOverrider = require("./detail/FieldOverrider");
 var ImmediateInterceptor = require("./detail/ImmediateInterceptor");
-
-function Timer(callback, precall, timerRepository, currentTime, callDelay) {
-  this.callback = callback;
-  this.dueTime = currentTime + callDelay;
-  this.callDelay = callDelay;
-  this.precall = precall;
-  this.timerRepository = timerRepository;
-}
-
-Timer.prototype.expire = function() {
-  this.precall();
-  this.callback.call();
-};
-
-Timer.prototype.reschedule = function() {
-  this.dueTime += this.callDelay;
-  this.timerRepository.insertTimer(this);
-};
-
-Timer.prototype.ignore = function() {
-};
-
-function Callback(f, args) {
-  this.f = f;
-  this.args = args;
-}
-
-Callback.prototype.call = function() {
-  this.f.apply(undefined, this.args);
-};
+var TimerInterceptor = require("./detail/TimerInterceptor");
 
 function Thoth() {
   this.timers = [];
@@ -37,8 +8,7 @@ function Thoth() {
 }
 
 Thoth.prototype.startTime = function() {
-  this.timeoutOverrider.restore();
-  this.intervalOverrider.restore();
+  this.timerInterceptor.restore();
   this.immediateInterceptor.restore();
 	
   this.stopForwarding();  
@@ -47,8 +17,8 @@ Thoth.prototype.startTime = function() {
 };
 
 Thoth.prototype.stopTime = function() {
-  this.timeoutOverrider = new FieldOverrider(global, "setTimeout", this.addTimer.bind(this, Timer.prototype.ignore));
-  this.intervalOverrider = new FieldOverrider(global, "setInterval", this.addTimer.bind(this, Timer.prototype.reschedule));
+  this.timers = [];
+  this.timerInterceptor = new TimerInterceptor(this);
   this.immediateInterceptor = new ImmediateInterceptor();
 };
 
@@ -73,12 +43,6 @@ Thoth.prototype.insertTimer = function(timer) {
   }
   
   this.timers.splice(i, 0, timer);  
-};
-
-Thoth.prototype.addTimer = function(precall, callbk, callDelay) {
-  var callback = new Callback(callbk, [].splice.call(arguments, 3));
-  var timer = new Timer(callback, precall, this, this.currentTime.milliseconds, callDelay);
-  this.insertTimer(timer);
 };
 
 Thoth.prototype.advanceTime = function(timeToForward) {
