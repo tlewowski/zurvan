@@ -26,7 +26,7 @@ function IntervalTimer(callback, timerRepository, currentTime, callDelay) {
   this.precall = function reschedule() {
     this.dueTime += this.callDelay;
     this.timerRepository.insertTimer(this);
-  }
+  };
 }
 
 IntervalTimer.prototype = Timer.prototype;
