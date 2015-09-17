@@ -7,3 +7,8 @@
 [![Dependencies](https://david-dm.org/Lewerow/Thoth.svg)](https://github.com/Lewerow/Thoth/blob/master/package.json)
 
 [![devDependencies](https://david-dm.org/Lewerow/Thoth/dev-status.svg)](https://david-dm.org/Lewerow/Thoth#info=devDependencies)
+
+
+*Zurvan* is a library for time management.
+
+Name is taken after babilonian deity of infinite time, Zurvan. For more details see: https://en.wikipedia.org/wiki/Zurvanism

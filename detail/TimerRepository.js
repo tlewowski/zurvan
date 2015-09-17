@@ -22,9 +22,14 @@ TimerRepository.prototype.insertTimer = function(timer) {
   return timer.uid;
 };
 
-TimerRepository.prototype.removeTimer = function(timer) {
-  assert(this.timers[0].uid.uid === timer.uid.uid);
-  this.timers.splice(0, 1);
+TimerRepository.prototype.clearTimer = function(uid) {
+  var i;
+  for(i = 0; i < this.timers.length; ++i) {
+    if (this.timers[0].uid.uid === uid.uid) {
+      this.timers.splice(i, 1);
+	  break;
+	}
+  }
 };
 
 TimerRepository.prototype.nextTimer = function() {

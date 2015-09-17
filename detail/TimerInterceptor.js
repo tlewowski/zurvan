@@ -9,7 +9,7 @@ function Timer(callback, timerRepository, currentTime, callDelay) {
 }
 
 Timer.prototype.expire = function() {
-  this.timerRepository.removeTimer(this);
+  this.timerRepository.clearTimer(this.uid);
   this.precall();
   this.callback.call();
 };
@@ -43,13 +43,17 @@ Callback.prototype.call = function() {
 function TimerInterceptor(timeServer) {
   this.timeServer = timeServer;
   this.timerRepository = new TimerRepository();
-  this.timeouts = new FieldOverrider(global, "setTimeout", this.addTimer.bind(this, TimeoutTimer));
-  this.intervals = new FieldOverrider(global, "setInterval", this.addTimer.bind(this, IntervalTimer));
+  this.setTimeouts = new FieldOverrider(global, "setTimeout", this.addTimer.bind(this, TimeoutTimer));
+  this.clearTimeouts = new FieldOverrider(global, "clearTimeout", this.clearTimer.bind(this));
+  this.setIntervals = new FieldOverrider(global, "setInterval", this.addTimer.bind(this, IntervalTimer));
+  this.clearIntervals = new FieldOverrider(global, "clearInterval", this.clearTimer.bind(this));
 }
 
 TimerInterceptor.prototype.restore = function() {
-  this.timeouts.restore();
-  this.intervals.restore();
+  this.setTimeouts.restore();
+  this.clearTimeouts.restore();
+  this.setIntervals.restore();
+  this.clearIntervals.restore();
 };
 
 TimerInterceptor.prototype.next = function() {
@@ -60,6 +64,10 @@ TimerInterceptor.prototype.addTimer = function(TimerType, callbk, callDelay) {
   var callback = new Callback(callbk, [].splice.call(arguments, 3));
   var timer = new TimerType(callback, this.timerRepository, this.timeServer.currentTime.milliseconds, callDelay);
   return this.timerRepository.insertTimer(timer);
+};
+
+TimerInterceptor.prototype.clearTimer = function(uid) {
+  return this.timerRepository.clearTimer(uid);
 };
 
 module.exports = TimerInterceptor;
