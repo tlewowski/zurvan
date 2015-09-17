@@ -9,12 +9,6 @@ function Timer(precall, callback, timerRepository, currentTime, callDelay) {
   this.timerRepository = timerRepository;
 }
 
-function addTimer(timeServer, timerRepository, precall, callbk, callDelay) {
-  var callback = new Callback(callbk, [].splice.call(arguments, 5));
-  var timer = new Timer(precall, callback, timerRepository, timeServer.currentTime.milliseconds, callDelay);
-  timerRepository.insertTimer(timer);
-};
-
 Timer.prototype.expire = function() {
   this.timerRepository.removeTimer(this);
   this.precall();
@@ -39,9 +33,10 @@ Callback.prototype.call = function() {
 };
 
 function TimerInterceptor(timeServer) {
+  this.timeServer = timeServer;
   this.timerRepository = new TimerRepository();
-  this.timeouts = new FieldOverrider(global, "setTimeout", addTimer.bind(undefined, timeServer, this.timerRepository, Timer.prototype.ignore));
-  this.intervals = new FieldOverrider(global, "setInterval", addTimer.bind(undefined, timeServer, this.timerRepository, Timer.prototype.reschedule));
+  this.timeouts = new FieldOverrider(global, "setTimeout", this.addTimer.bind(this, Timer.prototype.ignore));
+  this.intervals = new FieldOverrider(global, "setInterval", this.addTimer.bind(this, Timer.prototype.reschedule));
 };
 
 TimerInterceptor.prototype.restore = function() {
@@ -51,6 +46,12 @@ TimerInterceptor.prototype.restore = function() {
 
 TimerInterceptor.prototype.next = function() {
   return this.timerRepository.nextTimer();
+};
+
+TimerInterceptor.prototype.addTimer = function(precall, callbk, callDelay) {
+  var callback = new Callback(callbk, [].splice.call(arguments, 3));
+  var timer = new Timer(precall, callback, this.timerRepository, this.timeServer.currentTime.milliseconds, callDelay);
+  this.timerRepository.insertTimer(timer);
 };
 
 module.exports = TimerInterceptor;
