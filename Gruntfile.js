@@ -22,13 +22,12 @@ module.exports = function(grunt) {
         src: ['tests/*.js']
       }
     },
-    clean : [ 'build' ],
     watch : {
       files : [ '*.js', 'tests' ],
       tasks : 'default'
     },
     jshint : {
-      files : ['*.js', 'tests' ],
+      files : ['*.js', 'detail', 'tests' ],
 	},
     mocha_istanbul: {
         coverage: {
