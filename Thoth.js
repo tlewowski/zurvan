@@ -71,8 +71,8 @@ Thoth.prototype.isForwarding = function() {
   return this.forwardingOngoing;
 };
 
-Thoth.prototype.addTimer = function(callback, callAfter) {
-  var callback = new Callback(callback, [].splice.call(arguments, 2));
+Thoth.prototype.addTimer = function(callbk, callAfter) {
+  var callback = new Callback(callbk, [].splice.call(arguments, 2));
   var dueTime = callAfter + this.currentTime.milliseconds;
   var timer = new Timer(callback, dueTime);
   
@@ -109,10 +109,6 @@ Thoth.prototype.advanceTime = function(timeToForward) {
       return;
     }
 
-    if(time === 0) {
-      return;
-	}
-	  
     var targetTime = that.currentTime.milliseconds + time;
 
     that.startForwarding();
