@@ -1,3 +1,5 @@
+var assert = require("assert");
+
 function TimerRepository() {
   this.uid = 1;
   this.timers = [];  
@@ -17,12 +19,8 @@ TimerRepository.prototype.insertTimer = function(timer) {
 };
 
 TimerRepository.prototype.removeTimer = function(timer) {
-  var toRemove = this.timers.findIndex(function(analysed) {
-    return analysed.uid > timer.uid;
-  };
-  assert(toRemove !== -1);
-  
-  this.timers.splice(toRemove, 1);
+  assert(this.timers[0].uid === timer.uid);
+  this.timers.splice(0, 1);
 };
 
 TimerRepository.prototype.nextTimer = function() {

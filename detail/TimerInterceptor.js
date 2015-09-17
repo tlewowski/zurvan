@@ -1,11 +1,10 @@
 var FieldOverrider = require("./FieldOverrider");
 var TimerRepository = require("./TimerRepository");
 
-function Timer(precall, callback, timerRepository, currentTime, callDelay) {
+function Timer(callback, timerRepository, currentTime, callDelay) {
   this.callback = callback;
   this.dueTime = currentTime + callDelay;
   this.callDelay = callDelay;
-  this.precall = precall;
   this.timerRepository = timerRepository;
 }
 
@@ -15,13 +14,22 @@ Timer.prototype.expire = function() {
   this.callback.call();
 };
 
-Timer.prototype.reschedule = function() {
-  this.dueTime += this.callDelay;
-  this.timerRepository.insertTimer(this);
-};
+function TimeoutTimer(callback, timerRepository, currentTime, callDelay) {
+  Timer.bind(this)(callback, timerRepository, currentTime, callDelay);
+  this.precall = function ignore() {};
+}
 
-Timer.prototype.ignore = function() {
-};
+TimeoutTimer.prototype = Timer.prototype;
+
+function IntervalTimer(callback, timerRepository, currentTime, callDelay) {
+  Timer.bind(this)(callback, timerRepository, currentTime, callDelay);
+  this.precall = function reschedule() {
+    this.dueTime += this.callDelay;
+    this.timerRepository.insertTimer(this);
+  }
+}
+
+IntervalTimer.prototype = Timer.prototype;
 
 function Callback(f, args) {
   this.f = f;
@@ -35,8 +43,8 @@ Callback.prototype.call = function() {
 function TimerInterceptor(timeServer) {
   this.timeServer = timeServer;
   this.timerRepository = new TimerRepository();
-  this.timeouts = new FieldOverrider(global, "setTimeout", this.addTimer.bind(this, Timer.prototype.ignore));
-  this.intervals = new FieldOverrider(global, "setInterval", this.addTimer.bind(this, Timer.prototype.reschedule));
+  this.timeouts = new FieldOverrider(global, "setTimeout", this.addTimer.bind(this, TimeoutTimer));
+  this.intervals = new FieldOverrider(global, "setInterval", this.addTimer.bind(this, IntervalTimer));
 }
 
 TimerInterceptor.prototype.restore = function() {
@@ -48,9 +56,9 @@ TimerInterceptor.prototype.next = function() {
   return this.timerRepository.nextTimer();
 };
 
-TimerInterceptor.prototype.addTimer = function(precall, callbk, callDelay) {
+TimerInterceptor.prototype.addTimer = function(TimerType, callbk, callDelay) {
   var callback = new Callback(callbk, [].splice.call(arguments, 3));
-  var timer = new Timer(precall, callback, this.timerRepository, this.timeServer.currentTime.milliseconds, callDelay);
+  var timer = new TimerType(callback, this.timerRepository, this.timeServer.currentTime.milliseconds, callDelay);
   this.timerRepository.insertTimer(timer);
 };
 
