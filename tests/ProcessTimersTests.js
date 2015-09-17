@@ -45,5 +45,6 @@ describe('Thoth', function() {
 	  
 	  Thoth.advanceTime(11000);
 	});
+
   });
 });

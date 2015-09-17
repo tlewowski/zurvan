@@ -7,7 +7,10 @@ function TimerRepository() {
 
 TimerRepository.prototype.insertTimer = function(timer) {
 
-  timer.uid = this.uid++;
+  // to make uid instrigifiable, like the original one
+  timer.uid = {uid: this.uid++};
+  timer.uid.ref = timer.uid;
+  
   var i;
   for(i = 0; i < this.timers.length; ++i) {
     if(this.timers[i].dueTime > timer.dueTime) {
@@ -16,10 +19,11 @@ TimerRepository.prototype.insertTimer = function(timer) {
   }
   
   this.timers.splice(i, 0, timer);
+  return timer.uid;
 };
 
 TimerRepository.prototype.removeTimer = function(timer) {
-  assert(this.timers[0].uid === timer.uid);
+  assert(this.timers[0].uid.uid === timer.uid.uid);
   this.timers.splice(0, 1);
 };
 

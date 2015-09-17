@@ -11,7 +11,7 @@ ImmediateInterceptor.prototype.addImmediate = function(callback) {
   
   var that = this;
   var args = [].splice.call(arguments, 1);
-  this.enqueue(function() {
+  return this.enqueue(function() {
     --that.awaitingImmediates;
     callback.apply(undefined, args);
   });

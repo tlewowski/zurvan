@@ -13,7 +13,7 @@ ProcessTimerInterceptor.prototype.uptime = function() {
 
 function nanosecondsToHrtimeFormat(timeInNanoseconds) {
   return [Math.floor(timeInNanoseconds / 1e9), timeInNanoseconds % 1e9];  
-};
+}
 
 ProcessTimerInterceptor.prototype.hrtime = function(previousValue) {
   var currentTime = this.timeServer.currentTime;

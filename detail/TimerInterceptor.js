@@ -59,7 +59,7 @@ TimerInterceptor.prototype.next = function() {
 TimerInterceptor.prototype.addTimer = function(TimerType, callbk, callDelay) {
   var callback = new Callback(callbk, [].splice.call(arguments, 3));
   var timer = new TimerType(callback, this.timerRepository, this.timeServer.currentTime.milliseconds, callDelay);
-  this.timerRepository.insertTimer(timer);
+  return this.timerRepository.insertTimer(timer);
 };
 
 module.exports = TimerInterceptor;
