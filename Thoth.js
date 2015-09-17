@@ -1,4 +1,3 @@
-var FieldOverrider = require("./detail/FieldOverrider");
 var ImmediateInterceptor = require("./detail/ImmediateInterceptor");
 var TimerInterceptor = require("./detail/TimerInterceptor");
 

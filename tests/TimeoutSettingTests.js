@@ -66,7 +66,7 @@ describe('Thoth', function() {
 		setTimeout(function() {
 		  calls.push(2);
 		}, 10);
-	  }, 10)
+	  }, 10);
 	  
 	  setTimeout(function() {
 	    assert.deepEqual([1,1,2,1,2,1,2], calls);

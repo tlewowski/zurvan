@@ -37,7 +37,7 @@ function TimerInterceptor(timeServer) {
   this.timerRepository = new TimerRepository();
   this.timeouts = new FieldOverrider(global, "setTimeout", this.addTimer.bind(this, Timer.prototype.ignore));
   this.intervals = new FieldOverrider(global, "setInterval", this.addTimer.bind(this, Timer.prototype.reschedule));
-};
+}
 
 TimerInterceptor.prototype.restore = function() {
   this.timeouts.restore();

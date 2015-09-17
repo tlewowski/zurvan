@@ -25,7 +25,7 @@ TimerRepository.prototype.removeTimer = function(timer) {
   }
   
   this.timers.splice(i, 1);
-}
+};
 
 TimerRepository.prototype.nextTimer = function() {
   return this.timers[0];
