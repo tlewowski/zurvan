@@ -19,6 +19,7 @@ Thoth.prototype.stopTime = function() {
   this.timerInterceptor = new TimerInterceptor(this);
   this.processTimerInterceptor = new ProcessTimerInterceptor(this);
   this.immediateInterceptor = new ImmediateInterceptor();
+  this.currentTime = {milliseconds: 0, nanoseconds: 0};  
 };
 
 Thoth.prototype.startForwarding = function() {
@@ -56,7 +57,6 @@ Thoth.prototype.advanceTime = function(timeToForward) {
     }
 
     var targetTime = that.currentTime.milliseconds + time;
-
     that.startForwarding();
 	
 	var closestTimer = that.timerInterceptor.next();

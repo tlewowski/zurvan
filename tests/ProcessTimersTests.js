@@ -13,7 +13,7 @@ describe('Thoth', function() {
 	  done();
 	});
 
-    it('resets process.uptime and process.hrtime', function(done) {
+    it('resets process timers', function(done) {
 	  assert.equal(0, process.uptime());
 	  assert.deepEqual([0,0], process.hrtime());
 	  done();

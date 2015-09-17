@@ -75,5 +75,59 @@ describe('Thoth', function() {
 	  
 	  Thoth.advanceTime(30);
 	});
+	
+	it('supports arbitrary combination of sets/clears immediates/timeouts/intervals', function() {
+	  var calls = [];
+	  var knownHrtime;
+	  var immediate1 = setImmediate(function() {
+	    calls.push(1);
+		clearImmediate(immediate2);
+		clearTimeout(timeout1);
+		clearInterval(interval1);
+		
+		var localInterval = setInterval(function() {
+		  calls.push(8);
+		  clearInterval(localInterval);	  
+		}, 50);
+		
+		assert.equal(0, process.uptime());
+	  });
+	  
+	  var immediate2 = setImmediate(function() {
+	    calls.push(2);
+	  });
+	  
+	  var timeout1 = setTimeout(function() {
+	    calls.push(3);
+	  }, 50);
+	  
+	  var timeout2 = setTimeout(function() {
+	    calls.push(4);
+		setImmediate(function() {
+		  calls.push(10);
+		  clearInterval(interval2);
+		  
+		  setTimeout(function() {
+		    assert.deepEqual([1, 6, 8, 100, 4, 10]);
+			assert.deepEqual([0, 150e6], process.hrtime(knownHrtime));
+		    done();
+		  }, 100);
+		});
+	  }, 100);
+	  
+	  var interval1 = setInterval(function() {
+	    calls.push(5);
+	  }, 1);
+	  
+	  var interval2 = setInterval(function() {
+	    calls.push(6);
+		knownHrtime = process.hrtime();
+		process.nextTick(function() {
+		  calls.push(100);
+		});
+	  }, 50);
+	  
+	  Thoth.advanceTime(200);
+	});
   });
 });
