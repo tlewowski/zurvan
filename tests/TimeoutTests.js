@@ -151,7 +151,7 @@ describe('Thoth', function() {
 	    calls.push(1); 
 		setImmediate(function() {
 		  calls.push(4);
-        })
+        });
 	  });
 	  
 	  setTimeout(function() {

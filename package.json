@@ -1,5 +1,7 @@
 {
   "name": "Thoth",
+  "version": "0.0.1",
+  "keywords": "testing,timeouts,time",
   "description": "A library for faking timers in Node.js",
   "author": "Tomasz Lewowski",
   "devDependencies": {
@@ -18,11 +20,10 @@
 	"istanbul": "~0.3.20",
 	"codeclimate-test-reporter": "0.1.1"
   },
-  "licenses": [
-    {
-      "type": "MIT"
-    }
-  ],
+  "bugs": "https://github.com/Lewerow/Thoth/issues",
+  
+  "engines": {"node": ">=0.11.0"},
+  "license": "MIT",
   "scripts": {
     "test": "grunt"
   }
