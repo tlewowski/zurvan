@@ -95,12 +95,12 @@ Thoth.prototype.advanceTime = function(timeToForward) {
     throw new Error("Cannot forward time from two places simultaneously");
   }
 
-  var that = this;
   
-  setImmediate(function() {
+  this.immediateInterceptor.enqueue(function() {
     advanceTimeHelper(timeToForward);
   });
   
+  var that = this;
   function advanceTimeHelper(time) {
     if(that.immediateInterceptor.areAwaiting()) {
       that.immediateInterceptor.enqueue(function() {
