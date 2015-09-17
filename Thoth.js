@@ -1,5 +1,6 @@
 var ImmediateInterceptor = require("./detail/ImmediateInterceptor");
 var TimerInterceptor = require("./detail/TimerInterceptor");
+var ProcessTimerInterceptor = require("./detail/ProcessTimerInterceptor");
 
 function Thoth() {
   this.currentTime = {milliseconds: 0, nanoseconds: 0};
@@ -7,6 +8,7 @@ function Thoth() {
 
 Thoth.prototype.startTime = function() {
   this.timerInterceptor.restore();
+  this.processTimerInterceptor.restore();
   this.immediateInterceptor.restore();
 	
   this.stopForwarding();  
@@ -15,6 +17,7 @@ Thoth.prototype.startTime = function() {
 
 Thoth.prototype.stopTime = function() {
   this.timerInterceptor = new TimerInterceptor(this);
+  this.processTimerInterceptor = new ProcessTimerInterceptor(this);
   this.immediateInterceptor = new ImmediateInterceptor();
 };
 
@@ -39,7 +42,6 @@ Thoth.prototype.advanceTime = function(timeToForward) {
     throw new Error("Cannot forward time from two places simultaneously");
   }
 
-  
   this.immediateInterceptor.enqueue(function() {
     advanceTimeHelper(timeToForward);
   });
