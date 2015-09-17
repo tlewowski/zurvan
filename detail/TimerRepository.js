@@ -17,14 +17,12 @@ TimerRepository.prototype.insertTimer = function(timer) {
 };
 
 TimerRepository.prototype.removeTimer = function(timer) {
-  var i;
-  for(i = 0; i < this.timers.length; ++i) {
-    if(this.timers[i].uid === timer.uid) {
-	  break;
-	}
-  }
+  var toRemove = this.timers.findIndex(function(analysed) {
+    return analysed.uid > timer.uid;
+  };
+  assert(toRemove !== -1);
   
-  this.timers.splice(i, 1);
+  this.timers.splice(toRemove, 1);
 };
 
 TimerRepository.prototype.nextTimer = function() {
