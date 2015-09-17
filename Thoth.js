@@ -7,19 +7,21 @@ function Thoth() {
 }
 
 Thoth.prototype.startTime = function() {
-  this.timerInterceptor.restore();
-  this.processTimerInterceptor.restore();
-  this.immediateInterceptor.restore();
-	
-  this.stopForwarding();  
+  this.forwardingOngoing = false;
   this.currentTime = {milliseconds: 0, nanoseconds: 0};  
+
+  this.immediateInterceptor.restore();	
+  this.processTimerInterceptor.restore();
+  this.timerInterceptor.restore();
 };
 
 Thoth.prototype.stopTime = function() {
   this.timerInterceptor = new TimerInterceptor(this);
   this.processTimerInterceptor = new ProcessTimerInterceptor(this);
   this.immediateInterceptor = new ImmediateInterceptor();
+
   this.currentTime = {milliseconds: 0, nanoseconds: 0};  
+  this.forwardingOngoing = false;
 };
 
 Thoth.prototype.startForwarding = function() {

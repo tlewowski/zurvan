@@ -75,7 +75,7 @@ describe('Thoth', function() {
 	  
 	  Thoth.advanceTime(30);
 	});
-	/*
+	
 	it('supports arbitrary combination of sets/clears immediates/timeouts/intervals', function() {
 	  var calls = [];
 	  var knownHrtime;
@@ -128,7 +128,7 @@ describe('Thoth', function() {
 	  }, 50);
 	  
 	  Thoth.advanceTime(200);
-	});*/
+	});
 	
 	it('can intersperse timeouts and immediates', function(done) {
 	  var calls = [];
