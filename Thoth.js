@@ -4,7 +4,6 @@ var ProcessTimerInterceptor = require("./detail/ProcessTimerInterceptor");
 var assert = require("assert");
 
 function Thoth() {
-  this.currentTime = {milliseconds: 0, nanoseconds: 0};
 }
 
 Thoth.prototype.startTime = function() {
