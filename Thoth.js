@@ -9,12 +9,11 @@ function Thoth() {
 Thoth.prototype.startTime = function() {
   var that = this;
   return new Promise(function(resolve, reject) {
-    if(!that.expiringEvents) {
+    if(!that.isExpiringEvents()) {
 	  resolve();
 	}
 	else {
 	  reject();
-      that.endOfForwardingCallback = resolve;
 	}
   }).then(function() {
     assert(that.currentTime.milliseconds === that.targetTime.milliseconds, 
@@ -33,15 +32,10 @@ Thoth.prototype.stopTime = function() {
   this.currentTime = {milliseconds: 0, nanoseconds: 0};
   this.targetTime = {milliseconds: 0, nanoseconds: 0};
   this.timeForwardingOngoing = false;
-  this.endOfForwardingCallback = undefined;
 };
 
 Thoth.prototype.stopExpiringEvents = function() {
   this.timeForwardingOngoing = false;
-  
-  if(this.endOfForwardingCallback) {
-    this.endOfForwardingCallback();
-  }
 };
 
 Thoth.prototype.startExpiringEvents = function() {

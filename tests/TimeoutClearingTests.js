@@ -57,5 +57,17 @@ describe('Thoth', function() {
 	  assert.throws(function() {JSON.stringify(intervalHandle);});
       done();
 	});
+  });
+  
+  describe('after requesting to start time', function() {	
+	it('rejects if time has not yet passed', function(done) {
+	  Thoth.stopTime();
+	  setTimeout(function() {
+	    Thoth.startTime().catch(function() {
+		  done();
+		});
+	  }, 25);
+	  Thoth.advanceTime(50);
 	});
+  });
 });
