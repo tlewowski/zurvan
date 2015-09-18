@@ -3,13 +3,12 @@ var TimerRepository = require("./TimerRepository");
 
 function Timer(callback, timerRepository, currentTime, callDelay) {
   this.callback = callback;
-  this.dueTime = currentTime + callDelay;
+  this.dueTime = currentTime.milliseconds + callDelay;
   this.callDelay = callDelay;
   this.timerRepository = timerRepository;
 }
 
 Timer.prototype.expire = function() {
-  this.timerRepository.clearTimer(this.uid);
   this.precall();
   this.callback.call();
 };
@@ -24,7 +23,7 @@ TimeoutTimer.prototype = Timer.prototype;
 function IntervalTimer(callback, timerRepository, currentTime, callDelay) {
   Timer.bind(this)(callback, timerRepository, currentTime, callDelay);
   this.precall = function reschedule() {
-    this.dueTime += this.callDelay;
+    this.dueTime = currentTime.milliseconds + this.callDelay;
     this.timerRepository.insertTimer(this);
   };
 }
@@ -63,7 +62,7 @@ TimerInterceptor.prototype.next = function() {
 
 TimerInterceptor.prototype.addTimer = function(TimerType, callbk, callDelay) {
   var callback = new Callback(callbk, [].splice.call(arguments, 3));
-  var timer = new TimerType(callback, this.timerRepository, this.timeServer.currentTime.milliseconds, callDelay);
+  var timer = new TimerType(callback, this.timerRepository, this.timeServer.currentTime, callDelay);
   return this.timerRepository.insertTimer(timer);
 };
 

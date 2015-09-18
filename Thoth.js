@@ -13,11 +13,9 @@ Thoth.prototype.startTime = function() {
 	  resolve();
 	}
 	else {
-	  reject();
+	  reject(Error("Cannot start time during event expiration"));
 	}
   }).then(function() {
-    assert(that.currentTime.milliseconds === that.targetTime.milliseconds, 
-      "Cannot start time while it is being forwarded!");
     that.immediateInterceptor.restore();	
     that.processTimerInterceptor.restore();
     that.timerInterceptor.restore();
@@ -63,14 +61,14 @@ Thoth.prototype.advanceTime = function(timeToForward) {
   
     if(!that.isExpiringEvents()) {
       that.startExpiringEvents();
-      that.immediateInterceptor.enqueue(function() {
+      setImmediate(function() {
         advanceTimeHelper();
       });
     }
   
     function advanceTimeHelper() {
       if(that.immediateInterceptor.areAwaiting()) {
-        that.immediateInterceptor.enqueue(function() {
+        setImmediate(function() {
           advanceTimeHelper();
         });
         return;
@@ -78,8 +76,9 @@ Thoth.prototype.advanceTime = function(timeToForward) {
 	
 	  var closestTimer = that.timerInterceptor.next();
       if(closestTimer && closestTimer.dueTime <= that.targetTime.milliseconds) {
+	    that.timerInterceptor.clearTimer(closestTimer.uid);
         that.currentTime.milliseconds = closestTimer.dueTime;	  
-        that.immediateInterceptor.enqueue(function() {
+        setImmediate(function() {
   	      closestTimer.expire();
           advanceTimeHelper();
         });
@@ -91,6 +90,28 @@ Thoth.prototype.advanceTime = function(timeToForward) {
       }
     }
   });  
+};
+
+Thoth.prototype.blockSystem = function(timeToBlock) {
+
+  var that = this;  
+  return new Promise(function(resolve, reject) {
+    if(timeToBlock < 0) {
+      reject(Error("Even Thoth cannot move back in time!"));
+    }
+	
+    that.currentTime.milliseconds += timeToBlock;
+    that.targetTime.milliseconds = that.currentTime.milliseconds;
+    var closestTimer = that.timerInterceptor.next();
+    while(closestTimer && closestTimer.dueTime <= that.currentTime.milliseconds) {
+      that.timerInterceptor.clearTimer(closestTimer.uid);
+  	  setImmediate(closestTimer.expire.bind(closestTimer));
+      closestTimer = that.timerInterceptor.next();
+    }
+	resolve();
+  }).then(function() {
+	return that.advanceTime(0);
+  });
 };
 
 function createThoth() {

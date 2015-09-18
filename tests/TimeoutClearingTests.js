@@ -9,8 +9,7 @@ describe('Thoth', function() {
 	});
 	
 	afterEach(function(done) {
-	  Thoth.startTime();
-	  done();
+	  Thoth.startTime().then(done, done);
 	});
 
     it('does not call cleared immediates', function(done) {
