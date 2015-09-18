@@ -1,4 +1,3 @@
-var assert = require("assert");
 var UIDGenerator = require("./UIDGenerator");
 
 function TimerRepository() {

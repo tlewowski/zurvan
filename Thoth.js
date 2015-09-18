@@ -55,8 +55,8 @@ Thoth.prototype.advanceTime = function(timeToForward) {
     }
 
     if(that.currentTime.milliseconds !== that.targetTime.milliseconds) {
-      reject(Error("Cannot forward time before first forwarding ends. Currently at: " 
-	    + that.currentTime.milliseconds + " ms, target: " + that.targetTime.milliseconds + " ms"));
+      reject(Error("Cannot forward time before first forwarding ends. Currently at: " + 
+	    that.currentTime.milliseconds + " ms, target: " + that.targetTime.milliseconds + " ms"));
     }
 
     that.targetTime.milliseconds = that.currentTime.milliseconds + timeToForward;

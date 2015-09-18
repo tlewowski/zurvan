@@ -28,7 +28,7 @@ describe('Thoth', function() {
 	    assert.equal(1.6, process.uptime());
 		assert.deepEqual([1, 600e6], process.hrtime());
 	    done();
-	  });;
+	  });
 	});
 	
 	it('can calculate diff in process.hrtime', function(done) {

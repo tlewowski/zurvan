@@ -42,7 +42,7 @@ describe('Thoth', function() {
 	  }).then(function() {
 	    assert(called);
 		done();
-	  });;
+	  });
 	});
 
 	it('calls intervals in cycle', function(done) {
