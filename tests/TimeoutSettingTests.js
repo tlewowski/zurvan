@@ -8,8 +8,7 @@ describe('Thoth', function() {
 	  done();
 	});
 	afterEach(function(done) {
-	  Thoth.startTime();
-	  done();
+	  Thoth.startTime().then(done);
 	});
 	
     it('expires timers at advancing time', function(done) {
@@ -27,10 +26,9 @@ describe('Thoth', function() {
 	});
 		
 	it('throws on attempt to move time backwards', function(done) {
-	  assert.throws(function() {
-	    Thoth.advanceTime(-1);
+	  Thoth.advanceTime(-1).catch(function(err) {
+        done();
 	  });
-	  done();
 	});
 	
 	it('does not expire timeout before advanceTime finishes', function(done) {
@@ -40,9 +38,10 @@ describe('Thoth', function() {
 	    done();
 	  }, 100);
 	  
-	  Thoth.advanceTime(50);
-	  assert(!called);
-	  Thoth.advanceTime(50);
+	  Thoth.advanceTime(50).then(function() {
+	    assert(!called);
+	    Thoth.advanceTime(50);
+	  });;
 	});
 
 	it('calls intervals in cycle', function(done) {
@@ -160,12 +159,10 @@ describe('Thoth', function() {
 	
 	it('throws when time is advanced from two places simultaneously', function(done) {
       setTimeout(function() {
-	    try {
-    	  Thoth.advanceTime(100);
-		}
-		catch(err) {
-		  done();
-		}
+    	  Thoth.advanceTime(100)
+		    .catch(function(err) {
+		      done();
+		    });
 	  }, 50);
       
 	  Thoth.advanceTime(100);

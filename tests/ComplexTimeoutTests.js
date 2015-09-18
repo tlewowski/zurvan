@@ -8,8 +8,7 @@ describe('Thoth', function() {
 	  done();
 	});
 	afterEach(function(done) {
-	  Thoth.startTime();
-	  done();
+	  Thoth.startTime().then(done);
 	});
 	it('supports any combination of setTimeout, setImmediate and process.nextTick', function(done) {
 	  var calls = [];
@@ -69,14 +68,16 @@ describe('Thoth', function() {
 	  }, 30);
 	  
 	  setTimeout(function() {
-        assert.deepEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17], calls);
-		done();
+        calls.push(18);
 	  }, 30);
 	  
-	  Thoth.advanceTime(30);
+	  Thoth.advanceTime(30).then(function() {
+	    assert.deepEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18], calls);
+		done();
+	  });
 	});
 	
-	it('supports arbitrary combination of sets/clears immediates/timeouts/intervals', function() {
+	it('supports arbitrary combination of sets/clears immediates/timeouts/intervals', function(done) {
 	  var calls = [];
 	  var knownHrtime;
 	  var immediate1 = setImmediate(function() {
@@ -108,9 +109,8 @@ describe('Thoth', function() {
 		  clearInterval(interval2);
 		  
 		  setTimeout(function() {
-		    assert.deepEqual([1, 6, 8, 100, 4, 10]);
+		    assert.deepEqual([1, 6, 100, 8, 4, 10], calls);
 			assert.deepEqual([0, 150e6], process.hrtime(knownHrtime));
-		    done();
 		  }, 100);
 		});
 	  }, 100);
@@ -127,7 +127,7 @@ describe('Thoth', function() {
 		});
 	  }, 50);
 	  
-	  Thoth.advanceTime(200);
+	  Thoth.advanceTime(200).then(done);
 	});
 	
 	it('can intersperse timeouts and immediates', function(done) {

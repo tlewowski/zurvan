@@ -8,8 +8,9 @@ function TimerRepository() {
 
 TimerRepository.prototype.insertTimer = function(timer) {
 
-  // to make uid instrigifiable, like the original one
-  timer.uid = this.uidGenerator.generate();
+  if(!timer.uid) {
+    timer.uid = this.uidGenerator.generate();
+  }
   
   var i;
   for(i = 0; i < this.timers.length; ++i) {
@@ -25,7 +26,7 @@ TimerRepository.prototype.insertTimer = function(timer) {
 TimerRepository.prototype.clearTimer = function(uid) {
   var i;
   for(i = 0; i < this.timers.length; ++i) {
-    if (this.timers[0].uid.uid === uid.uid) {
+    if (this.timers[i].uid.uid === uid.uid) {
       this.timers.splice(i, 1);
 	  break;
 	}

@@ -9,8 +9,7 @@ describe('Thoth', function() {
 	});
 	
 	afterEach(function(done) {
-	  Thoth.startTime();
-	  done();
+	  Thoth.startTime().then(done);
 	});
 
     it('resets process timers', function(done) {
@@ -23,10 +22,13 @@ describe('Thoth', function() {
 	  setTimeout(function() {
 	    assert.equal(1.523, process.uptime());
 		assert.deepEqual([1, 523e6], process.hrtime());
-		done();
 	  }, 1523);
 	  
-	  Thoth.advanceTime(1600);
+	  Thoth.advanceTime(1600).then(function() {
+	    assert.equal(1.6, process.uptime());
+		assert.deepEqual([1, 600e6], process.hrtime());
+	    done();
+	  });;
 	});
 	
 	it('can calculate diff in process.hrtime', function(done) {

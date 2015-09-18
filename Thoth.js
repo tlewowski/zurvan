@@ -7,13 +7,22 @@ function Thoth() {
 }
 
 Thoth.prototype.startTime = function() {
-  assert(!this.isForwarding(), "Cannot start time while it is being forwarded!");
-  
-  this.currentTime = {milliseconds: 0, nanoseconds: 0};  
-
-  this.immediateInterceptor.restore();	
-  this.processTimerInterceptor.restore();
-  this.timerInterceptor.restore();
+  var that = this;
+  return new Promise(function(resolve, reject) {
+    if(!that.expiringEvents) {
+	  resolve();
+	}
+	else {
+	  reject();
+      that.endOfForwardingCallback = resolve;
+	}
+  }).then(function() {
+    assert(that.currentTime.milliseconds === that.targetTime.milliseconds, 
+      "Cannot start time while it is being forwarded!");
+    that.immediateInterceptor.restore();	
+    that.processTimerInterceptor.restore();
+    that.timerInterceptor.restore();
+  });
 };
 
 Thoth.prototype.stopTime = function() {
@@ -22,64 +31,72 @@ Thoth.prototype.stopTime = function() {
   this.immediateInterceptor = new ImmediateInterceptor();
 
   this.currentTime = {milliseconds: 0, nanoseconds: 0};
+  this.targetTime = {milliseconds: 0, nanoseconds: 0};
+  this.timeForwardingOngoing = false;
+  this.endOfForwardingCallback = undefined;
 };
 
-Thoth.prototype.startForwarding = function() {
-  this.forwardingOngoing = true;
+Thoth.prototype.stopExpiringEvents = function() {
+  this.timeForwardingOngoing = false;
+  
+  if(this.endOfForwardingCallback) {
+    this.endOfForwardingCallback();
+  }
 };
 
-Thoth.prototype.stopForwarding = function() {
-  this.forwardingOngoing = false;
+Thoth.prototype.startExpiringEvents = function() {
+  this.timeForwardingOngoing = true;  
 };
 
-Thoth.prototype.isForwarding = function() {
-  return this.forwardingOngoing;
+Thoth.prototype.isExpiringEvents = function() {
+  return this.timeForwardingOngoing;
 };
 
 Thoth.prototype.advanceTime = function(timeToForward) {
-  if(timeToForward < 0) {
-    throw new Error("Even Thoth cannot move back in time!");
-  }
-
-  if(this.isForwarding()) {
-    throw new Error("Cannot forward time from two places simultaneously");
-  }
-
-  this.immediateInterceptor.enqueue(function() {
-    advanceTimeHelper(timeToForward);
-  });
   
   var that = this;
-  function advanceTimeHelper(time) {
-    if(that.immediateInterceptor.areAwaiting()) {
-      that.immediateInterceptor.enqueue(function() {
-        advanceTimeHelper(time);
-      });
-      return;
+  return new Promise(function(resolve, reject) {
+    if(timeToForward < 0) {
+      reject("Even Thoth cannot move back in time!");
     }
 
-    var targetTime = that.currentTime.milliseconds + time;
-    that.startForwarding();
-	
-	var closestTimer = that.timerInterceptor.next();
-    if(closestTimer && closestTimer.dueTime <= targetTime) {
-      that.currentTime.milliseconds = closestTimer.dueTime;
-      var nextTimeStep = targetTime - closestTimer.dueTime;
-      if(nextTimeStep === 0) {
-	    that.stopForwarding();
-	  }
-	  
+    if(that.currentTime.milliseconds !== that.targetTime.milliseconds) {
+      reject(Error("Cannot forward time before first forwarding ends. Currently at: " 
+	    + that.currentTime.milliseconds + " ms, target: " + that.targetTime.milliseconds + " ms"));
+    }
+
+    that.targetTime.milliseconds = that.currentTime.milliseconds + timeToForward;
+  
+    if(!that.isExpiringEvents()) {
+      that.startExpiringEvents();
       that.immediateInterceptor.enqueue(function() {
-	    closestTimer.expire();
-        advanceTimeHelper(nextTimeStep);
-  	  });
+        advanceTimeHelper();
+      });
     }
-	else {
-      that.currentTime.milliseconds = targetTime;
-      that.stopForwarding();
-  	  return;	  
+  
+    function advanceTimeHelper() {
+      if(that.immediateInterceptor.areAwaiting()) {
+        that.immediateInterceptor.enqueue(function() {
+          advanceTimeHelper();
+        });
+        return;
+      }
+	
+	  var closestTimer = that.timerInterceptor.next();
+      if(closestTimer && closestTimer.dueTime <= that.targetTime.milliseconds) {
+        that.currentTime.milliseconds = closestTimer.dueTime;	  
+        that.immediateInterceptor.enqueue(function() {
+  	      closestTimer.expire();
+          advanceTimeHelper();
+        });
+      }
+	  else {
+        that.currentTime.milliseconds = that.targetTime.milliseconds;
+        that.stopExpiringEvents();
+		resolve();
+      }
     }
-  }
+  });  
 };
 
 function createThoth() {
