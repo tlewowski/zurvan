@@ -54,6 +54,7 @@ TimerInterceptor.prototype.restore = function() {
   this.clearTimeouts.restore();
   this.setIntervals.restore();
   this.clearIntervals.restore();
+  this.timerRepository.clearAll();
 };
 
 TimerInterceptor.prototype.next = function() {

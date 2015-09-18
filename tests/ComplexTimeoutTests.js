@@ -2,7 +2,7 @@ var assert = require("assert");
 var Thoth = require("../Thoth");
 
 describe('Thoth', function() {
-  describe('after stopping time', function() {
+  describe('after stopping time', function(done) {
     beforeEach(function(done) {
 	  Thoth.stopTime();
 	  done();
@@ -11,7 +11,7 @@ describe('Thoth', function() {
 	  Thoth.startTime();
 	  done();
 	});
-	it('supports any combination of setTimeout, setImmediate and process.nextTick is supported', function(done) {
+	it('supports any combination of setTimeout, setImmediate and process.nextTick', function(done) {
 	  var calls = [];
 	  process.nextTick(function() {
 	    calls.push(1);
@@ -132,13 +132,23 @@ describe('Thoth', function() {
 	
 	it('can intersperse timeouts and immediates', function(done) {
 	  var calls = [];
-	  var immediate = setImmediate(function() {
+	  var immediate1 = setImmediate(function() {
 	    calls.push(1);
 	  });
 	  
-	  clearImmediate(immediate);
+	  setImmediate(function() {
+	    setImmediate(function() {
+	      setImmediate(function() {
+  	        calls.push(2);
+	      });
+	    });
+	  });
+	  
+	  clearImmediate(immediate1);
+	  clearImmediate(immediate1);
+	  
 	  setTimeout(function() {
-	    assert.deepEqual([], calls);
+	    assert.deepEqual([2], calls);
 		done();
 	  }, 200);
 	  

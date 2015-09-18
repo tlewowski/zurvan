@@ -1,13 +1,15 @@
 var ImmediateInterceptor = require("./detail/ImmediateInterceptor");
 var TimerInterceptor = require("./detail/TimerInterceptor");
 var ProcessTimerInterceptor = require("./detail/ProcessTimerInterceptor");
+var assert = require("assert");
 
 function Thoth() {
   this.currentTime = {milliseconds: 0, nanoseconds: 0};
 }
 
 Thoth.prototype.startTime = function() {
-  this.forwardingOngoing = false;
+  assert(!this.isForwarding(), "Cannot start time while it is being forwarded!");
+  
   this.currentTime = {milliseconds: 0, nanoseconds: 0};  
 
   this.immediateInterceptor.restore();	
@@ -20,8 +22,7 @@ Thoth.prototype.stopTime = function() {
   this.processTimerInterceptor = new ProcessTimerInterceptor(this);
   this.immediateInterceptor = new ImmediateInterceptor();
 
-  this.currentTime = {milliseconds: 0, nanoseconds: 0};  
-  this.forwardingOngoing = false;
+  this.currentTime = {milliseconds: 0, nanoseconds: 0};
 };
 
 Thoth.prototype.startForwarding = function() {

@@ -1,15 +1,15 @@
 var assert = require("assert");
+var UIDGenerator = require("./UIDGenerator");
 
 function TimerRepository() {
-  this.uid = 1;
+  this.uidGenerator = new UIDGenerator();
   this.timers = [];  
 }
 
 TimerRepository.prototype.insertTimer = function(timer) {
 
   // to make uid instrigifiable, like the original one
-  timer.uid = {uid: this.uid++};
-  timer.uid.ref = timer.uid;
+  timer.uid = this.uidGenerator.generate();
   
   var i;
   for(i = 0; i < this.timers.length; ++i) {
@@ -30,6 +30,10 @@ TimerRepository.prototype.clearTimer = function(uid) {
 	  break;
 	}
   }
+};
+
+TimerRepository.prototype.clearAll = function() {
+  this.timers = [];
 };
 
 TimerRepository.prototype.nextTimer = function() {
