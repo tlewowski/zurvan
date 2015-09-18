@@ -15,14 +15,13 @@ describe('Thoth', function() {
 	  var calls = [];
 	  setTimeout(function() {
 	    assert.deepEqual(calls, [1]);
-	    done();
 	  }, 1001);
 	  
 	  setTimeout(function() {
         calls.push(1);	  
 	  }, 1000);
 	  
-	  Thoth.advanceTime(1001);
+	  Thoth.advanceTime(1001).then(done);
 	});
 		
 	it('throws on attempt to move time backwards', function(done) {
@@ -35,12 +34,14 @@ describe('Thoth', function() {
 	  var called = false;
 	  setTimeout(function() {
 	    called = true;
-	    done();
 	  }, 100);
 	  
 	  Thoth.advanceTime(50).then(function() {
 	    assert(!called);
-	    Thoth.advanceTime(50);
+	    return Thoth.advanceTime(50);
+	  }).then(function() {
+	    assert(called);
+		done();
 	  });;
 	});
 
@@ -221,17 +222,6 @@ describe('Thoth', function() {
 	  }, 20);
 	  
 	  Thoth.advanceTime(20);
-	});
-	
-	it('creates unstrigifiable handles', function(done) {
-	  var immediateHandle = setImmediate(function() {});
-	  var timeoutHandle = setTimeout(function() {});
-	  var intervalHandle = setInterval(function() {});
-	  
-	  assert.throws(function() {JSON.stringify(immediateHandle);});
-	  assert.throws(function() {JSON.stringify(timeoutHandle);});
-	  assert.throws(function() {JSON.stringify(intervalHandle);});
-      done();
 	});
   });
 });

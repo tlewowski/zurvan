@@ -46,5 +46,16 @@ describe('Thoth', function() {
 	  clearInterval(b);
 	  Thoth.advanceTime(100);
 	});
-  });
+
+	it('creates unstrigifiable handles', function(done) {
+	  var immediateHandle = setImmediate(function() {});
+	  var timeoutHandle = setTimeout(function() {});
+	  var intervalHandle = setInterval(function() {});
+	  
+	  assert.throws(function() {JSON.stringify(immediateHandle);});
+	  assert.throws(function() {JSON.stringify(timeoutHandle);});
+	  assert.throws(function() {JSON.stringify(intervalHandle);});
+      done();
+	});
+	});
 });
