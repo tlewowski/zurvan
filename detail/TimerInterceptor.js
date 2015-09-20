@@ -90,7 +90,7 @@ TimerInterceptor.prototype.addTimer = function(TimerType, callbk, callDelay) {
   }
   
   if(!isNumber(callDelay)) {
-    if(this.config.denyImplicitZeroTimer) {
+    if(this.config.denyImplicitTimer) {
       throw new Error("Call delay in timer call must be a numeric value");
 	}
 	

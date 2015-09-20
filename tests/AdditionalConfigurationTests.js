@@ -32,17 +32,15 @@ describe('Zurvan', function() {
 	});
   });
   
-  	
-
   describe('under special configuration', function() { 
     var timeoutCalledOverrider;
     var intervalCalledOverrider;
-    before(function() {
+    beforeEach(function() {
 	  timeoutCalledOverrider = new FieldOverrider(global, "timeoutCalled", false);
       intervalCalledOverrider = new FieldOverrider(global, "intervalCalled", 0);
     });
 	
-	after(function() {
+	afterEach(function() {
 	  timeoutCalledOverrider.restore();
 	  intervalCalledOverrider.restore();
 	});
@@ -57,6 +55,17 @@ describe('Zurvan', function() {
 	      assert(global.timeoutCalled === true);
     	  return Zurvan.startTime();
 	  }).then(done, done);
+	});
+	
+	it('', function(done) {
+	  var called;
+	  Zurvan.stopTime({denyImplicitTimer: true}).then(function() {
+	    setTimeout(function(){called = true;}, function(){});
+	  }).then(function() {
+	    return done(new Error("Implicit timer shall be denied and setting timer shall throw"));
+	  }, function() {
+     	return Zurvan.startTime().then(done, done);
+	  });
 	});
   });
 });
