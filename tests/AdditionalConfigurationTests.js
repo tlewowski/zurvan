@@ -3,15 +3,36 @@ var Zurvan = require("../Zurvan");
 var FieldOverrider = require("../detail/FieldOverrider")
 
 describe('Zurvan', function() {
-  it('by default denies timers that use eval (they do not work in nodejs)', function(done) {
-    Zurvan.stopTime().then(function() {
-	  setTimeout("global.timeoutCalled = true", 75);
-	}).then(function() {
-	  done(new Error("Shouldn't accept timer with eval call!"));
-	}, function() {
-	  Zurvan.startTime().then(done, done);
+  describe('by default', function() {
+    beforeEach(function(done) {
+	  Zurvan.stopTime().then(done, done);
+	});
+	afterEach(function(done) {
+	  Zurvan.startTime().then(done);
+	});
+	
+    it('denies timers that use eval (they do not work in nodejs)', function(done) {
+      try {	  
+	    setTimeout("global.timeoutCalled = true", 75);
+        done(new Error("Shouldn't accept timer with eval call!"));
+	  }
+	  catch(err) {
+	    done();
+	  }
+    });
+
+	it('executes immediately when setting timer without time', function(done) {
+	  var called;
+	  setTimeout(function() {called = true;}, {invalid:"type",of:"dueTime"});
+	  assert.equal(0, process.uptime());
+	  
+      Zurvan.expireAllTimeouts().then(function() {
+	    assert(called === true);
+      }).then(done, done);
 	});
   });
+  
+  	
 
   describe('under special configuration', function() { 
     var timeoutCalledOverrider;

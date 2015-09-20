@@ -26,7 +26,7 @@ describe('Zurvan', function() {
         done();
 	  });
 	});
-
+	
 	it('does not expire timeout before advanceTime finishes', function(done) {
 	  var called = false;
 	  setTimeout(function() {

@@ -39,7 +39,7 @@ Zurvan.prototype.stopTime = function(config) {
 	that.currentTime = {milliseconds: 0, nanoseconds: 0};
 	that.targetTime = {milliseconds: 0, nanoseconds: 0};
 
-    that.timerInterceptor = new TimerInterceptor(that, that.config.acceptEvalTimers);
+    that.timerInterceptor = new TimerInterceptor(that, that.config);
     that.processTimerInterceptor = new ProcessTimerInterceptor(that);
     that.immediateInterceptor = new ImmediateInterceptor();	
   });
