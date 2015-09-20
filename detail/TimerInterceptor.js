@@ -4,7 +4,7 @@ var TimerType = require("./TimerType");
 
 function isFunction(callbk) {
   return typeof callbk === 'function';
-};
+}
 
 function isNumber(n) {
   return !isNaN(parseFloat(n)) && isFinite(n);

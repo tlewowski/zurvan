@@ -1,6 +1,6 @@
-var assert = require("assert");
 var Zurvan = require("../Zurvan");
-var FieldOverrider = require("../detail/FieldOverrider")
+var FieldOverrider = require("../detail/FieldOverrider");
+var assert = require("assert");
 
 describe('Zurvan', function() {
   describe('by default', function() {
