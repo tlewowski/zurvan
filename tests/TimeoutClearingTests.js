@@ -74,5 +74,25 @@ describe('Thoth', function() {
 		return Thoth.startTime();
 	  }).then(done, done);
 	});
+	
+	it('rejects if time was not stopped', function(done) {
+	  Thoth.startTime().then(function() {
+	    done(new Error("Time was not stopped yet - starting shall be rejected"));
+	  }, function() {
+	    done();
+	  });
+	});
+  });
+  
+  describe('after stopping time', function() {
+    it('rejects stopping it again', function(done) {
+	  Thoth.stopTime().then(function() {
+	    return Thoth.stopTime();
+	  }).then(function() {
+	    done(new Error("Time was already stopped - shall not be able to stop it again"));
+	  }, function() {
+	    Thoth.startTime().then(done, done);
+	  });
+	});
   });
 });

@@ -9,6 +9,26 @@ describe('Thoth', function() {
 	afterEach(function(done) {
 	  Thoth.startTime().then(done, done);
 	});
+	
+	it('if no timeouts available, expiration of all does not advance time', function(done) {
+	  var calls = [];
+	  setInterval(function() {
+	    calls.push(1);
+	  }, 1000);
+	  
+	  assert.equal(0, process.uptime());
+	  Thoth.expireAllTimeouts().then(function() {
+	    assert.equal(0, process.uptime());
+		assert.deepEqual([], calls);
+	  }).then(done, done);
+	});
+	
+	it('if no timers available, expiration of single one does not advance time', function(done) {
+	  assert.equal(0, process.uptime());
+	  Thoth.forwardTimeToNextTimer().then(function() {
+	    assert.equal(0, process.uptime());
+	  }).then(done, done);
+	});
 
 	it('is able to expire all set timeouts', function(done) {
 	  var calls = [];

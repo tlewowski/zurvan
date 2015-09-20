@@ -29,9 +29,6 @@ Thoth.prototype.startTime = function() {
 Thoth.prototype.stopTime = function() {
   var that = this;
   return new Promise(function(resolve, reject) {
-    if(that.isExpiringEvents()) {
-	  return reject(Error("Cannot stop time that is already forwarded"));
-	}
     if(that.isStopped) {
 	  return reject(Error("Cannot stop time that is already stopped"));
 	}
@@ -69,7 +66,7 @@ Thoth.prototype.advanceTime = function(timeToForward) {
     }
 
     if(that.isExpiringEvents()) {
-      return reject(Error("Cannot forward time before first forwarding ends. Currently at: " + 
+      return reject(Error("Cannot forward time before previous forwarding ends. Currently at: " + 
 	    that.currentTime.milliseconds + " ms, target: " + that.targetTime.milliseconds + " ms"));
     }
 
