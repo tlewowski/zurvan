@@ -90,6 +90,18 @@ Thoth.prototype.advanceTime = function(timeToForward) {
   });  
 };
 
+Thoth.prototype.expireAllTimeouts = function() {
+    var lastTimeout = this.timerInterceptor.lastTimeout();
+	if(lastTimeout) {
+	  var that = this;
+	  return this.advanceTime(lastTimeout.dueTime - that.currentTime.milliseconds).then(function() {
+	    return that.expireAllTimeouts();
+	  });
+	}
+
+	return Promise.resolve();
+};
+
 Thoth.prototype.blockSystem = function(timeToBlock) {
 
   var that = this;  

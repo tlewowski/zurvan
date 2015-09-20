@@ -1,4 +1,5 @@
 var UIDGenerator = require("./UIDGenerator");
+var TimerType = require("./TimerType");
 
 function TimerRepository() {
   this.uidGenerator = new UIDGenerator();
@@ -38,6 +39,16 @@ TimerRepository.prototype.clearAll = function() {
 
 TimerRepository.prototype.nextTimer = function() {
   return this.timers[0];
+};
+
+TimerRepository.prototype.lastTimeout = function() {
+
+  var i;
+  for(i = this.timers.length - 1; i >= 0; --i) {
+    if(this.timers[i].type === TimerType.timeout) {
+	  return this.timers[i];
+	}
+  }
 };
 
 module.exports = TimerRepository;
