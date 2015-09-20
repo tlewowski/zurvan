@@ -16,9 +16,7 @@ describe('Thoth', function() {
 	    assert.deepEqual(calls, [1]);
 	  }, 1001);
 	  
-	  setTimeout(function() {
-        calls.push(1);	  
-	  }, 1000);
+	  setTimeout(Array.push.bind(calls, 1), 1000);
 	  
 	  Thoth.advanceTime(1001).then(done);
 	});
@@ -46,9 +44,7 @@ describe('Thoth', function() {
 
 	it('calls intervals in cycle', function(done) {
 	  var calls = [];
-	  setInterval(function() {
-	    calls.push(1);
-	  }, 100);
+	  setInterval(Array.push.bind(calls, 1), 100);
 	  
 	  setTimeout(function() {
 	    assert.deepEqual([1,1,1,1], calls);
@@ -62,9 +58,7 @@ describe('Thoth', function() {
 	  var calls = [];
 	  setInterval(function() {
 	    calls.push(1);
-		setTimeout(function() {
-		  calls.push(2);
-		}, 10);
+		setTimeout(Array.push.bind(calls, 2), 10);
 	  }, 10);
 	  
 	  setTimeout(function() {
@@ -96,9 +90,7 @@ describe('Thoth', function() {
 	it('is called in order of dueTime', function(done) {
 	  
 	  var calls = [];
-	  setTimeout(function() {
-	    calls.push(1);
-	  }, 50);
+	  setTimeout(Array.push.bind(calls, 1), 50);
 
 	  setTimeout(function() {
 	    assert.deepEqual(calls, [1]);
@@ -114,9 +106,7 @@ describe('Thoth', function() {
 	  var calls = [];
 	  setTimeout(function() {
 	    calls.push(1);
-		setTimeout(function() {
-		  calls.push(2);
-		}, 50);
+		setTimeout(Array.push.bind(calls, 2), 50);
 	  }, 50);
 	
 	  setTimeout(function() {
@@ -134,9 +124,7 @@ describe('Thoth', function() {
 
 	    setImmediate(function() {
 		  calls.push(2);
-		  setImmediate(function() {
-		    calls.push(3);
-		  });
+		  setImmediate(Array.push.bind(calls, 3));
 		});
 	  }, 50);
 	  
@@ -150,9 +138,7 @@ describe('Thoth', function() {
 	
 	it('expires timeouts one-by-one', function(done) {
 	  setTimeout(function() {
-	    setTimeout(function() {
-		  done();
-		}, 100);
+	    setTimeout(done, 100);
 	  }, 100);
 	  
 	  Thoth.advanceTime(200);  
@@ -173,9 +159,7 @@ describe('Thoth', function() {
 	  var calls = [];
 	  setImmediate(function() {
 	    calls.push(1); 
-		setImmediate(function() {
-		  calls.push(4);
-        });
+		setImmediate(Array.push.bind(calls, 4));
 	  });
 	  
 	  setTimeout(function() {
@@ -194,9 +178,7 @@ describe('Thoth', function() {
 	  var calls = [];
 	  setImmediate(function() {
 	    calls.push(1);
-		setTimeout(function() {
-		  calls.push(2);
-		}, 50);
+		setTimeout(Array.push.bind(calls, 2), 50);
 	  });
 	  
 	  setTimeout(function() {
@@ -211,9 +193,7 @@ describe('Thoth', function() {
 	  var calls = [];
 	  process.nextTick(function() {
 	    calls.push(1);
-		setTimeout(function() {
-		  calls.push(2);
-		}, 10);
+		setTimeout(Array.push.bind(calls, 2), 10);
 	  });
 	  
 	  setTimeout(function() {
