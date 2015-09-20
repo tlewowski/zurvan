@@ -45,7 +45,7 @@ describe('Zurvan', function() {
 	  intervalCalledOverrider.restore();
 	});
 	
-    it('timer or interval set with string will be evaluated if configured to', function(done) {
+    it('timer or interval set with string will be evaluated', function(done) {
       Zurvan.stopTime({acceptEvalTimers: true}).then(function() {
 	    setTimeout("global.timeoutCalled = true", 75);
 	    setInterval("global.intervalCalled = global.intervalCalled || 0; ++global.intervalCalled;", 50);
@@ -57,7 +57,7 @@ describe('Zurvan', function() {
 	  }).then(done, done);
 	});
 	
-	it('', function(done) {
+	it('denies implicit timeout time (0)', function(done) {
 	  var called;
 	  Zurvan.stopTime({denyImplicitTimer: true}).then(function() {
 	    setTimeout(function(){called = true;}, function(){});
