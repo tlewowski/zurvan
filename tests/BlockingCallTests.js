@@ -1,14 +1,14 @@
 var assert = require("assert");
-var Thoth = require("../Thoth");
+var Zurvan = require("../Zurvan");
 
-describe('Thoth', function() {
+describe('Zurvan', function() {
   describe('during blocking call', function() {
     beforeEach(function(done) {
-	  Thoth.stopTime().then(done, done);
+	  Zurvan.stopTime().then(done, done);
 	});
 	
 	afterEach(function(done) {
-	  Thoth.startTime().then(done, done);
+	  Zurvan.startTime().then(done, done);
 	});
 
     it('expires all timeouts at once in proper order', function(done) {
@@ -23,7 +23,7 @@ describe('Thoth', function() {
 	    calls.push(2);
 	  }, 2000);
 	
-	  Thoth.blockSystem(5000).then(function() {
+	  Zurvan.blockSystem(5000).then(function() {
 	    assert.deepEqual([1,2], calls);
 	  }).then(done, done);
 	});
@@ -46,7 +46,7 @@ describe('Thoth', function() {
 	    calls.push(3);
 	  }, 200);
 	  
-	  Thoth.blockSystem(1000)
+	  Zurvan.blockSystem(1000)
 	    .then(function() {
 		  assert.deepEqual([0,1,2,3], calls);
 		}).then(done, done);
@@ -65,13 +65,13 @@ describe('Thoth', function() {
 	    calls.push(3);
 	  }, 40);
 	  
-	  Thoth.blockSystem(1000).then(function() {
+	  Zurvan.blockSystem(1000).then(function() {
 	    assert.deepEqual([1,3,2], calls);
 	  }).then(done, done);
 	});
 
     it('rejects negative time', function(done) {
-      Thoth.blockSystem(-1).then(function() {
+      Zurvan.blockSystem(-1).then(function() {
 	    done(new Error("Should not be possible to block for negative time"));
   	  }, function() {
 	    done();

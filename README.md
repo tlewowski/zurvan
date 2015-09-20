@@ -1,12 +1,12 @@
-[![Build Status](https://travis-ci.org/Lewerow/Thoth.svg?branch=master)](https://travis-ci.org/Lewerow/Thoth)
+[![Build Status](https://travis-ci.org/Lewerow/Zurvan.svg?branch=master)](https://travis-ci.org/Lewerow/Zurvan)
 
-[![Code Climate](https://codeclimate.com/github/Lewerow/Thoth/badges/gpa.svg)](https://codeclimate.com/github/Lewerow/Thoth)
+[![Code Climate](https://codeclimate.com/github/Lewerow/Zurvan/badges/gpa.svg)](https://codeclimate.com/github/Lewerow/Zurvan)
 
-[![Test Coverage](https://codeclimate.com/github/Lewerow/Thoth/badges/coverage.svg)](https://codeclimate.com/github/Lewerow/Thoth/coverage)
+[![Test Coverage](https://codeclimate.com/github/Lewerow/Zurvan/badges/coverage.svg)](https://codeclimate.com/github/Lewerow/Zurvan/coverage)
 
-[![Dependencies](https://david-dm.org/Lewerow/Thoth.svg)](https://github.com/Lewerow/Thoth/blob/master/package.json)
+[![Dependencies](https://david-dm.org/Lewerow/Zurvan.svg)](https://github.com/Lewerow/Zurvan/blob/master/package.json)
 
-[![devDependencies](https://david-dm.org/Lewerow/Thoth/dev-status.svg)](https://david-dm.org/Lewerow/Thoth#info=devDependencies)
+[![devDependencies](https://david-dm.org/Lewerow/Zurvan/dev-status.svg)](https://david-dm.org/Lewerow/Zurvan#info=devDependencies)
 
 
 *Zurvan* is a library for time management.

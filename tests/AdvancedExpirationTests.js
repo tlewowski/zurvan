@@ -1,13 +1,13 @@
 var assert = require("assert");
-var Thoth = require("../Thoth");
+var Zurvan = require("../Zurvan");
 
-describe('Thoth', function() {
+describe('Zurvan', function() {
   describe('while manages time', function() {
     beforeEach(function(done) {
-	  Thoth.stopTime().then(done, done);
+	  Zurvan.stopTime().then(done, done);
 	});
 	afterEach(function(done) {
-	  Thoth.startTime().then(done, done);
+	  Zurvan.startTime().then(done, done);
 	});
 	
 	it('if no timeouts available, expiration of all does not advance time', function(done) {
@@ -17,7 +17,7 @@ describe('Thoth', function() {
 	  }, 1000);
 	  
 	  assert.equal(0, process.uptime());
-	  Thoth.expireAllTimeouts().then(function() {
+	  Zurvan.expireAllTimeouts().then(function() {
 	    assert.equal(0, process.uptime());
 		assert.deepEqual([], calls);
 	  }).then(done, done);
@@ -25,7 +25,7 @@ describe('Thoth', function() {
 	
 	it('if no timers available, expiration of single one does not advance time', function(done) {
 	  assert.equal(0, process.uptime());
-	  Thoth.forwardTimeToNextTimer().then(function() {
+	  Zurvan.forwardTimeToNextTimer().then(function() {
 	    assert.equal(0, process.uptime());
 	  }).then(done, done);
 	});
@@ -44,7 +44,7 @@ describe('Thoth', function() {
 	    calls.push(0);
 	  });
 	  
-	  Thoth.expireAllTimeouts().then(function() {
+	  Zurvan.expireAllTimeouts().then(function() {
 	    assert.deepEqual([0, 1, 2], calls);
 		assert.equal(1, process.uptime());
 	  }).then(done, done);
@@ -63,7 +63,7 @@ describe('Thoth', function() {
 	    calls.push(3);
 	  }, 2000);
 	  
-	  Thoth.expireAllTimeouts().then(function() {
+	  Zurvan.expireAllTimeouts().then(function() {
 	    assert.deepEqual([1,2,3,2], calls);
 	  }).then(done, done);
 	});
@@ -93,12 +93,12 @@ describe('Thoth', function() {
 		});
 	  }, 1000);
 	  
-	  Thoth.forwardTimeToNextTimer().then(function() {
+	  Zurvan.forwardTimeToNextTimer().then(function() {
 	    assert.deepEqual([1,2,5,3], calls);
-		return Thoth.forwardTimeToNextTimer();
+		return Zurvan.forwardTimeToNextTimer();
 	  }).then(function() {
 	    assert.deepEqual([1,2,5,3,4,6], calls);
-		return Thoth.forwardTimeToNextTimer();
+		return Zurvan.forwardTimeToNextTimer();
 	  }).then(function() {
 	    assert.deepEqual([1,2,5,3,4,6,4,6], calls);
 	  }).then(done, done);

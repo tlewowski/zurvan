@@ -1,13 +1,13 @@
 var assert = require("assert");
-var Thoth = require("../Thoth");
+var Zurvan = require("../Zurvan");
 
-describe('Thoth', function() {
+describe('Zurvan', function() {
   describe('while manages time', function() {
     beforeEach(function(done) {
-	  Thoth.stopTime().then(done, done);
+	  Zurvan.stopTime().then(done, done);
 	});
 	afterEach(function(done) {
-	  Thoth.startTime().then(done, done);
+	  Zurvan.startTime().then(done, done);
 	});
 	
 	it('can integrate advancing time and blocking', function(done) {
@@ -26,8 +26,8 @@ describe('Thoth', function() {
 	    calls.push(3);
 	  }, 50);
 	  
-	  Thoth.blockSystem(45).then(function() {
-	    return Thoth.advanceTime(40);
+	  Zurvan.blockSystem(45).then(function() {
+	    return Zurvan.advanceTime(40);
 	  }).then(function() {
 	    assert.deepEqual([1,2,3,4,2,2], calls);
 	  }).then(done, done);
@@ -38,7 +38,7 @@ describe('Thoth', function() {
 	  setTimeout(function() {
 	    assert.deepEqual([5, 0], process.hrtime());
 	    calls.push(1);
-		Thoth.blockSystem(1000).then(function() {
+		Zurvan.blockSystem(1000).then(function() {
 		  assert.equal(6, process.uptime());
 		});
 	  }, 5000);
@@ -48,7 +48,7 @@ describe('Thoth', function() {
 		calls.push(2);
 	  }, 5000);
 	  
-	  Thoth.advanceTime(7000).then(function() {
+	  Zurvan.advanceTime(7000).then(function() {
 	    assert.deepEqual(7, process.uptime());
 		assert.deepEqual([1,2], calls);
 	  }).then(done, done);
@@ -56,28 +56,28 @@ describe('Thoth', function() {
 	
 	it('cannot block system for longer than requested advance time', function(done) {
 	  setTimeout(function() {
-	    Thoth.blockSystem(2000);
+	    Zurvan.blockSystem(2000);
 	  }, 50);
 	  
 	  setTimeout(function() {
 	    assert.equal(0.1, process.uptime());
 	  }, 100);
 	  
-	  Thoth.advanceTime(1000).then(done, done);
+	  Zurvan.advanceTime(1000).then(done, done);
 	});
 	
 	it('when system is blocked, time cannot be additionally forwarded', function(done) {
 	  var rejected;
 	  setTimeout(function() {
 	    assert.equal(2, process.uptime());
-	    Thoth.advanceTime(1000).then(function() {
+	    Zurvan.advanceTime(1000).then(function() {
 		  rejected = false;
 		}, function() {
 		  rejected = true;
 		});
 	  }, 1000);
 	  
-	  Thoth.blockSystem(2000).then(function() {
+	  Zurvan.blockSystem(2000).then(function() {
 	    assert.equal(2, process.uptime());
 		assert(rejected);
 	  }).then(done, done);

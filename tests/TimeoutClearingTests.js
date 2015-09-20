@@ -1,14 +1,14 @@
 var assert = require("assert");
-var Thoth = require("../Thoth");
+var Zurvan = require("../Zurvan");
 
-describe('Thoth', function() {
+describe('Zurvan', function() {
   describe('after stopping time', function() {
     beforeEach(function(done) {
-	  Thoth.stopTime().then(done, done);
+	  Zurvan.stopTime().then(done, done);
 	});
 	
 	afterEach(function(done) {
-	  Thoth.startTime().then(done, done);
+	  Zurvan.startTime().then(done, done);
 	});
 
     it('does not call cleared immediates', function(done) {
@@ -41,7 +41,7 @@ describe('Thoth', function() {
 	  
 	  clearTimeout(a);
 	  clearInterval(b);
-	  Thoth.advanceTime(100).then(done, done);
+	  Zurvan.advanceTime(100).then(done, done);
 	});
 
 	it('creates unstrigifiable handles', function(done) {
@@ -59,24 +59,24 @@ describe('Thoth', function() {
   describe('after requesting to start time', function() {	
 	it('rejects if time has not yet passed', function(done) {
 	  var rejected;
-	  Thoth.stopTime().then(function() {
+	  Zurvan.stopTime().then(function() {
 	    setTimeout(function() {
-	      Thoth.startTime().then(function() {
+	      Zurvan.startTime().then(function() {
             rejected = false;
 		  }, function() {
 		    rejected = true;
 		  });
 	    }, 25);
 
-        return Thoth.advanceTime(50);
+        return Zurvan.advanceTime(50);
 	  }).then(function() {
         assert(rejected === true);
-		return Thoth.startTime();
+		return Zurvan.startTime();
 	  }).then(done, done);
 	});
 	
 	it('rejects if time was not stopped', function(done) {
-	  Thoth.startTime().then(function() {
+	  Zurvan.startTime().then(function() {
 	    done(new Error("Time was not stopped yet - starting shall be rejected"));
 	  }, function() {
 	    done();
@@ -86,12 +86,12 @@ describe('Thoth', function() {
   
   describe('after stopping time', function() {
     it('rejects stopping it again', function(done) {
-	  Thoth.stopTime().then(function() {
-	    return Thoth.stopTime();
+	  Zurvan.stopTime().then(function() {
+	    return Zurvan.stopTime();
 	  }).then(function() {
 	    done(new Error("Time was already stopped - shall not be able to stop it again"));
 	  }, function() {
-	    Thoth.startTime().then(done, done);
+	    Zurvan.startTime().then(done, done);
 	  });
 	});
   });

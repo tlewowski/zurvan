@@ -3,14 +3,14 @@ var TimerInterceptor = require("./detail/TimerInterceptor");
 var ProcessTimerInterceptor = require("./detail/ProcessTimerInterceptor");
 var assert = require("assert");
 
-function Thoth() {
+function Zurvan() {
   this.currentTime = {milliseconds: 0, nanoseconds: 0};
   this.targetTime = {milliseconds: 0, nanoseconds: 0};
   this.timeForwardingOngoing = false;
   this.isStopped = false;
 }
 
-Thoth.prototype.startTime = function() {
+Zurvan.prototype.startTime = function() {
   var that = this;
   return new Promise(function(resolve, reject) {
     if(that.isStopped && !that.isExpiringEvents()) {
@@ -26,7 +26,7 @@ Thoth.prototype.startTime = function() {
   });
 };
 
-Thoth.prototype.stopTime = function() {
+Zurvan.prototype.stopTime = function() {
   var that = this;
   return new Promise(function(resolve, reject) {
     if(that.isStopped) {
@@ -45,24 +45,24 @@ Thoth.prototype.stopTime = function() {
   
 };
 
-Thoth.prototype.stopExpiringEvents = function() {
+Zurvan.prototype.stopExpiringEvents = function() {
   this.timeForwardingOngoing = false;
 };
 
-Thoth.prototype.startExpiringEvents = function() {
+Zurvan.prototype.startExpiringEvents = function() {
   this.timeForwardingOngoing = true;  
 };
 
-Thoth.prototype.isExpiringEvents = function() {
+Zurvan.prototype.isExpiringEvents = function() {
   return this.timeForwardingOngoing;
 };
 
-Thoth.prototype.advanceTime = function(timeToForward) {
+Zurvan.prototype.advanceTime = function(timeToForward) {
   
   var that = this;
   return new Promise(function(resolve, reject) {
     if(timeToForward < 0) {
-      reject("Even Thoth cannot move back in time!");
+      reject("Even Zurvan cannot move back in time!");
     }
 
     if(that.isExpiringEvents()) {
@@ -103,7 +103,7 @@ Thoth.prototype.advanceTime = function(timeToForward) {
   });  
 };
 
-Thoth.prototype.expireAllTimeouts = function() {
+Zurvan.prototype.expireAllTimeouts = function() {
   var lastTimeout = this.timerInterceptor.lastTimeout();
   if(lastTimeout) {
     var that = this;
@@ -115,7 +115,7 @@ Thoth.prototype.expireAllTimeouts = function() {
   return Promise.resolve();
 };
 
-Thoth.prototype.forwardTimeToNextTimer = function() {
+Zurvan.prototype.forwardTimeToNextTimer = function() {
   var closestTimer = this.timerInterceptor.nextTimer();
   if(closestTimer) {
     return this.advanceTime(closestTimer.dueTime - this.currentTime.milliseconds);
@@ -124,12 +124,12 @@ Thoth.prototype.forwardTimeToNextTimer = function() {
   return Promise.resolve();
 };
 
-Thoth.prototype.blockSystem = function(timeToBlock) {
+Zurvan.prototype.blockSystem = function(timeToBlock) {
 
   var that = this;  
   return new Promise(function(resolve, reject) {
     if(timeToBlock < 0) {
-      return reject(Error("Even Thoth cannot move back in time!"));
+      return reject(Error("Even Zurvan cannot move back in time!"));
     }
 	
 	if(!that.isExpiringEvents()) {
@@ -157,8 +157,8 @@ Thoth.prototype.blockSystem = function(timeToBlock) {
   });
 };
 
-function createThoth() {
-  return new Thoth();
+function createZurvan() {
+  return new Zurvan();
 }
 
-module.exports = createThoth();
+module.exports = createZurvan();

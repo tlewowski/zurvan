@@ -1,13 +1,13 @@
 var assert = require("assert");
-var Thoth = require("../Thoth");
+var Zurvan = require("../Zurvan");
 
-describe('Thoth', function() {
+describe('Zurvan', function() {
   describe('after stopping time', function() {
     beforeEach(function(done) {
-	  Thoth.stopTime().then(done, done);
+	  Zurvan.stopTime().then(done, done);
 	});
 	afterEach(function(done) {
-	  Thoth.startTime().then(done);
+	  Zurvan.startTime().then(done);
 	});
 //	if('timer set with 
     it('expires timers at advancing time', function(done) {
@@ -18,11 +18,11 @@ describe('Thoth', function() {
 	  
 	  setTimeout(calls.push.bind(calls, 1), 1000);
 	  
-	  Thoth.advanceTime(1001).then(done);
+	  Zurvan.advanceTime(1001).then(done);
 	});
 		
 	it('throws on attempt to move time backwards', function(done) {
-	  Thoth.advanceTime(-1).catch(function(err) {
+	  Zurvan.advanceTime(-1).catch(function(err) {
         done();
 	  });
 	});
@@ -33,9 +33,9 @@ describe('Thoth', function() {
 	    called = true;
 	  }, 100);
 	  
-	  Thoth.advanceTime(50).then(function() {
+	  Zurvan.advanceTime(50).then(function() {
 	    assert(!called);
-	    return Thoth.advanceTime(50);
+	    return Zurvan.advanceTime(50);
 	  }).then(function() {
 	    assert(called);
 		done();
@@ -51,7 +51,7 @@ describe('Thoth', function() {
 		done();
 	  }, 410);
 	  
-	  Thoth.advanceTime(410);
+	  Zurvan.advanceTime(410);
 	});
 	
 	it('can call both timeouts and intervals', function(done) {
@@ -66,7 +66,7 @@ describe('Thoth', function() {
 		done();
 	  }, 41);
 	  
-	  Thoth.advanceTime(42);
+	  Zurvan.advanceTime(42);
 	});
 
 	it('can pass arguments to timers', function(done) {
@@ -82,8 +82,8 @@ describe('Thoth', function() {
         done();
 	  }, 1050);
 
-	  Thoth.advanceTime(50).then(function() {
-	    return Thoth.advanceTime(1000);
+	  Zurvan.advanceTime(50).then(function() {
+	    return Zurvan.advanceTime(1000);
 	  });	  
 	});
 	
@@ -97,7 +97,7 @@ describe('Thoth', function() {
 	    done();
 	  }, 1000);
 	  
-	  Thoth.advanceTime(1500);
+	  Zurvan.advanceTime(1500);
 	});
 	
 	
@@ -114,7 +114,7 @@ describe('Thoth', function() {
 		done();
 	  }, 150);
 	  
-	  Thoth.advanceTime(150);
+	  Zurvan.advanceTime(150);
 	});
 	
 	it('executes async callbacks after all immediates (queue) is cleared', function(done) {
@@ -133,7 +133,7 @@ describe('Thoth', function() {
 		done();
 	  }, 100);
 	  
-	  Thoth.advanceTime(100);
+	  Zurvan.advanceTime(100);
 	});
 	
 	it('expires timeouts one-by-one', function(done) {
@@ -141,18 +141,18 @@ describe('Thoth', function() {
 	    setTimeout(done, 100);
 	  }, 100);
 	  
-	  Thoth.advanceTime(200);  
+	  Zurvan.advanceTime(200);  
 	});
 	
 	it('throws when time is advanced from two places simultaneously', function(done) {
       setTimeout(function() {
-    	  Thoth.advanceTime(100)
+    	  Zurvan.advanceTime(100)
 		    .catch(function(err) {
 		      done();
 		    });
 	  }, 50);
       
-	  Thoth.advanceTime(100);
+	  Zurvan.advanceTime(100);
 	});
 	
 	it('immediates are called before timeouts', function(done) {
@@ -171,7 +171,7 @@ describe('Thoth', function() {
 		}, 50);
 	  }, 50);
 	  
-	  Thoth.advanceTime(100);
+	  Zurvan.advanceTime(100);
 	});
 	
 	it('takes into account setTimeouts in setImmediates when forwarding time', function(done) {
@@ -186,7 +186,7 @@ describe('Thoth', function() {
 		done();
 	  }, 100);
 	  
-	  Thoth.advanceTime(100);
+	  Zurvan.advanceTime(100);
 	});
 	
 	it('takes into account setTimeout in process.nextTick when forwarding time', function(done) {
@@ -201,7 +201,7 @@ describe('Thoth', function() {
 		done();
 	  }, 20);
 	  
-	  Thoth.advanceTime(20);
+	  Zurvan.advanceTime(20);
 	});
   });
 });

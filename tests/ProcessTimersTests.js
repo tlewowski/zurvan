@@ -1,14 +1,14 @@
 var assert = require("assert");
-var Thoth = require("../Thoth");
+var Zurvan = require("../Zurvan");
 
-describe('Thoth', function() {
+describe('Zurvan', function() {
   describe('after stopping time', function() {
     beforeEach(function(done) {
-	  Thoth.stopTime().then(done, done);
+	  Zurvan.stopTime().then(done, done);
 	});
 	
 	afterEach(function(done) {
-	  Thoth.startTime().then(done);
+	  Zurvan.startTime().then(done);
 	});
 
     it('resets process timers', function(done) {
@@ -23,7 +23,7 @@ describe('Thoth', function() {
 		assert.deepEqual([1, 523e6], process.hrtime());
 	  }, 1523);
 	  
-	  Thoth.advanceTime(1600).then(function() {
+	  Zurvan.advanceTime(1600).then(function() {
 	    assert.equal(1.6, process.uptime());
 		assert.deepEqual([1, 600e6], process.hrtime());
 	    done();
@@ -44,7 +44,7 @@ describe('Thoth', function() {
 		}, 8721);
 	  }, 1523);
 	  
-	  Thoth.advanceTime(11000);
+	  Zurvan.advanceTime(11000);
 	});
 
   });

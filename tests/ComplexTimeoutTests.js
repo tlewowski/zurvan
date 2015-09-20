@@ -1,13 +1,13 @@
 var assert = require("assert");
-var Thoth = require("../Thoth");
+var Zurvan = require("../Zurvan");
 
-describe('Thoth', function() {
+describe('Zurvan', function() {
   describe('after stopping time', function(done) {
     beforeEach(function(done) {
-	  Thoth.stopTime().then(done, done);
+	  Zurvan.stopTime().then(done, done);
 	});
 	afterEach(function(done) {
-	  Thoth.startTime().then(done, done);
+	  Zurvan.startTime().then(done, done);
 	});
 	it('supports any combination of setTimeout, setImmediate and process.nextTick', function(done) {
 	  var calls = [];
@@ -70,7 +70,7 @@ describe('Thoth', function() {
         calls.push(18);
 	  }, 30);
 	  
-	  Thoth.advanceTime(30).then(function() {
+	  Zurvan.advanceTime(30).then(function() {
 	    assert.deepEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18], calls);
 		done();
 	  });
@@ -126,7 +126,7 @@ describe('Thoth', function() {
 		});
 	  }, 50);
 	  
-	  Thoth.advanceTime(200).then(done);
+	  Zurvan.advanceTime(200).then(done);
 	});
 	
 	it('handles setImmediates and process.nextTick always properly', function(done) {
@@ -148,7 +148,7 @@ describe('Thoth', function() {
 		  calls.push(0.5);
 		});
 		
-		Thoth.advanceTime(100).then(function() {
+		Zurvan.advanceTime(100).then(function() {
 		  assert.deepEqual([0,0.5,1,2,3,4,5,6], calls);
 		}).then(done, done);
 	  });
@@ -187,7 +187,7 @@ describe('Thoth', function() {
 		done();
 	  }, 200);
 	  
-	  Thoth.advanceTime(200);
+	  Zurvan.advanceTime(200);
 	});
   });
 });
