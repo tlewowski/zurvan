@@ -1,6 +1,7 @@
 var ImmediateInterceptor = require("./detail/ImmediateInterceptor");
 var TimerInterceptor = require("./detail/TimerInterceptor");
 var ProcessTimerInterceptor = require("./detail/ProcessTimerInterceptor");
+var assert = require("assert");
 
 function Thoth() {
 }
@@ -99,17 +100,25 @@ Thoth.prototype.blockSystem = function(timeToBlock) {
       reject(Error("Even Thoth cannot move back in time!"));
     }
 	
+	if(!that.isExpiringEvents()) {
+	  assert(that.targetTime.milliseconds === that.currentTime.milliseconds);
+	  that.targetTime.milliseconds += timeToBlock;
+	}
+	
     that.currentTime.milliseconds += timeToBlock;
-    that.targetTime.milliseconds = that.currentTime.milliseconds;
+	
     var closestTimer = that.timerInterceptor.next();
     while(closestTimer && closestTimer.dueTime <= that.currentTime.milliseconds) {
       that.timerInterceptor.clearTimer(closestTimer.uid);
   	  setImmediate(closestTimer.expire.bind(closestTimer));
       closestTimer = that.timerInterceptor.next();
     }
-	resolve();
+	
+  	resolve();
   }).then(function() {
-	return that.advanceTime(0);
+    if(!that.isExpiringEvents()) {
+      return that.advanceTime(0);
+	}
   });
 };
 

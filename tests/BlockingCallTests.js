@@ -73,7 +73,7 @@ describe('Thoth', function() {
 
     it('rejects negative time', function(done) {
       Thoth.blockSystem(-1).then(function() {
-	    assert(false);
+	    done(new Error("Should not be possible to block for negative time"));
   	  }, function() {
 	    done();
 	  });
