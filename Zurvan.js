@@ -26,7 +26,7 @@ Zurvan.prototype.startTime = function() {
   });
 };
 
-Zurvan.prototype.stopTime = function() {
+Zurvan.prototype.stopTime = function(config) {
   var that = this;
   return new Promise(function(resolve, reject) {
     if(that.isStopped) {
@@ -34,11 +34,12 @@ Zurvan.prototype.stopTime = function() {
 	}
 	return resolve();
   }).then(function() {
+    that.config = config || {};
     that.isStopped = true;
 	that.currentTime = {milliseconds: 0, nanoseconds: 0};
 	that.targetTime = {milliseconds: 0, nanoseconds: 0};
 
-    that.timerInterceptor = new TimerInterceptor(that);
+    that.timerInterceptor = new TimerInterceptor(that, that.config.acceptEvalTimers);
     that.processTimerInterceptor = new ProcessTimerInterceptor(that);
     that.immediateInterceptor = new ImmediateInterceptor();	
   });

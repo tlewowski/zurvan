@@ -1,6 +1,5 @@
 var assert = require("assert");
 var Zurvan = require("../Zurvan");
-var FieldOverrider = require("../detail/FieldOverrider")
 
 describe('Zurvan', function() {
   describe('after stopping time', function() {
@@ -27,22 +26,7 @@ describe('Zurvan', function() {
         done();
 	  });
 	});
-	
-	it('timer or interval set with string will be evaluated', function(done) {
-	  var timeoutCalledOverrider = new FieldOverrider(global, "timeoutCalled", false);
-	  var intervalCalledOverrider = new FieldOverrider(global, "intervalCalled", 0);
-	
-	  setTimeout("global.timeoutCalled = true", 75);
-	  setInterval("global.intervalCalled = global.intervalCalled || 0; ++global.intervalCalled;", 50);
-      Zurvan.advanceTime(100).then(function() {
-	    assert(global.intervalCalled === 2);
-		assert(global.timeoutCalled === true);
-		
-		timeoutCalledOverrider.restore();
-		intervalCalledOverrider.restore();
-	  }).then(done, done);
-	});
-	
+
 	it('does not expire timeout before advanceTime finishes', function(done) {
 	  var called = false;
 	  setTimeout(function() {

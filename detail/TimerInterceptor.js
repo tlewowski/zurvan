@@ -46,8 +46,9 @@ Callback.prototype.call = function() {
   this.f.apply(undefined, this.args);
 };
 
-function TimerInterceptor(timeServer) {
+function TimerInterceptor(timeServer, acceptEvalTimer) {
   this.timeServer = timeServer;
+  this.acceptEvalTimer = acceptEvalTimer;
   this.timerRepository = new TimerRepository();
   this.setTimeouts = new FieldOverrider(global, "setTimeout", this.addTimer.bind(this, TimeoutTimer));
   this.clearTimeouts = new FieldOverrider(global, "clearTimeout", this.clearTimer.bind(this));
@@ -77,8 +78,11 @@ TimerInterceptor.prototype.addTimer = function(TimerType, callbk, callDelay) {
   if(isFunction(callbk)) {
     callback = new Callback(callbk, [].splice.call(arguments, 3));
   }
-  else {
+  else if(this.acceptEvalTimer) {
     callback = new Callback(function() {return eval(callbk);}, []);
+  }
+  else {
+    throw new Error("Node.js does not accept strings in timers. If you wish, you can configure Zurvan to use them, but beware.");
   }
   
   var timer = new TimerType(callback, this.timerRepository, this.timeServer.currentTime, callDelay);
