@@ -1,14 +1,7 @@
 var FieldOverrider = require("./FieldOverrider");
 var TimerRepository = require("./TimerRepository");
 var TimerType = require("./TimerType");
-
-function isFunction(callbk) {
-  return typeof callbk === 'function';
-}
-
-function isNumber(n) {
-  return !isNaN(parseFloat(n)) && isFinite(n);
-}
+var TypeUtils = require("./TypeUtils");
 
 function Timer(callback, timerRepository, currentTime, callDelay) {
   this.callback = callback;
@@ -79,7 +72,7 @@ TimerInterceptor.prototype.lastTimeout = function() {
 TimerInterceptor.prototype.addTimer = function(TimerType, callbk, callDelay) {
 
   var callback;
-  if(isFunction(callbk)) {
+  if(TypeUtils.isFunction(callbk)) {
     callback = new Callback(callbk, [].splice.call(arguments, 3));
   }
   else if(this.config.acceptEvalTimers) {
@@ -89,7 +82,7 @@ TimerInterceptor.prototype.addTimer = function(TimerType, callbk, callDelay) {
     throw new Error("Node.js does not accept strings in timers. If you wish, you can configure Zurvan to use them, but beware.");
   }
   
-  if(!isNumber(callDelay)) {
+  if(!TypeUtils.isNumber(callDelay)) {
     if(this.config.denyImplicitTimer) {
       throw new Error("Call delay in timer call must be a numeric value");
 	}

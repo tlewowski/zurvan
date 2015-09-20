@@ -67,5 +67,25 @@ describe('Zurvan', function() {
      	return Zurvan.startTime().then(done, done);
 	  });
 	});
+	
+	it('runs at arbitrary time since process startup', function(done) {
+	  Zurvan.stopTime({timeSinceStartup: 4}).then(function() {
+	    assert.equal(4, process.uptime());
+		assert.deepEqual([4, 0], process.hrtime());
+		return Zurvan.startTime();
+	  }).then(function() {
+	    return Zurvan.stopTime({timeSinceStartup: [100, 132587951]});
+	  }).then(function() {
+	    assert.equal(100.132, process.uptime());
+		assert.deepEqual([100, 132587951], process.hrtime());
+		return Zurvan.startTime();
+	  }).then(function() {
+	    return Zurvan.stopTime({timeSinceStartup: [0, 1e10]});
+	  }).then(function() {
+	    assert.equal(10, process.uptime());
+		assert.deepEqual([10, 0], process.hrtime());
+		return Zurvan.startTime();
+	  }).then(done, done);
+	});
   });
 });

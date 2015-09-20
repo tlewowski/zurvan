@@ -1,6 +1,7 @@
 var ImmediateInterceptor = require("./detail/ImmediateInterceptor");
 var TimerInterceptor = require("./detail/TimerInterceptor");
 var ProcessTimerInterceptor = require("./detail/ProcessTimerInterceptor");
+var TypeUtils = require("./detail/TypeUtils");
 var assert = require("assert");
 
 function Zurvan() {
@@ -36,14 +37,26 @@ Zurvan.prototype.stopTime = function(config) {
   }).then(function() {
     that.config = config || {};
     that.isStopped = true;
-	that.currentTime = {milliseconds: 0, nanoseconds: 0};
-	that.targetTime = {milliseconds: 0, nanoseconds: 0};
+	that.setupTime(that.config.timeSinceStartup);
 
     that.timerInterceptor = new TimerInterceptor(that, that.config);
     that.processTimerInterceptor = new ProcessTimerInterceptor(that);
     that.immediateInterceptor = new ImmediateInterceptor();	
   });
   
+};
+
+Zurvan.prototype.setupTime = function(timeSinceStartup) {
+  var startupTimeInNanoseconds = 0;
+  if(TypeUtils.isNumber(timeSinceStartup)) {
+    startupTimeInNanoseconds = timeSinceStartup * 1e9;
+  }
+  else if (timeSinceStartup !== undefined){
+    startupTimeInNanoseconds = timeSinceStartup[0] * 1e9 + timeSinceStartup[1];
+  }
+  
+  this.currentTime = {milliseconds: Math.floor(startupTimeInNanoseconds / 1e6), nanoseconds: startupTimeInNanoseconds % 1e6};
+  this.targetTime = {milliseconds: this.currentTime.milliseconds, nanoseconds: this.currentTime.nanoseconds};
 };
 
 Zurvan.prototype.stopExpiringEvents = function() {
