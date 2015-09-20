@@ -66,5 +66,22 @@ describe('Thoth', function() {
 	  
 	  Thoth.advanceTime(1000).then(done, done);
 	});
+	
+	it('when system is blocked, time cannot be additionally forwarded', function(done) {
+	  var rejected;
+	  setTimeout(function() {
+	    assert.equal(2, process.uptime());
+	    Thoth.advanceTime(1000).then(function() {
+		  rejected = false;
+		}, function() {
+		  rejected = true;
+		});
+	  }, 1000);
+	  
+	  Thoth.blockSystem(2000).then(function() {
+	    assert.equal(2, process.uptime());
+		assert(rejected);
+	  }).then(done, done);
+	});
   });
 });

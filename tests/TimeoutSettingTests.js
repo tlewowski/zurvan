@@ -82,15 +82,16 @@ describe('Thoth', function() {
 	  setTimeout(function(a,b) {
 	    calls.push(a);
 		calls.push(b);
-		Thoth.advanceTime(1000);
 	  }, 50, 2, 5);
 	  
 	  setTimeout(function() {
         assert.deepEqual(calls, [2, 5]);
-        done();		
+        done();
 	  }, 1050);
 
-	  Thoth.advanceTime(50);	  
+	  Thoth.advanceTime(50).then(function() {
+	    return Thoth.advanceTime(1000);
+	  });	  
 	});
 	
 	it('is called in order of dueTime', function(done) {

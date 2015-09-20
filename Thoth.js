@@ -52,19 +52,17 @@ Thoth.prototype.advanceTime = function(timeToForward) {
       reject("Even Thoth cannot move back in time!");
     }
 
-    if(that.currentTime.milliseconds !== that.targetTime.milliseconds) {
-      reject(Error("Cannot forward time before first forwarding ends. Currently at: " + 
+    if(that.isExpiringEvents()) {
+      return reject(Error("Cannot forward time before first forwarding ends. Currently at: " + 
 	    that.currentTime.milliseconds + " ms, target: " + that.targetTime.milliseconds + " ms"));
     }
 
     that.targetTime.milliseconds = that.currentTime.milliseconds + timeToForward;
   
-    if(!that.isExpiringEvents()) {
-      that.startExpiringEvents();
-      setImmediate(function() {
-        advanceTimeHelper();
-      });
-    }
+    that.startExpiringEvents();
+    setImmediate(function() {
+	  advanceTimeHelper();
+    });
   
     function advanceTimeHelper() {
       if(that.immediateInterceptor.areAwaiting()) {
