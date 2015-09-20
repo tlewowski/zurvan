@@ -9,4 +9,4 @@ node_js:
 sudo: false
 addons:
     code_climate:
-        repo_token: 2ee7cfe310b2af805dbb96e8d98c52757f9f99847714eb76eda3f39e4514bb0e
+        repo_token: 6daf1df58d7bd37ca679d2e53201320fe4babe51334fb456dd35673d4a857d37
