@@ -97,15 +97,19 @@ Thoth.prototype.blockSystem = function(timeToBlock) {
   var that = this;  
   return new Promise(function(resolve, reject) {
     if(timeToBlock < 0) {
-      reject(Error("Even Thoth cannot move back in time!"));
+      return reject(Error("Even Thoth cannot move back in time!"));
     }
 	
 	if(!that.isExpiringEvents()) {
 	  assert(that.targetTime.milliseconds === that.currentTime.milliseconds);
 	  that.targetTime.milliseconds += timeToBlock;
 	}
+	else if(that.targetTime.milliseconds < that.currentTime.milliseconds + timeToBlock) {
+	  return reject(Error("Cannot block system during advancing for longer than requested advance time"));
+	}
 	
     that.currentTime.milliseconds += timeToBlock;
+		
 	
     var closestTimer = that.timerInterceptor.next();
     while(closestTimer && closestTimer.dueTime <= that.currentTime.milliseconds) {

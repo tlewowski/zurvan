@@ -54,5 +54,17 @@ describe('Thoth', function() {
 		assert.deepEqual([1,2], calls);
 	  }).then(done, done);
 	});
+	
+	it('cannot block system for longer than requested advance time', function(done) {
+	  setTimeout(function() {
+	    Thoth.blockSystem(2000);
+	  }, 50);
+	  
+	  setTimeout(function() {
+	    assert.equal(0.1, process.uptime());
+	  }, 100);
+	  
+	  Thoth.advanceTime(1000).then(done, done);
+	});
   });
 });
