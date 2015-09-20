@@ -48,5 +48,41 @@ describe('Thoth', function() {
 	    assert.deepEqual([1,2,3,2], calls);
 	  }).then(done, done);
 	});
+	
+	it('forwarding to next timer takes into account timers and intervals', function(done) {
+	  var calls = [];
+	  setImmediate(function() {
+	    calls.push(1);
+	  });
+	  
+	  setTimeout(function() {
+	    calls.push(2);
+		process.nextTick(function() {
+		  calls.push(5);
+		});
+	  }, 500);
+	  
+	  setTimeout(function() {
+	    calls.push(3);
+        assert.equal(0.5, process.uptime());
+	  }, 500);
+	  
+	  setInterval(function() {
+	    calls.push(4);
+		setImmediate(function() {
+		  calls.push(6);
+		});
+	  }, 1000);
+	  
+	  Thoth.forwardTimeToNextTimer().then(function() {
+	    assert.deepEqual([1,2,5,3], calls);
+		return Thoth.forwardTimeToNextTimer();
+	  }).then(function() {
+	    assert.deepEqual([1,2,5,3,4,6], calls);
+		return Thoth.forwardTimeToNextTimer();
+	  }).then(function() {
+	    assert.deepEqual([1,2,5,3,4,6,4,6], calls);
+	  }).then(done, done);
+	});
   });
 });

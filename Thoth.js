@@ -72,7 +72,7 @@ Thoth.prototype.advanceTime = function(timeToForward) {
         return;
       }
 	
-	  var closestTimer = that.timerInterceptor.next();
+	  var closestTimer = that.timerInterceptor.nextTimer();
       if(closestTimer && closestTimer.dueTime <= that.targetTime.milliseconds) {
 	    that.timerInterceptor.clearTimer(closestTimer.uid);
         that.currentTime.milliseconds = closestTimer.dueTime;	  
@@ -91,15 +91,24 @@ Thoth.prototype.advanceTime = function(timeToForward) {
 };
 
 Thoth.prototype.expireAllTimeouts = function() {
-    var lastTimeout = this.timerInterceptor.lastTimeout();
-	if(lastTimeout) {
-	  var that = this;
-	  return this.advanceTime(lastTimeout.dueTime - that.currentTime.milliseconds).then(function() {
-	    return that.expireAllTimeouts();
-	  });
-	}
+  var lastTimeout = this.timerInterceptor.lastTimeout();
+  if(lastTimeout) {
+    var that = this;
+	return this.advanceTime(lastTimeout.dueTime - that.currentTime.milliseconds).then(function() {
+	  return that.expireAllTimeouts();
+	});
+  }
 
-	return Promise.resolve();
+  return Promise.resolve();
+};
+
+Thoth.prototype.forwardTimeToNextTimer = function() {
+  var closestTimer = this.timerInterceptor.nextTimer();
+  if(closestTimer) {
+    return this.advanceTime(closestTimer.dueTime - this.currentTime.milliseconds);
+  }
+  
+  return Promise.resolve();
 };
 
 Thoth.prototype.blockSystem = function(timeToBlock) {
@@ -120,12 +129,11 @@ Thoth.prototype.blockSystem = function(timeToBlock) {
 	
     that.currentTime.milliseconds += timeToBlock;
 		
-	
-    var closestTimer = that.timerInterceptor.next();
+    var closestTimer = that.timerInterceptor.nextTimer();
     while(closestTimer && closestTimer.dueTime <= that.currentTime.milliseconds) {
       that.timerInterceptor.clearTimer(closestTimer.uid);
   	  setImmediate(closestTimer.expire.bind(closestTimer));
-      closestTimer = that.timerInterceptor.next();
+      closestTimer = that.timerInterceptor.nextTimer();
     }
 	
   	resolve();

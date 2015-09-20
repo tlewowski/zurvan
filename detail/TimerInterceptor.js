@@ -59,7 +59,7 @@ TimerInterceptor.prototype.restore = function() {
   this.timerRepository.clearAll();
 };
 
-TimerInterceptor.prototype.next = function() {
+TimerInterceptor.prototype.nextTimer = function() {
   return this.timerRepository.nextTimer();
 };
 
