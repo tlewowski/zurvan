@@ -130,6 +130,42 @@ describe('Thoth', function() {
 	  Thoth.advanceTime(200).then(done);
 	});
 	
+	it('handles setImmediates and process.nextTick always properly', function(done) {
+	  var calls = [];
+	  
+	  setImmediate(function() {
+	    calls.push(0);
+		setImmediate(function() {
+		  process.nextTick(function() {
+			calls.push(2);
+			process.nextTick(function() {
+			  calls.push(3);
+		    });
+		  });
+		  calls.push(1);
+		});
+		
+		process.nextTick(function() {
+		  calls.push(0.5);
+		});
+		
+		Thoth.advanceTime(100).then(function() {
+		  assert.deepEqual([0,0.5,1,2,3,4,5,6], calls);
+		}).then(done, done);
+	  });
+	  
+	  setTimeout(function() {
+	    calls.push(4);
+		process.nextTick(function() {
+		  calls.push(5);
+		});
+		
+		setImmediate(function() {
+		  calls.push(6);
+		});
+	  }, 50);
+	});
+	
 	it('can intersperse timeouts and immediates', function(done) {
 	  var calls = [];
 	  var immediate1 = setImmediate(function() {
