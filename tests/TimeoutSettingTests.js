@@ -4,13 +4,12 @@ var Thoth = require("../Thoth");
 describe('Thoth', function() {
   describe('after stopping time', function() {
     beforeEach(function(done) {
-	  Thoth.stopTime();
-	  done();
+	  Thoth.stopTime().then(done, done);
 	});
 	afterEach(function(done) {
 	  Thoth.startTime().then(done);
 	});
-	
+//	if('timer set with 
     it('expires timers at advancing time', function(done) {
 	  var calls = [];
 	  setTimeout(function() {

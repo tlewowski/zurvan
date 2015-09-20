@@ -4,18 +4,22 @@ var ProcessTimerInterceptor = require("./detail/ProcessTimerInterceptor");
 var assert = require("assert");
 
 function Thoth() {
+  this.currentTime = {milliseconds: 0, nanoseconds: 0};
+  this.targetTime = {milliseconds: 0, nanoseconds: 0};
+  this.timeForwardingOngoing = false;
+  this.isStopped = false;
 }
 
 Thoth.prototype.startTime = function() {
   var that = this;
   return new Promise(function(resolve, reject) {
-    if(!that.isExpiringEvents()) {
-	  resolve();
+    if(that.isStopped && !that.isExpiringEvents()) {
+	  return resolve();
 	}
-	else {
-	  reject(Error("Cannot start time during event expiration"));
-	}
+	
+	return reject(Error("Cannot start time during event expiration"));
   }).then(function() {
+    that.isStopped = false;
     that.immediateInterceptor.restore();	
     that.processTimerInterceptor.restore();
     that.timerInterceptor.restore();
@@ -23,13 +27,25 @@ Thoth.prototype.startTime = function() {
 };
 
 Thoth.prototype.stopTime = function() {
-  this.timerInterceptor = new TimerInterceptor(this);
-  this.processTimerInterceptor = new ProcessTimerInterceptor(this);
-  this.immediateInterceptor = new ImmediateInterceptor();
+  var that = this;
+  return new Promise(function(resolve, reject) {
+    if(that.isExpiringEvents()) {
+	  return reject(Error("Cannot stop time that is already forwarded"));
+	}
+    if(that.isStopped) {
+	  return reject(Error("Cannot stop time that is already stopped"));
+	}
+	return resolve();
+  }).then(function() {
+    that.isStopped = true;
+	that.currentTime = {milliseconds: 0, nanoseconds: 0};
+	that.targetTime = {milliseconds: 0, nanoseconds: 0};
 
-  this.currentTime = {milliseconds: 0, nanoseconds: 0};
-  this.targetTime = {milliseconds: 0, nanoseconds: 0};
-  this.timeForwardingOngoing = false;
+    that.timerInterceptor = new TimerInterceptor(that);
+    that.processTimerInterceptor = new ProcessTimerInterceptor(that);
+    that.immediateInterceptor = new ImmediateInterceptor();	
+  });
+  
 };
 
 Thoth.prototype.stopExpiringEvents = function() {

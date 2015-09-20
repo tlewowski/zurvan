@@ -4,8 +4,7 @@ var Thoth = require("../Thoth");
 describe('Thoth', function() {
   describe('after stopping time', function() {
     beforeEach(function(done) {
-	  Thoth.stopTime();
-	  done();
+	  Thoth.stopTime().then(done, done);
 	});
 	
 	afterEach(function(done) {
@@ -38,12 +37,11 @@ describe('Thoth', function() {
 	  
 	  setTimeout(function() {
 	    assert.deepEqual([], calls);
-		done();
 	  }, 40);
 	  
 	  clearTimeout(a);
 	  clearInterval(b);
-	  Thoth.advanceTime(100);
+	  Thoth.advanceTime(100).then(done, done);
 	});
 
 	it('creates unstrigifiable handles', function(done) {
@@ -60,13 +58,21 @@ describe('Thoth', function() {
   
   describe('after requesting to start time', function() {	
 	it('rejects if time has not yet passed', function(done) {
-	  Thoth.stopTime();
-	  setTimeout(function() {
-	    Thoth.startTime().catch(function() {
-		  done();
-		});
-	  }, 25);
-	  Thoth.advanceTime(50);
+	  var rejected;
+	  Thoth.stopTime().then(function() {
+	    setTimeout(function() {
+	      Thoth.startTime().then(function() {
+            rejected = false;
+		  }, function() {
+		    rejected = true;
+		  });
+	    }, 25);
+
+        return Thoth.advanceTime(50);
+	  }).then(function() {
+        assert(rejected === true);
+		return Thoth.startTime();
+	  }).then(done, done);
 	});
   });
 });

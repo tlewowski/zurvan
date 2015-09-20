@@ -4,11 +4,10 @@ var Thoth = require("../Thoth");
 describe('Thoth', function() {
   describe('after stopping time', function(done) {
     beforeEach(function(done) {
-	  Thoth.stopTime();
-	  done();
+	  Thoth.stopTime().then(done, done);
 	});
 	afterEach(function(done) {
-	  Thoth.startTime().then(done);
+	  Thoth.startTime().then(done, done);
 	});
 	it('supports any combination of setTimeout, setImmediate and process.nextTick', function(done) {
 	  var calls = [];
