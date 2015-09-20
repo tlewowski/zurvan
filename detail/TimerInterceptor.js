@@ -2,6 +2,10 @@ var FieldOverrider = require("./FieldOverrider");
 var TimerRepository = require("./TimerRepository");
 var TimerType = require("./TimerType");
 
+function isFunction(callbk) {
+  return typeof callbk === 'function';
+};
+
 function Timer(callback, timerRepository, currentTime, callDelay) {
   this.callback = callback;
   this.dueTime = currentTime.milliseconds + callDelay;
@@ -68,7 +72,15 @@ TimerInterceptor.prototype.lastTimeout = function() {
 };
 
 TimerInterceptor.prototype.addTimer = function(TimerType, callbk, callDelay) {
-  var callback = new Callback(callbk, [].splice.call(arguments, 3));
+
+  var callback;
+  if(isFunction(callbk)) {
+    callback = new Callback(callbk, [].splice.call(arguments, 3));
+  }
+  else {
+    callback = new Callback(function() {return eval(callbk);}, []);
+  }
+  
   var timer = new TimerType(callback, this.timerRepository, this.timeServer.currentTime, callDelay);
   return this.timerRepository.insertTimer(timer);
 };

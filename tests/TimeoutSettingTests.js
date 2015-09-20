@@ -9,8 +9,8 @@ describe('Zurvan', function() {
 	afterEach(function(done) {
 	  Zurvan.startTime().then(done);
 	});
-//	if('timer set with 
-    it('expires timers at advancing time', function(done) {
+	
+	it('expires timers at advancing time', function(done) {
 	  var calls = [];
 	  setTimeout(function() {
 	    assert.deepEqual(calls, [1]);
@@ -21,10 +21,22 @@ describe('Zurvan', function() {
 	  Zurvan.advanceTime(1001).then(done);
 	});
 		
-	it('throws on attempt to move time backwards', function(done) {
+	it('rejects attempt to move time backwards', function(done) {
 	  Zurvan.advanceTime(-1).catch(function(err) {
         done();
 	  });
+	});
+	
+	it('timer or interval set with string will be evaluated', function(done) {
+	  setTimeout("global.timeoutCalled = true", 75);
+	  
+	  setInterval("global.intervalCalled = global.intervalCalled || 0; ++global.intervalCalled;", 50);
+      Zurvan.advanceTime(100).then(function() {
+	    assert(global.intervalCalled === 2);
+		assert(global.timeoutCalled === true);
+		global.intervalCalled = undefined;
+		global.timeoutCalled = undefined;
+	  }).then(done, done);
 	});
 	
 	it('does not expire timeout before advanceTime finishes', function(done) {
