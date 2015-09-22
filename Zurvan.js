@@ -2,11 +2,12 @@ var ImmediateInterceptor = require("./detail/ImmediateInterceptor");
 var TimerInterceptor = require("./detail/TimerInterceptor");
 var ProcessTimerInterceptor = require("./detail/ProcessTimerInterceptor");
 var TypeUtils = require("./detail/TypeUtils");
+var TimeUnit = require("./TimeUnit");
 var assert = require("assert");
 
 function Zurvan() {
   this.currentTime = {milliseconds: 0, nanoseconds: 0};
-  this.targetTime = {milliseconds: 0, nanoseconds: 0};
+  this.targetTime = TimeUnit.milliseconds(0);
   this.timeForwardingOngoing = false;
   this.isStopped = false;
 }
@@ -56,7 +57,7 @@ Zurvan.prototype.setupTime = function(timeSinceStartup) {
   }
   
   this.currentTime = {milliseconds: Math.floor(startupTimeInNanoseconds / 1e6), nanoseconds: startupTimeInNanoseconds % 1e6};
-  this.targetTime = {milliseconds: this.currentTime.milliseconds, nanoseconds: this.currentTime.nanoseconds};
+  this.targetTime = TimeUnit.nanoseconds(this.currentTime.milliseconds * 1e6 + this.currentTime.nanoseconds);
 };
 
 Zurvan.prototype.stopExpiringEvents = function() {
@@ -81,10 +82,10 @@ Zurvan.prototype.advanceTime = function(timeToForward) {
 
     if(that.isExpiringEvents()) {
       return reject(Error("Cannot forward time before previous forwarding ends. Currently at: " + 
-	    that.currentTime.milliseconds + " ms, target: " + that.targetTime.milliseconds + " ms"));
+	    that.currentTime.milliseconds + " ms, target: " + that.targetTime.toMilliseconds() + " ms"));
     }
 
-    that.targetTime.milliseconds = that.currentTime.milliseconds + timeToForward;
+    that.targetTime = TimeUnit.milliseconds(that.currentTime.milliseconds + timeToForward);
   
     that.startExpiringEvents();
     setImmediate(function() {
@@ -100,7 +101,7 @@ Zurvan.prototype.advanceTime = function(timeToForward) {
       }
 	
 	  var closestTimer = that.timerInterceptor.nextTimer();
-      if(closestTimer && closestTimer.dueTime <= that.targetTime.milliseconds) {
+      if(closestTimer && closestTimer.dueTime <= that.targetTime.toMilliseconds()) {
 	    that.timerInterceptor.clearTimer(closestTimer.uid);
         that.currentTime.milliseconds = closestTimer.dueTime;	  
         setImmediate(function() {
@@ -109,7 +110,7 @@ Zurvan.prototype.advanceTime = function(timeToForward) {
         });
       }
 	  else {
-        that.currentTime.milliseconds = that.targetTime.milliseconds;
+        that.currentTime.milliseconds = that.targetTime.toMilliseconds();
         that.stopExpiringEvents();
 		resolve();
       }
@@ -147,10 +148,10 @@ Zurvan.prototype.blockSystem = function(timeToBlock) {
     }
 	
 	if(!that.isExpiringEvents()) {
-	  assert(that.targetTime.milliseconds === that.currentTime.milliseconds);
-	  that.targetTime.milliseconds += timeToBlock;
+	  assert(that.targetTime.toMilliseconds() === that.currentTime.milliseconds);
+	  that.targetTime.add(TimeUnit.milliseconds(timeToBlock));
 	}
-	else if(that.targetTime.milliseconds < that.currentTime.milliseconds + timeToBlock) {
+	else if(that.targetTime.toMilliseconds() < that.currentTime.milliseconds + timeToBlock) {
 	  return reject(Error("Cannot block system during advancing for longer than requested advance time"));
 	}
 	
