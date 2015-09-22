@@ -1,6 +1,6 @@
 var assert = require("assert");
 
-function StandardTime(coefficient) {
+function standardTime(coefficient) {
   var StandardTimer = function(value) {
     return new TimeUnit(coefficient, value);
   };
@@ -10,14 +10,14 @@ function StandardTime(coefficient) {
 }
 
 var standardTimers = {};
-standardTimers.nanoseconds = StandardTime(1e-9);
-standardTimers.microseconds = StandardTime(1e-6);
-standardTimers.milliseconds = StandardTime(1e-3);
-standardTimers.seconds = StandardTime(1);
-standardTimers.minutes = StandardTime(60);
-standardTimers.hours = StandardTime(60 * standardTimers.minutes.coefficient);
-standardTimers.days = StandardTime(24 * standardTimers.hours.coefficient);
-standardTimers.weeks = StandardTime(7 * standardTimers.days.coefficient);
+standardTimers.nanoseconds = standardTime(1e-9);
+standardTimers.microseconds = standardTime(1e-6);
+standardTimers.milliseconds = standardTime(1e-3);
+standardTimers.seconds = standardTime(1);
+standardTimers.minutes = standardTime(60);
+standardTimers.hours = standardTime(60 * standardTimers.minutes.coefficient);
+standardTimers.days = standardTime(24 * standardTimers.hours.coefficient);
+standardTimers.weeks = standardTime(7 * standardTimers.days.coefficient);
 
 function TimeUnit(coefficient, value) {
   this.value = value;
@@ -54,7 +54,7 @@ TimeUnit.prototype.before = function(time) {
 
 TimeUnit.prototype.minus = function(time) {
   return this.setTo(this.before(time));
-}
+};
 
 TimeUnit.prototype.setTo = function(time) {
   assert(time instanceof TimeUnit);
