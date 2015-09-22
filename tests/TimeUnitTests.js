@@ -44,4 +44,39 @@ describe('TimeUnit', function() {
 	
 	done();
   });
+  
+  describe('cannot be added to', function() {
+    function addFailureScenario(toAdd) {
+	  return function(done) {
+        var day = TimeUnit.days(1);
+	    try {
+	      day.add(toAdd);
+          done(new Error("Cannot add not TimeUnit to TimeUnit"));
+	    }
+	    catch(err) {
+	      done();
+	    }	 	
+	  };
+	}
+  
+    it('cannot be added to number', addFailureScenario(10));  
+    it('cannot be added to string', addFailureScenario("10:00"));
+    it('cannot be added to object', addFailureScenario({value: 100, coefficient: 1}));
+  });
+});
+
+describe('Two TimeUnits', function() {
+  it('can be added, which mutates one of them', function(done) {
+    var hour = TimeUnit.hours(1);
+	var quarter = TimeUnit.minutes(15);
+	
+	assert.equal(hour.add(quarter).toMinutes(), 75);
+	assert.equal(hour.toMinutes(), 75);
+	
+	var second = TimeUnit.nanoseconds(1e9);
+	assert.equal(second.add(quarter).toSeconds(), 901);
+	assert.equal(second.toSeconds(), 901);
+	
+	done();
+  });
 });

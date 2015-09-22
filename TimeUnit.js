@@ -1,4 +1,6 @@
- function StandardTime(coefficient) {
+var assert = require("assert");
+
+function StandardTime(coefficient) {
   var StandardTimer = function(value) {
     return new TimeUnit(coefficient, value);
   };
@@ -24,6 +26,20 @@ function TimeUnit(coefficient, value) {
 
 TimeUnit.prototype.toStandardTime = function (timer) {
   return this.value * this.coefficient / timer.coefficient;
+};
+
+TimeUnit.prototype.add = function(time) {
+  assert(time instanceof TimeUnit);
+  
+  if(this.coefficient > time.coefficient) {
+    this.value = this.value * this.coefficient / time.coefficient + time.value;
+	this.coefficient = time.coefficient;
+  }
+  else {
+    this.value = time.value * time.coefficient / this.coefficient + this.value;
+  }
+  
+  return this;  
 };
 
 TimeUnit.prototype.toNanoseconds = function() {return this.toStandardTime(standardTimers.nanoseconds);};
