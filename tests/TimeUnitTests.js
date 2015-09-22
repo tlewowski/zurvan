@@ -79,4 +79,24 @@ describe('Two TimeUnits', function() {
 	
 	done();
   });
+  
+  it('can be used to calculate time after both', function(done) {
+    var hour = TimeUnit.hours(1);
+	var quarter = TimeUnit.nanoseconds(TimeUnit.minutes(15).toNanoseconds());
+	
+	assert.equal(hour.after(quarter).toMinutes(), 75);
+	assert.equal(hour.toMinutes(), 60);
+	
+	done();
+  });
+  
+  it('can be used to set one another value', function(done) {
+    var tenSeconds = TimeUnit.microseconds(TimeUnit.seconds(10).toMicroseconds());
+	var week = TimeUnit.days(7);
+	
+	week.setTo(tenSeconds);
+	assert.equal(week.toMilliseconds(), tenSeconds.toMilliseconds());
+	
+	done();
+  });
 });

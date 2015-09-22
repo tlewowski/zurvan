@@ -30,16 +30,32 @@ TimeUnit.prototype.toStandardTime = function (timer) {
 
 TimeUnit.prototype.add = function(time) {
   assert(time instanceof TimeUnit);
-  
-  if(this.coefficient > time.coefficient) {
-    this.value = this.value * this.coefficient / time.coefficient + time.value;
-	this.coefficient = time.coefficient;
-  }
-  else {
-    this.value = time.value * time.coefficient / this.coefficient + this.value;
-  }
+  this.setTo(this.after(time));
   
   return this;  
+};
+
+TimeUnit.prototype.after = function(time) {
+  assert(time instanceof TimeUnit);
+  var value = this.value;
+  var coefficient = this.coefficient;
+  
+  if(coefficient > time.coefficient) {
+    value = value * coefficient / time.coefficient + time.value;
+	coefficient = time.coefficient;
+  }
+  else {
+    value = time.value * time.coefficient / coefficient + value;
+  }
+  
+  return new TimeUnit(value, coefficient);
+}
+
+TimeUnit.prototype.setTo = function(time) {
+  assert(time instanceof TimeUnit);
+  
+  this.value = time.value;
+  this.coefficient = time.coefficient;
 };
 
 TimeUnit.prototype.toNanoseconds = function() {return this.toStandardTime(standardTimers.nanoseconds);};
