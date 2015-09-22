@@ -10,6 +10,8 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-mocha-istanbul');
   grunt.loadNpmTasks('grunt-madge');
 
+  var allFiles = ['*.js', 'detail', 'tests' ];
+  
   grunt.initConfig({
     // Configure a mochaTest task
     mochaTest: {
@@ -22,17 +24,14 @@ module.exports = function(grunt) {
       }
     },
     watch : {
-      files : [ '*.js', 'tests' ],
+      files : allFiles,
       tasks : 'default'
     },
     jshint : {
-      files : ['*.js', 'detail', 'tests' ],
+      files : allFiles
 	},
 	madge: {
-	  options: {
-	    format: 'cjs'
-	  },
-	  all: ['*.js', 'tests', 'detail']
+	  all: allFiles
 	},
     mocha_istanbul: {
         coverage: {
