@@ -8,6 +8,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-env');
   grunt.loadNpmTasks('grunt-mocha-istanbul');
+  grunt.loadNpmTasks('grunt-madge');
 
   grunt.initConfig({
     // Configure a mochaTest task
@@ -26,6 +27,12 @@ module.exports = function(grunt) {
     },
     jshint : {
       files : ['*.js', 'detail', 'tests' ],
+	},
+	madge: {
+	  options: {
+	    format: 'cjs'
+	  },
+	  all: ['*.js', 'tests', 'detail']
 	},
     mocha_istanbul: {
         coverage: {

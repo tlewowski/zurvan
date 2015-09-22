@@ -1,9 +1,13 @@
 {
-  "name": "Thoth",
+  "name": "Zurvan",
   "version": "0.0.1",
   "keywords": "testing,timeouts,time",
-  "description": "A library for faking timers in Node.js",
+  "description": "A library for faking timers in Node.js tests",
   "author": "Tomasz Lewowski",
+  "repository" : { 
+    "type" : "git", 
+    "url" : "https://github.com/Lewerow/Zurvan.git"
+  },
   "devDependencies": {
     "grunt-mocha-test": "^0.12.7",
     "mocha": "2.3.x",
@@ -17,6 +21,7 @@
 	"grunt-istanbul": "~0.6.0",
 	"grunt-mocha-istanbul": "~3.0.1",
     "grunt-env": "~0.4.1",
+	"grunt-madge": "~0.0.6",
 	"istanbul": "~0.3.20",
 	"codeclimate-test-reporter": "0.1.1"
   },
