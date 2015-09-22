@@ -29,10 +29,7 @@ TimeUnit.prototype.toStandardTime = function (timer) {
 };
 
 TimeUnit.prototype.add = function(time) {
-  assert(time instanceof TimeUnit);
-  this.setTo(this.after(time));
-  
-  return this;  
+  return this.setTo(this.after(time));
 };
 
 TimeUnit.prototype.after = function(time) {
@@ -49,6 +46,14 @@ TimeUnit.prototype.after = function(time) {
   }
   
   return new TimeUnit(value, coefficient);
+};
+
+TimeUnit.prototype.before = function(time) {
+  return this.after(new TimeUnit(-time.value, time.coefficient));
+};
+
+TimeUnit.prototype.minus = function(time) {
+  return this.setTo(this.before(time));
 }
 
 TimeUnit.prototype.setTo = function(time) {
@@ -56,6 +61,7 @@ TimeUnit.prototype.setTo = function(time) {
   
   this.value = time.value;
   this.coefficient = time.coefficient;
+  return this;
 };
 
 TimeUnit.prototype.toNanoseconds = function() {return this.toStandardTime(standardTimers.nanoseconds);};
