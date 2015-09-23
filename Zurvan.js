@@ -148,17 +148,17 @@ Zurvan.prototype.blockSystem = function(timeToBlock) {
     }
 	
 	if(!that.isExpiringEvents()) {
-	  assert(that.targetTime.toMilliseconds() === that.currentTime.toMilliseconds());
+	  assert(Math.round(that.targetTime.toMilliseconds()) === Math.round(that.currentTime.toMilliseconds()));
 	  that.targetTime.add(TimeUnit.milliseconds(timeToBlock));
 	}
-	else if(that.targetTime.toMilliseconds() < that.currentTime.toMilliseconds() + timeToBlock) {
+	else if(Math.round(that.targetTime.toMilliseconds()) < Math.round(that.currentTime.toMilliseconds() + timeToBlock)) {
 	  return reject(Error("Cannot block system during advancing for longer than requested advance time"));
 	}
 	
     that.currentTime.add(TimeUnit.milliseconds(timeToBlock));
 		
     var closestTimer = that.timerInterceptor.nextTimer();
-    while(closestTimer && closestTimer.dueTime.toMilliseconds() <= that.currentTime.toMilliseconds()) {
+    while(closestTimer && Math.round(closestTimer.dueTime.toMilliseconds()) <= Math.round(that.currentTime.toMilliseconds())) {
       that.timerInterceptor.clearTimer(closestTimer.uid);
   	  setImmediate(closestTimer.expire.bind(closestTimer));
       closestTimer = that.timerInterceptor.nextTimer();
