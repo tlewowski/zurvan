@@ -6,7 +6,7 @@ var TimeUnit = require("./TimeUnit");
 var assert = require("assert");
 
 function Zurvan() {
-  this.currentTime = {milliseconds: 0, nanoseconds: 0};
+  this.currentTime = TimeUnit.nanoseconds(0);
   this.targetTime = TimeUnit.nanoseconds(0);
   this.timeForwardingOngoing = false;
   this.isStopped = false;
@@ -56,8 +56,8 @@ Zurvan.prototype.setupTime = function(timeSinceStartup) {
     startupTimeInNanoseconds = timeSinceStartup[0] * 1e9 + timeSinceStartup[1];
   }
   
-  this.currentTime = {milliseconds: Math.floor(startupTimeInNanoseconds / 1e6), nanoseconds: startupTimeInNanoseconds % 1e6};
-  this.targetTime = TimeUnit.nanoseconds(this.currentTime.milliseconds * 1e6 + this.currentTime.nanoseconds);
+  this.currentTime = TimeUnit.nanoseconds(startupTimeInNanoseconds);
+  this.targetTime = TimeUnit.nanoseconds(startupTimeInNanoseconds);
 };
 
 Zurvan.prototype.stopExpiringEvents = function() {
@@ -82,10 +82,10 @@ Zurvan.prototype.advanceTime = function(timeToForward) {
 
     if(that.isExpiringEvents()) {
       return reject(Error("Cannot forward time before previous forwarding ends. Currently at: " + 
-	    that.currentTime.milliseconds + " ms, target: " + that.targetTime.toMilliseconds() + " ms"));
+	    that.currentTime.toMilliseconds() + " ms, target: " + that.targetTime.toMilliseconds() + " ms"));
     }
 
-    that.targetTime = TimeUnit.milliseconds(that.currentTime.milliseconds + timeToForward);
+    that.targetTime = that.currentTime.after(TimeUnit.milliseconds(timeToForward));
   
     that.startExpiringEvents();
     setImmediate(function() {
@@ -103,14 +103,14 @@ Zurvan.prototype.advanceTime = function(timeToForward) {
 	  var closestTimer = that.timerInterceptor.nextTimer();
       if(closestTimer && closestTimer.dueTime.toMilliseconds() <= that.targetTime.toMilliseconds()) {
 	    that.timerInterceptor.clearTimer(closestTimer.uid);
-        that.currentTime.milliseconds = closestTimer.dueTime.toMilliseconds();	  
+        that.currentTime.setTo(closestTimer.dueTime);
         setImmediate(function() {
   	      closestTimer.expire();
           advanceTimeHelper();
         });
       }
 	  else {
-        that.currentTime.milliseconds = that.targetTime.toMilliseconds();
+        that.currentTime.setTo(that.targetTime);
         that.stopExpiringEvents();
 		resolve();
       }
@@ -122,7 +122,7 @@ Zurvan.prototype.expireAllTimeouts = function() {
   var lastTimeout = this.timerInterceptor.lastTimeout();
   if(lastTimeout) {
     var that = this;
-	return this.advanceTime(lastTimeout.dueTime.toMilliseconds() - that.currentTime.milliseconds).then(function() {
+	return this.advanceTime(lastTimeout.dueTime.toMilliseconds() - that.currentTime.toMilliseconds()).then(function() {
 	  return that.expireAllTimeouts();
 	});
   }
@@ -133,7 +133,7 @@ Zurvan.prototype.expireAllTimeouts = function() {
 Zurvan.prototype.forwardTimeToNextTimer = function() {
   var closestTimer = this.timerInterceptor.nextTimer();
   if(closestTimer) {
-    return this.advanceTime(closestTimer.dueTime.toMilliseconds() - this.currentTime.milliseconds);
+    return this.advanceTime(closestTimer.dueTime.toMilliseconds() - this.currentTime.toMilliseconds());
   }
   
   return Promise.resolve();
@@ -148,17 +148,17 @@ Zurvan.prototype.blockSystem = function(timeToBlock) {
     }
 	
 	if(!that.isExpiringEvents()) {
-	  assert(that.targetTime.toMilliseconds() === that.currentTime.milliseconds);
+	  assert(that.targetTime.toMilliseconds() === that.currentTime.toMilliseconds());
 	  that.targetTime.add(TimeUnit.milliseconds(timeToBlock));
 	}
-	else if(that.targetTime.toMilliseconds() < that.currentTime.milliseconds + timeToBlock) {
+	else if(that.targetTime.toMilliseconds() < that.currentTime.toMilliseconds() + timeToBlock) {
 	  return reject(Error("Cannot block system during advancing for longer than requested advance time"));
 	}
 	
-    that.currentTime.milliseconds += timeToBlock;
+    that.currentTime.add(TimeUnit.milliseconds(timeToBlock));
 		
     var closestTimer = that.timerInterceptor.nextTimer();
-    while(closestTimer && closestTimer.dueTime.toMilliseconds() <= that.currentTime.milliseconds) {
+    while(closestTimer && closestTimer.dueTime.toMilliseconds() <= that.currentTime.toMilliseconds()) {
       that.timerInterceptor.clearTimer(closestTimer.uid);
   	  setImmediate(closestTimer.expire.bind(closestTimer));
       closestTimer = that.timerInterceptor.nextTimer();

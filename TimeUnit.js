@@ -10,11 +10,11 @@ function standardTime(coefficient) {
 }
 
 var standardTimers = {};
-standardTimers.nanoseconds = standardTime(1e-9);
-standardTimers.microseconds = standardTime(1e-6);
-standardTimers.milliseconds = standardTime(1e-3);
-standardTimers.seconds = standardTime(1);
-standardTimers.minutes = standardTime(60);
+standardTimers.nanoseconds = standardTime(1);
+standardTimers.microseconds = standardTime(1e3 * standardTimers.nanoseconds.coefficient);
+standardTimers.milliseconds = standardTime(1e3 * standardTimers.microseconds.coefficient);
+standardTimers.seconds = standardTime(1e3 * standardTimers.milliseconds.coefficient);
+standardTimers.minutes = standardTime(60 * standardTimers.seconds.coefficient);
 standardTimers.hours = standardTime(60 * standardTimers.minutes.coefficient);
 standardTimers.days = standardTime(24 * standardTimers.hours.coefficient);
 standardTimers.weeks = standardTime(7 * standardTimers.days.coefficient);

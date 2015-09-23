@@ -76,7 +76,7 @@ describe('Zurvan', function() {
 	  }).then(function() {
 	    return Zurvan.stopTime({timeSinceStartup: [100, 132587951]});
 	  }).then(function() {
-	    assert.equal(100.132, process.uptime());
+	    assert(Math.abs(100.132587951 - process.uptime()) < 1e-12);
 		assert.deepEqual([100, 132587951], process.hrtime());
 		return Zurvan.startTime();
 	  }).then(function() {

@@ -7,7 +7,7 @@ var TimeUnit = require("../TimeUnit");
 function Timer(callback, timerRepository, currentTime, callDelay) {
   this.callback = callback;
   this.callDelay = TimeUnit.milliseconds(callDelay);
-  this.dueTime = TimeUnit.milliseconds(currentTime.milliseconds).after(this.callDelay);
+  this.dueTime = currentTime.after(this.callDelay);
   this.timerRepository = timerRepository;
 }
 
@@ -28,7 +28,7 @@ function IntervalTimer(callback, timerRepository, currentTime, callDelay) {
   Timer.bind(this)(callback, timerRepository, currentTime, callDelay);
   this.type = TimerType.interval;
   this.precall = function reschedule() {
-    this.dueTime = TimeUnit.milliseconds(currentTime.milliseconds).after(this.callDelay);
+    this.dueTime = currentTime.after(this.callDelay);
     this.timerRepository.insertTimer(this);
   };
 }

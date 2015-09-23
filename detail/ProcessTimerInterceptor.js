@@ -8,7 +8,7 @@ function ProcessTimerInterceptor(timeServer) {
 }
 
 ProcessTimerInterceptor.prototype.uptime = function() {
-  return this.timeServer.currentTime.milliseconds / 1000;
+  return this.timeServer.currentTime.toMilliseconds() / 1000;
 };
 
 function nanosecondsToHrtimeFormat(timeInNanoseconds) {
@@ -17,7 +17,7 @@ function nanosecondsToHrtimeFormat(timeInNanoseconds) {
 
 ProcessTimerInterceptor.prototype.hrtime = function(previousValue) {
   var currentTime = this.timeServer.currentTime;
-  var currentTimeInNanoseconds = currentTime.milliseconds * 1e6 + currentTime.nanoseconds;
+  var currentTimeInNanoseconds = currentTime.toNanoseconds();
   if(previousValue !== undefined) {
     assert(previousValue.length === 2);
 	var previousTimeInNanoseconds = previousValue[0] * 1e9 + previousValue[1];
