@@ -1,5 +1,6 @@
 var assert = require("assert");
 var Zurvan = require("../Zurvan");
+var TimeUnit = require("../TimeUnit");
 
 describe('Zurvan', function() {
   describe('during blocking call', function() {
@@ -65,7 +66,7 @@ describe('Zurvan', function() {
 	    calls.push(3);
 	  }, 40);
 	  
-	  Zurvan.blockSystem(1000).then(function() {
+	  Zurvan.blockSystem(TimeUnit.seconds(1)).then(function() {
 	    assert.deepEqual([1,3,2], calls);
 	  }).then(done, done);
 	});

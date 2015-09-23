@@ -73,10 +73,10 @@ Zurvan.prototype.isExpiringEvents = function() {
 };
 
 Zurvan.prototype.advanceTime = function(timeToForward) {
-  
+  var advanceStep = (TypeUtils.isNumber(timeToForward)) ? TimeUnit.milliseconds(timeToForward) : timeToForward;  
   var that = this;
   return new Promise(function(resolve, reject) {
-    if(timeToForward < 0) {
+    if(advanceStep.toMilliseconds() < 0) {
       reject("Even Zurvan cannot move back in time!");
     }
 
@@ -85,7 +85,7 @@ Zurvan.prototype.advanceTime = function(timeToForward) {
 	    that.currentTime.toMilliseconds() + " ms, target: " + that.targetTime.toMilliseconds() + " ms"));
     }
 
-    that.targetTime = that.currentTime.after(TimeUnit.milliseconds(timeToForward));
+    that.targetTime = that.currentTime.after(advanceStep);
   
     that.startExpiringEvents();
     setImmediate(function() {
@@ -140,22 +140,23 @@ Zurvan.prototype.forwardTimeToNextTimer = function() {
 };
 
 Zurvan.prototype.blockSystem = function(timeToBlock) {
+  var blockStep = (TypeUtils.isNumber(timeToBlock)) ? TimeUnit.milliseconds(timeToBlock) : timeToBlock;  
 
   var that = this;  
   return new Promise(function(resolve, reject) {
-    if(timeToBlock < 0) {
+    if(blockStep.toMilliseconds() < 0) {
       return reject(Error("Even Zurvan cannot move back in time!"));
     }
 	
 	if(!that.isExpiringEvents()) {
 	  assert(Math.round(that.targetTime.toMilliseconds()) === Math.round(that.currentTime.toMilliseconds()));
-	  that.targetTime.add(TimeUnit.milliseconds(timeToBlock));
+	  that.targetTime.add(blockStep);
 	}
-	else if(Math.round(that.targetTime.toMilliseconds()) < Math.round(that.currentTime.toMilliseconds() + timeToBlock)) {
+	else if(Math.round(that.targetTime.toMilliseconds()) < Math.round(that.currentTime.after(blockStep).toMilliseconds())) {
 	  return reject(Error("Cannot block system during advancing for longer than requested advance time"));
 	}
 	
-    that.currentTime.add(TimeUnit.milliseconds(timeToBlock));
+    that.currentTime.add(blockStep);
 		
     var closestTimer = that.timerInterceptor.nextTimer();
     while(closestTimer && Math.round(closestTimer.dueTime.toMilliseconds()) <= Math.round(that.currentTime.toMilliseconds())) {

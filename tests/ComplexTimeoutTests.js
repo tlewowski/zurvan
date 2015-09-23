@@ -1,5 +1,6 @@
 var assert = require("assert");
 var Zurvan = require("../Zurvan");
+var TimeUnit = require("../TimeUnit");
 
 describe('Zurvan', function() {
   describe('after stopping time', function(done) {
@@ -70,7 +71,7 @@ describe('Zurvan', function() {
         calls.push(18);
 	  }, 30);
 	  
-	  Zurvan.advanceTime(30).then(function() {
+	  Zurvan.advanceTime(TimeUnit.milliseconds(30)).then(function() {
 	    assert.deepEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18], calls);
 		done();
 	  });
