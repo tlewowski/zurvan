@@ -1,5 +1,6 @@
 var assert = require("assert");
 var FieldOverrider = require("./FieldOverrider");
+var TimeUnit = require("../TimeUnit");
 
 function ProcessTimerInterceptor(timeServer) {
   this.timeServer = timeServer;
@@ -8,23 +9,21 @@ function ProcessTimerInterceptor(timeServer) {
 }
 
 ProcessTimerInterceptor.prototype.uptime = function() {
-  return this.timeServer.currentTime.toMilliseconds() / 1000;
+  return this.timeServer.currentTime.toSeconds();
 };
 
-function nanosecondsToHrtimeFormat(timeInNanoseconds) {
-  return [Math.floor(timeInNanoseconds / 1e9), timeInNanoseconds % 1e9];  
+function toHrtimeFormat(time) {
+  return [Math.floor(time.toSeconds()), time.toNanoseconds() % (TimeUnit.seconds.coefficient / TimeUnit.nanoseconds.coefficient)];
 }
 
 ProcessTimerInterceptor.prototype.hrtime = function(previousValue) {
-  var currentTime = this.timeServer.currentTime;
-  var currentTimeInNanoseconds = currentTime.toNanoseconds();
   if(previousValue !== undefined) {
     assert(previousValue.length === 2);
-	var previousTimeInNanoseconds = previousValue[0] * 1e9 + previousValue[1];
-	return nanosecondsToHrtimeFormat(currentTimeInNanoseconds - previousTimeInNanoseconds);
+	var previousTime = TimeUnit.seconds(previousValue[0]).after(TimeUnit.nanoseconds(previousValue[1]));
+	return toHrtimeFormat(this.timeServer.currentTime.before(previousTime));
   }
   
-  return nanosecondsToHrtimeFormat(currentTimeInNanoseconds);
+  return toHrtimeFormat(this.timeServer.currentTime);
 };
 
 ProcessTimerInterceptor.prototype.restore = function() {
