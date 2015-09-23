@@ -2,11 +2,12 @@ var FieldOverrider = require("./FieldOverrider");
 var TimerRepository = require("./TimerRepository");
 var TimerType = require("./TimerType");
 var TypeUtils = require("./TypeUtils");
+var TimeUnit = require("../TimeUnit");
 
 function Timer(callback, timerRepository, currentTime, callDelay) {
   this.callback = callback;
-  this.dueTime = currentTime.milliseconds + callDelay;
-  this.callDelay = callDelay;
+  this.callDelay = TimeUnit.milliseconds(callDelay);
+  this.dueTime = currentTime.milliseconds + this.callDelay.toMilliseconds();
   this.timerRepository = timerRepository;
 }
 
@@ -27,7 +28,7 @@ function IntervalTimer(callback, timerRepository, currentTime, callDelay) {
   Timer.bind(this)(callback, timerRepository, currentTime, callDelay);
   this.type = TimerType.interval;
   this.precall = function reschedule() {
-    this.dueTime = currentTime.milliseconds + this.callDelay;
+    this.dueTime = currentTime.milliseconds + this.callDelay.toMilliseconds();
     this.timerRepository.insertTimer(this);
   };
 }

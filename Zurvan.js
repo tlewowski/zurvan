@@ -7,7 +7,7 @@ var assert = require("assert");
 
 function Zurvan() {
   this.currentTime = {milliseconds: 0, nanoseconds: 0};
-  this.targetTime = TimeUnit.milliseconds(0);
+  this.targetTime = TimeUnit.nanoseconds(0);
   this.timeForwardingOngoing = false;
   this.isStopped = false;
 }
