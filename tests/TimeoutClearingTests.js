@@ -3,11 +3,11 @@ var Zurvan = require("../Zurvan");
 
 describe('Zurvan', function() {
   describe('extended stopping time', function() {
-    shortenedEach(function(done) {
+    beforeEach(function(done) {
 	  Zurvan.stopTime().then(done, done);
 	});
 	
-	extendedEach(function(done) {
+	afterEach(function(done) {
 	  Zurvan.startTime().then(done, done);
 	});
 

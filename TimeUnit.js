@@ -29,10 +29,10 @@ TimeUnit.prototype.toStandardTime = function (timer) {
 };
 
 TimeUnit.prototype.add = function(time) {
-  return this.setTo(this.after(time));
+  return this.setTo(this.extended(time));
 };
 
-TimeUnit.prototype.after = function(time) {
+TimeUnit.prototype.extended = function(time) {
   assert(time instanceof TimeUnit);
   var value = this.value;
   var coefficient = this.coefficient;
@@ -48,12 +48,12 @@ TimeUnit.prototype.after = function(time) {
   return new TimeUnit(value, coefficient);
 };
 
-TimeUnit.prototype.before = function(time) {
-  return this.after(new TimeUnit(-time.value, time.coefficient));
+TimeUnit.prototype.shortened = function(time) {
+  return this.extended(new TimeUnit(-time.value, time.coefficient));
 };
 
 TimeUnit.prototype.minus = function(time) {
-  return this.setTo(this.before(time));
+  return this.setTo(this.shortened(time));
 };
 
 TimeUnit.prototype.setTo = function(time) {

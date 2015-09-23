@@ -4,11 +4,11 @@ var TimeUnit = require("../TimeUnit");
 
 describe('Zurvan', function() {
   describe('during blocking call', function() {
-    shortenedEach(function(done) {
+    beforeEach(function(done) {
 	  Zurvan.stopTime().then(done, done);
 	});
 	
-	extendedEach(function(done) {
+	afterEach(function(done) {
 	  Zurvan.startTime().then(done, done);
 	});
 
