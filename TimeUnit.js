@@ -1,8 +1,9 @@
 var assert = require("assert");
+var TypeUtils = require("./detail/TypeUtils");
 
 function standardTime(coefficient) {
   var StandardTimer = function(value) {
-    return new TimeUnit(coefficient, value);
+    return new TimeUnit(value * coefficient);
   };
   
   StandardTimer.coefficient = coefficient;
@@ -19,13 +20,13 @@ standardTimers.hours = standardTime(60 * standardTimers.minutes.coefficient);
 standardTimers.days = standardTime(24 * standardTimers.hours.coefficient);
 standardTimers.weeks = standardTime(7 * standardTimers.days.coefficient);
 
-function TimeUnit(coefficient, value) {
+function TimeUnit(value) {
+  assert(TypeUtils.isNumber(value));
   this.value = value;
-  this.coefficient = coefficient;
 }
 
 TimeUnit.prototype.toStandardTime = function (timer) {
-  return this.value * this.coefficient / timer.coefficient;
+  return this.value / timer.coefficient;
 };
 
 TimeUnit.prototype.add = function(time) {
@@ -34,25 +35,16 @@ TimeUnit.prototype.add = function(time) {
 
 TimeUnit.prototype.extended = function(time) {
   assert(time instanceof TimeUnit);
-  var value = this.value;
-  var coefficient = this.coefficient;
-  
-  if(coefficient > time.coefficient) {
-    value = value * coefficient / time.coefficient + time.value;
-	coefficient = time.coefficient;
-  }
-  else {
-    value = time.value * time.coefficient / coefficient + value;
-  }
-  
-  return new TimeUnit(value, coefficient);
+  var value = this.value + time.value;
+ 
+  return new TimeUnit(value);
 };
 
 TimeUnit.prototype.shortened = function(time) {
-  return this.extended(new TimeUnit(-time.value, time.coefficient));
+  return this.extended(new TimeUnit(-time.value));
 };
 
-TimeUnit.prototype.minus = function(time) {
+TimeUnit.prototype.subtract = function(time) {
   return this.setTo(this.shortened(time));
 };
 
@@ -60,8 +52,30 @@ TimeUnit.prototype.setTo = function(time) {
   assert(time instanceof TimeUnit);
   
   this.value = time.value;
-  this.coefficient = time.coefficient;
   return this;
+};
+
+TimeUnit.prototype.copy = function() {
+  return new TimeUnit(this.value);
+};
+
+var EPSILON_EQUALITY_COEFFICIENT = 1e-6;
+TimeUnit.prototype.isLongerThan = function(time) {
+  assert(time instanceof TimeUnit);
+  
+  return (this.value - time.value) > EPSILON_EQUALITY_COEFFICIENT;
+};
+
+TimeUnit.prototype.isShorterThan = function(time) {
+  assert(time instanceof TimeUnit);
+  
+  return (this.value - time.value) < -EPSILON_EQUALITY_COEFFICIENT;
+};
+
+TimeUnit.prototype.isEqualTo = function(time) {
+  assert(time instanceof TimeUnit);
+  
+  return Math.abs(this.value - time.value) < EPSILON_EQUALITY_COEFFICIENT;
 };
 
 TimeUnit.prototype.toNanoseconds = function() {return this.toStandardTime(standardTimers.nanoseconds);};
