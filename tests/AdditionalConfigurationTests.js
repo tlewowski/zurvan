@@ -1,5 +1,7 @@
+var TimeUnit = require("../TimeUnit");
 var Zurvan = require("../Zurvan");
 var FieldOverrider = require("../detail/FieldOverrider");
+
 var assert = require("assert");
 
 describe('Zurvan', function() {
@@ -78,6 +80,12 @@ describe('Zurvan', function() {
 	  }).then(function() {
 	    assert(Math.abs(100.132587951 - process.uptime()) < 1e-12);
 		assert.deepEqual([100, 132587951], process.hrtime());
+		return Zurvan.startTime();
+	  }).then(function() {
+	    return Zurvan.stopTime({timeSinceStartup: TimeUnit.microseconds(12e8 + 100)});
+	  }).then(function() {
+	    assert(Math.abs(1200.0001 - process.uptime()) < 1e-12);
+		assert.deepEqual([1200, 100000], process.hrtime());
 		return Zurvan.startTime();
 	  }).then(function() {
 	    return Zurvan.stopTime({timeSinceStartup: [0, 1e10]});

@@ -6,8 +6,6 @@ var TimeUnit = require("./TimeUnit");
 var assert = require("assert");
 
 function Zurvan() {
-  this.currentTime = TimeUnit.nanoseconds(0);
-  this.targetTime = TimeUnit.nanoseconds(0);
   this.timeForwardingOngoing = false;
   this.isStopped = false;
 }
@@ -51,11 +49,16 @@ Zurvan.prototype.setupTime = function(timeSinceStartup) {
   if(TypeUtils.isNumber(timeSinceStartup)) {
     this.currentTime = TimeUnit.seconds(timeSinceStartup);
   }
-  else if (timeSinceStartup !== undefined){
+  else if (timeSinceStartup && timeSinceStartup.length === 2){
     this.currentTime = TimeUnit.seconds(timeSinceStartup[0]).extended(TimeUnit.nanoseconds(timeSinceStartup[1]));
   }
+  else {
+    this.currentTime = TimeUnit.seconds(0);
+	if(timeSinceStartup) {
+	  this.currentTime.add(timeSinceStartup);
+	}
+  }
   
-   = TimeUnit.nanoseconds(startupTimeInNanoseconds);
   this.targetTime = this.currentTime.copy();
 };
 
