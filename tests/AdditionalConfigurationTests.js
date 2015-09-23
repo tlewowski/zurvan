@@ -15,7 +15,7 @@ describe('Zurvan', function() {
 	
     it('denies timers that use eval (they do not work in nodejs)', function(done) {
       try {	  
-	    setTimeout("global.timeoutCalled = true", 75);
+	    setTimeout("global.timeoutCalled = true;", 75);
         done(new Error("Shouldn't accept timer with eval call!"));
 	  }
 	  catch(err) {
@@ -49,7 +49,7 @@ describe('Zurvan', function() {
 	
     it('timer or interval set with string will be evaluated', function(done) {
       Zurvan.stopTime({acceptEvalTimers: true}).then(function() {
-	    setTimeout("global.timeoutCalled = true", 75);
+	    setTimeout("global.timeoutCalled = true;", 75);
 	    setInterval("global.intervalCalled = global.intervalCalled || 0; ++global.intervalCalled;", 50);
         return Zurvan.advanceTime(100);
 	  }).then(function() {
