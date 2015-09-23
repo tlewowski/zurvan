@@ -11,6 +11,7 @@
   "devDependencies": {
     "mocha": "2.3.x",
 	"istanbul": "~0.3.20",
+    "grunt": "~0.4.4",
 	"codeclimate-test-reporter": "0.1.1",
     "grunt-contrib-jshint": "~0.11.3",
 	"grunt-istanbul": "~0.6.0",
