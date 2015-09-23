@@ -14,7 +14,7 @@ TimerRepository.prototype.insertTimer = function(timer) {
   
   var i;
   for(i = 0; i < this.timers.length; ++i) {
-    if(this.timers[i].dueTime > timer.dueTime) {
+    if(this.timers[i].dueTime.toMilliseconds() > timer.dueTime.toMilliseconds()) {
 	  break;
 	}
   }

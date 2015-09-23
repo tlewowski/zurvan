@@ -101,9 +101,9 @@ Zurvan.prototype.advanceTime = function(timeToForward) {
       }
 	
 	  var closestTimer = that.timerInterceptor.nextTimer();
-      if(closestTimer && closestTimer.dueTime <= that.targetTime.toMilliseconds()) {
+      if(closestTimer && closestTimer.dueTime.toMilliseconds() <= that.targetTime.toMilliseconds()) {
 	    that.timerInterceptor.clearTimer(closestTimer.uid);
-        that.currentTime.milliseconds = closestTimer.dueTime;	  
+        that.currentTime.milliseconds = closestTimer.dueTime.toMilliseconds();	  
         setImmediate(function() {
   	      closestTimer.expire();
           advanceTimeHelper();
@@ -122,7 +122,7 @@ Zurvan.prototype.expireAllTimeouts = function() {
   var lastTimeout = this.timerInterceptor.lastTimeout();
   if(lastTimeout) {
     var that = this;
-	return this.advanceTime(lastTimeout.dueTime - that.currentTime.milliseconds).then(function() {
+	return this.advanceTime(lastTimeout.dueTime.toMilliseconds() - that.currentTime.milliseconds).then(function() {
 	  return that.expireAllTimeouts();
 	});
   }
@@ -133,7 +133,7 @@ Zurvan.prototype.expireAllTimeouts = function() {
 Zurvan.prototype.forwardTimeToNextTimer = function() {
   var closestTimer = this.timerInterceptor.nextTimer();
   if(closestTimer) {
-    return this.advanceTime(closestTimer.dueTime - this.currentTime.milliseconds);
+    return this.advanceTime(closestTimer.dueTime.toMilliseconds() - this.currentTime.milliseconds);
   }
   
   return Promise.resolve();
@@ -158,7 +158,7 @@ Zurvan.prototype.blockSystem = function(timeToBlock) {
     that.currentTime.milliseconds += timeToBlock;
 		
     var closestTimer = that.timerInterceptor.nextTimer();
-    while(closestTimer && closestTimer.dueTime <= that.currentTime.milliseconds) {
+    while(closestTimer && closestTimer.dueTime.toMilliseconds() <= that.currentTime.milliseconds) {
       that.timerInterceptor.clearTimer(closestTimer.uid);
   	  setImmediate(closestTimer.expire.bind(closestTimer));
       closestTimer = that.timerInterceptor.nextTimer();
