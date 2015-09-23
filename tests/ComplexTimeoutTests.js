@@ -3,11 +3,11 @@ var Zurvan = require("../Zurvan");
 var TimeUnit = require("../TimeUnit");
 
 describe('Zurvan', function() {
-  describe('after stopping time', function(done) {
-    beforeEach(function(done) {
+  describe('extended stopping time', function(done) {
+    shortenedEach(function(done) {
 	  Zurvan.stopTime().then(done, done);
 	});
-	afterEach(function(done) {
+	extendedEach(function(done) {
 	  Zurvan.startTime().then(done, done);
 	});
 	it('supports any combination of setTimeout, setImmediate and process.nextTick', function(done) {

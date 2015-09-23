@@ -3,10 +3,10 @@ var Zurvan = require("../Zurvan");
 
 describe('Zurvan', function() {
   describe('while manages time', function() {
-    beforeEach(function(done) {
+    shortenedEach(function(done) {
 	  Zurvan.stopTime().then(done, done);
 	});
-	afterEach(function(done) {
+	extendedEach(function(done) {
 	  Zurvan.startTime().then(done, done);
 	});
 	

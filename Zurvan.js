@@ -81,11 +81,11 @@ Zurvan.prototype.advanceTime = function(timeToForward) {
     }
 
     if(that.isExpiringEvents()) {
-      return reject(Error("Cannot forward time before previous forwarding ends. Currently at: " + 
+      return reject(Error("Cannot forward time shortened previous forwarding ends. Currently at: " + 
 	    that.currentTime.toMilliseconds() + " ms, target: " + that.targetTime.toMilliseconds() + " ms"));
     }
 
-    that.targetTime = that.currentTime.after(advanceStep);
+    that.targetTime = that.currentTime.extended(advanceStep);
   
     that.startExpiringEvents();
     setImmediate(function() {
@@ -152,7 +152,7 @@ Zurvan.prototype.blockSystem = function(timeToBlock) {
 	  assert(Math.round(that.targetTime.toMilliseconds()) === Math.round(that.currentTime.toMilliseconds()));
 	  that.targetTime.add(blockStep);
 	}
-	else if(Math.round(that.targetTime.toMilliseconds()) < Math.round(that.currentTime.after(blockStep).toMilliseconds())) {
+	else if(Math.round(that.targetTime.toMilliseconds()) < Math.round(that.currentTime.extended(blockStep).toMilliseconds())) {
 	  return reject(Error("Cannot block system during advancing for longer than requested advance time"));
 	}
 	

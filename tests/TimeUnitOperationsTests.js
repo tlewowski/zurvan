@@ -16,11 +16,11 @@ describe('Two TimeUnits', function() {
 	done();
   });
   
-  it('can be used to calculate time after both, without mutating arguments', function(done) {
+  it('can be used to calculate time extended both, without mutating arguments', function(done) {
     var hour = TimeUnit.hours(1);
 	var quarter = TimeUnit.nanoseconds(TimeUnit.minutes(15).toNanoseconds());
 	
-	assert.equal(hour.after(quarter).toMinutes(), 75);
+	assert.equal(hour.extended(quarter).toMinutes(), 75);
 	assert.equal(hour.toMinutes(), 60);
 	
 	done();
@@ -52,21 +52,21 @@ describe('Two TimeUnits', function() {
 	done();
   });
   
-  it('can be used to calculate time before, without mutating any argument', function(done) {
+  it('can be used to calculate time shortened, without mutating any argument', function(done) {
     var hour = TimeUnit.hours(1);
 	var quarter = TimeUnit.seconds(TimeUnit.minutes(15).toSeconds());
 	
-	assert.equal(hour.before(quarter).toMinutes(), 45);
+	assert.equal(hour.shortened(quarter).toMinutes(), 45);
 	assert.equal(hour.toMinutes(), 60);
 	
 	done();
   });
 
-  it('can be used to calculate time before but may have floating-point errors in case of decimal places', function(done) {
+  it('can be used to calculate time shortened but may have floating-point errors in case of decimal places', function(done) {
     var hour = TimeUnit.hours(1);
 	var quarter = TimeUnit.nanoseconds(TimeUnit.minutes(15).toNanoseconds());
 	
-	assert(Math.abs(hour.before(quarter).toMinutes() - 45) < 1e-12);
+	assert(Math.abs(hour.shortened(quarter).toMinutes() - 45) < 1e-12);
 	assert.equal(hour.toMinutes(), 60);
 	
 	done();

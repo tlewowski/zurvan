@@ -19,8 +19,8 @@ function toHrtimeFormat(time) {
 ProcessTimerInterceptor.prototype.hrtime = function(previousValue) {
   if(previousValue !== undefined) {
     assert(previousValue.length === 2);
-	var previousTime = TimeUnit.seconds(previousValue[0]).after(TimeUnit.nanoseconds(previousValue[1]));
-	return toHrtimeFormat(this.timeServer.currentTime.before(previousTime));
+	var previousTime = TimeUnit.seconds(previousValue[0]).extended(TimeUnit.nanoseconds(previousValue[1]));
+	return toHrtimeFormat(this.timeServer.currentTime.shortened(previousTime));
   }
   
   return toHrtimeFormat(this.timeServer.currentTime);

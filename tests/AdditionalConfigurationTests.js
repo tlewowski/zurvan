@@ -4,10 +4,10 @@ var assert = require("assert");
 
 describe('Zurvan', function() {
   describe('by default', function() {
-    beforeEach(function(done) {
+    shortenedEach(function(done) {
 	  Zurvan.stopTime().then(done, done);
 	});
-	afterEach(function(done) {
+	extendedEach(function(done) {
 	  Zurvan.startTime().then(done);
 	});
 	
@@ -35,12 +35,12 @@ describe('Zurvan', function() {
   describe('under special configuration', function() { 
     var timeoutCalledOverrider;
     var intervalCalledOverrider;
-    beforeEach(function() {
+    shortenedEach(function() {
 	  timeoutCalledOverrider = new FieldOverrider(global, "timeoutCalled", false);
       intervalCalledOverrider = new FieldOverrider(global, "intervalCalled", 0);
     });
 	
-	afterEach(function() {
+	extendedEach(function() {
 	  timeoutCalledOverrider.restore();
 	  intervalCalledOverrider.restore();
 	});

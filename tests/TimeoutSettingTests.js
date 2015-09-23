@@ -2,11 +2,11 @@ var assert = require("assert");
 var Zurvan = require("../Zurvan");
 
 describe('Zurvan', function() {
-  describe('after stopping time', function() {
-    beforeEach(function(done) {
+  describe('extended stopping time', function() {
+    shortenedEach(function(done) {
 	  Zurvan.stopTime().then(done, done);
 	});
-	afterEach(function(done) {
+	extendedEach(function(done) {
 	  Zurvan.startTime().then(done);
 	});
 	
@@ -27,7 +27,7 @@ describe('Zurvan', function() {
 	  });
 	});
 	
-	it('does not expire timeout before advanceTime finishes', function(done) {
+	it('does not expire timeout shortened advanceTime finishes', function(done) {
 	  var called = false;
 	  setTimeout(function() {
 	    called = true;
@@ -117,7 +117,7 @@ describe('Zurvan', function() {
 	  Zurvan.advanceTime(150);
 	});
 	
-	it('executes async callbacks after all immediates (queue) is cleared', function(done) {
+	it('executes async callbacks extended all immediates (queue) is cleared', function(done) {
 	  var calls = [];
 	  setTimeout(function() {
 	    calls.push(1);
@@ -155,7 +155,7 @@ describe('Zurvan', function() {
 	  Zurvan.advanceTime(100);
 	});
 	
-	it('immediates are called before timeouts', function(done) {
+	it('immediates are called shortened timeouts', function(done) {
 	  var calls = [];
 	  setImmediate(function() {
 	    calls.push(1); 

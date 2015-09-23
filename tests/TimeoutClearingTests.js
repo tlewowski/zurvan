@@ -2,12 +2,12 @@ var assert = require("assert");
 var Zurvan = require("../Zurvan");
 
 describe('Zurvan', function() {
-  describe('after stopping time', function() {
-    beforeEach(function(done) {
+  describe('extended stopping time', function() {
+    shortenedEach(function(done) {
 	  Zurvan.stopTime().then(done, done);
 	});
 	
-	afterEach(function(done) {
+	extendedEach(function(done) {
 	  Zurvan.startTime().then(done, done);
 	});
 
@@ -56,7 +56,7 @@ describe('Zurvan', function() {
 	});
   });
   
-  describe('after requesting to start time', function() {	
+  describe('extended requesting to start time', function() {	
 	it('rejects if time has not yet passed', function(done) {
 	  var rejected;
 	  Zurvan.stopTime().then(function() {
@@ -84,7 +84,7 @@ describe('Zurvan', function() {
 	});
   });
   
-  describe('after stopping time', function() {
+  describe('extended stopping time', function() {
     it('rejects stopping it again', function(done) {
 	  Zurvan.stopTime().then(function() {
 	    return Zurvan.stopTime();
