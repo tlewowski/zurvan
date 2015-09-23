@@ -48,16 +48,15 @@ Zurvan.prototype.stopTime = function(config) {
 };
 
 Zurvan.prototype.setupTime = function(timeSinceStartup) {
-  var startupTimeInNanoseconds = 0;
   if(TypeUtils.isNumber(timeSinceStartup)) {
-    startupTimeInNanoseconds = timeSinceStartup * 1e9;
+    this.currentTime = TimeUnit.seconds(timeSinceStartup);
   }
   else if (timeSinceStartup !== undefined){
-    startupTimeInNanoseconds = timeSinceStartup[0] * 1e9 + timeSinceStartup[1];
+    this.currentTime = TimeUnit.seconds(timeSinceStartup[0]).extended(TimeUnit.nanoseconds(timeSinceStartup[1]));
   }
   
-  this.currentTime = TimeUnit.nanoseconds(startupTimeInNanoseconds);
-  this.targetTime = TimeUnit.nanoseconds(startupTimeInNanoseconds);
+   = TimeUnit.nanoseconds(startupTimeInNanoseconds);
+  this.targetTime = this.currentTime.copy();
 };
 
 Zurvan.prototype.stopExpiringEvents = function() {
@@ -76,7 +75,7 @@ Zurvan.prototype.advanceTime = function(timeToForward) {
   var advanceStep = (TypeUtils.isNumber(timeToForward)) ? TimeUnit.milliseconds(timeToForward) : timeToForward;  
   var that = this;
   return new Promise(function(resolve, reject) {
-    if(advanceStep.toMilliseconds() < 0) {
+    if(advanceStep.isShorterThan(TimeUnit.milliseconds(0))) {
       reject("Even Zurvan cannot move back in time!");
     }
 
@@ -101,7 +100,7 @@ Zurvan.prototype.advanceTime = function(timeToForward) {
       }
 	
 	  var closestTimer = that.timerInterceptor.nextTimer();
-      if(closestTimer && closestTimer.dueTime.toMilliseconds() <= that.targetTime.toMilliseconds()) {
+      if(closestTimer && !closestTimer.dueTime.isLongerThan(that.targetTime)) {
 	    that.timerInterceptor.clearTimer(closestTimer.uid);
         that.currentTime.setTo(closestTimer.dueTime);
         setImmediate(function() {
@@ -122,7 +121,7 @@ Zurvan.prototype.expireAllTimeouts = function() {
   var lastTimeout = this.timerInterceptor.lastTimeout();
   if(lastTimeout) {
     var that = this;
-	return this.advanceTime(lastTimeout.dueTime.toMilliseconds() - that.currentTime.toMilliseconds()).then(function() {
+	return this.advanceTime(lastTimeout.dueTime.shortened(that.currentTime)).then(function() {
 	  return that.expireAllTimeouts();
 	});
   }
@@ -133,7 +132,7 @@ Zurvan.prototype.expireAllTimeouts = function() {
 Zurvan.prototype.forwardTimeToNextTimer = function() {
   var closestTimer = this.timerInterceptor.nextTimer();
   if(closestTimer) {
-    return this.advanceTime(closestTimer.dueTime.toMilliseconds() - this.currentTime.toMilliseconds());
+    return this.advanceTime(closestTimer.dueTime.shortened(this.currentTime));
   }
   
   return Promise.resolve();
@@ -144,22 +143,22 @@ Zurvan.prototype.blockSystem = function(timeToBlock) {
 
   var that = this;  
   return new Promise(function(resolve, reject) {
-    if(blockStep.toMilliseconds() < 0) {
+    if(blockStep.isShorterThan(TimeUnit.milliseconds(0))) {
       return reject(Error("Even Zurvan cannot move back in time!"));
     }
 	
 	if(!that.isExpiringEvents()) {
-	  assert(Math.round(that.targetTime.toMilliseconds()) === Math.round(that.currentTime.toMilliseconds()));
+	  assert(that.targetTime.isEqualTo(that.currentTime));
 	  that.targetTime.add(blockStep);
 	}
-	else if(Math.round(that.targetTime.toMilliseconds()) < Math.round(that.currentTime.extended(blockStep).toMilliseconds())) {
+	else if(that.targetTime.isShorterThan(that.currentTime.extended(blockStep))) {
 	  return reject(Error("Cannot block system during advancing for longer than requested advance time"));
 	}
 	
     that.currentTime.add(blockStep);
 		
     var closestTimer = that.timerInterceptor.nextTimer();
-    while(closestTimer && Math.round(closestTimer.dueTime.toMilliseconds()) <= Math.round(that.currentTime.toMilliseconds())) {
+    while(closestTimer && !closestTimer.dueTime.isLongerThan(that.currentTime)) {
       that.timerInterceptor.clearTimer(closestTimer.uid);
   	  setImmediate(closestTimer.expire.bind(closestTimer));
       closestTimer = that.timerInterceptor.nextTimer();
