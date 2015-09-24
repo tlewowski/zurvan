@@ -1,8 +1,8 @@
 {
-  "name": "Zurvan",
+  "name": "zurvan",
   "version": "0.0.2",
-  "keywords": "testing,timeouts,time,timers",
-  "description": "A library for faking timers in Node.js tests",
+  "keywords": ["testing","timeouts","time","timers"],
+  "description": "A library for faking timers in Node.js",
   "author": "Tomasz Lewowski",
   "repository" : { 
     "type" : "git", 
@@ -25,5 +25,7 @@
   "license": "MIT",
   "scripts": {
     "test": "grunt"
-  }
+  },
+  
+  "main": "Zurvan.js"
 }

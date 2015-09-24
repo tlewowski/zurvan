@@ -1,6 +1,7 @@
 var ImmediateInterceptor = require("./detail/ImmediateInterceptor");
 var TimerInterceptor = require("./detail/TimerInterceptor");
 var ProcessTimerInterceptor = require("./detail/ProcessTimerInterceptor");
+var DateInterceptor = require("./detail/DateInterceptor");
 var TypeUtils = require("./detail/TypeUtils");
 var TimeUnit = require("./TimeUnit");
 var assert = require("assert");
@@ -23,6 +24,7 @@ Zurvan.prototype.startTime = function() {
     that.immediateInterceptor.restore();	
     that.processTimerInterceptor.restore();
     that.timerInterceptor.restore();
+	that.dateInterceptor.restore();
   });
 };
 
@@ -41,6 +43,7 @@ Zurvan.prototype.stopTime = function(config) {
     that.timerInterceptor = new TimerInterceptor(that, that.config);
     that.processTimerInterceptor = new ProcessTimerInterceptor(that);
     that.immediateInterceptor = new ImmediateInterceptor();	
+	that.dateInterceptor = new DateInterceptor(that);
   });
   
 };

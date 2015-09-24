@@ -10,7 +10,7 @@ describe('Zurvan', function() {
 	  Zurvan.stopTime().then(done, done);
 	});
 	afterEach(function(done) {
-	  Zurvan.startTime().then(done);
+	  Zurvan.startTime().then(done, done);
 	});
 	
     it('denies timers that use eval (they do not work in nodejs)', function(done) {
