@@ -1,4 +1,5 @@
 var TimeUnit = require("../TimeUnit");
+var TypeUtils = require("../detail/TypeUtils");
 var Zurvan = require("../Zurvan");
 
 var assert = require("assert");
@@ -55,6 +56,15 @@ describe('Zurvan', function() {
 		assert.equal(origFromWhole.getMilliseconds(), 854);
 	  }).then(function() {
 	  }).then(done, done);
+	});
+	
+	it('allows Date to be called as function as in original', function(done) {
+	  var date = Date();
+	  assert(TypeUtils.isString(date));
+	  
+	  var dateObj = new Date(date);
+	  assert(TypeUtils.isObject(dateObj));	  
+	  done();
 	});
   });
 });

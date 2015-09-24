@@ -24,8 +24,13 @@ function fakeDate(currentTime) {
   
   function FakeDate() {
     var argsArray = [].splice.call(arguments, 0);
-    this._date = (argsArray.length === 0) ? new OriginalDate(Date.now()) : makeOriginalDateFromArgs.apply(undefined, argsArray);
-    this._date = (argsArray.length === 0) ? new OriginalDate(Date.now()) : makeOriginalDateFromArgs.apply(undefined, argsArray);
+    var date = (argsArray.length === 0) ? new OriginalDate(Date.now()) : makeOriginalDateFromArgs.apply(undefined, argsArray);
+	
+	if(!(this instanceof FakeDate)) {
+	  return date.toString();
+	}
+	
+    this._date = date;
   }
 
   forwardedCalls.forEach(function(property) {
