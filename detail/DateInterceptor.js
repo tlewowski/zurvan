@@ -15,11 +15,16 @@ var forwardedCalls = ["valueOf", "toUTCString", "toTimeString", "toString", "toS
 function fakeDate(currentTime) {
   var OriginalDate = global.Date;  
 
-  function makeOriginalDateFromArgs(year, month, day, hour, minute, second, millisecond) {
-    if(typeof year === 'string' || month === undefined) {
-	  return new OriginalDate(year);
+  function makeOriginalDateFromArgs(yearOrTimeAsStringOrTimestamp, month, day, hour, minute, second, millisecond) {
+    if(TypeUtils.isString(yearOrTimeAsStringOrTimestamp)) {
+	  return new OriginalDate(yearOrTimeAsStringOrTimestamp);
 	}
-    return new OriginalDate(year, month, day, hour, minute, second, millisecond);
+	
+	if(month === undefined) { // means: first argument is a timestamp
+	  return new OriginalDate(yearOrTimeAsStringOrTimestamp);	  
+	}
+	
+    return new OriginalDate(yearOrTimeAsStringOrTimestamp, month, day, hour, minute, second, millisecond);
   }
   
   function FakeDate() {
