@@ -1,7 +1,7 @@
 function exportFunction(exportedObject, functionName) {
   return function() {
     return exportedObject[functionName].apply(exportedObject, [].splice.call(arguments, 0));
-  }
+  };
 }
 
 function createAPI(exportedObject, functionNames) {
