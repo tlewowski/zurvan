@@ -1,14 +1,14 @@
 var assert = require("assert");
-var Zurvan = require("../Zurvan");
+var zurvan = require("../zurvan");
 
-describe('Zurvan', function() {
+describe('zurvan', function() {
   describe('extended stopping time', function() {
     beforeEach(function(done) {
-	  Zurvan.stopTime().then(done, done);
+	  zurvan.stopTime().then(done, done);
 	});
 	
 	afterEach(function(done) {
-	  Zurvan.startTime().then(done, done);
+	  zurvan.startTime().then(done, done);
 	});
 
     it('does not call cleared immediates', function(done) {
@@ -41,7 +41,7 @@ describe('Zurvan', function() {
 	  
 	  clearTimeout(a);
 	  clearInterval(b);
-	  Zurvan.advanceTime(100).then(done, done);
+	  zurvan.advanceTime(100).then(done, done);
 	});
 
 	it('creates unstrigifiable handles', function(done) {
@@ -59,24 +59,24 @@ describe('Zurvan', function() {
   describe('extended requesting to start time', function() {	
 	it('rejects if time has not yet passed', function(done) {
 	  var rejected;
-	  Zurvan.stopTime().then(function() {
+	  zurvan.stopTime().then(function() {
 	    setTimeout(function() {
-	      Zurvan.startTime().then(function() {
+	      zurvan.startTime().then(function() {
             rejected = false;
 		  }, function() {
 		    rejected = true;
 		  });
 	    }, 25);
 
-        return Zurvan.advanceTime(50);
+        return zurvan.advanceTime(50);
 	  }).then(function() {
         assert(rejected === true);
-		return Zurvan.startTime();
+		return zurvan.startTime();
 	  }).then(done, done);
 	});
 	
 	it('rejects if time was not stopped', function(done) {
-	  Zurvan.startTime().then(function() {
+	  zurvan.startTime().then(function() {
 	    done(new Error("Time was not stopped yet - starting shall be rejected"));
 	  }, function() {
 	    done();
@@ -86,12 +86,12 @@ describe('Zurvan', function() {
   
   describe('extended stopping time', function() {
     it('rejects stopping it again', function(done) {
-	  Zurvan.stopTime().then(function() {
-	    return Zurvan.stopTime();
+	  zurvan.stopTime().then(function() {
+	    return zurvan.stopTime();
 	  }).then(function() {
 	    done(new Error("Time was already stopped - shall not be able to stop it again"));
 	  }, function() {
-	    Zurvan.startTime().then(done, done);
+	    zurvan.startTime().then(done, done);
 	  });
 	});
   });

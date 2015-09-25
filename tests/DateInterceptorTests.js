@@ -1,16 +1,16 @@
 var TimeUnit = require("../TimeUnit");
-var TypeUtils = require("../detail/TypeUtils");
-var Zurvan = require("../Zurvan");
+var TypeChecks = require("../detail/TypeChecks");
+var zurvan = require("../zurvan");
 
 var assert = require("assert");
 
-describe('Zurvan', function() {
+describe('zurvan', function() {
   describe('when faking Date', function() {
     beforeEach(function(done) {
-      Zurvan.stopTime().then(done, done);
+      zurvan.stopTime().then(done, done);
     });
     afterEach(function(done) {
-	  Zurvan.startTime().then(done, done);
+	  zurvan.startTime().then(done, done);
     });
 	
     it('intercepts Date and by default resets timestamp to 0', function(done) {
@@ -31,14 +31,14 @@ describe('Zurvan', function() {
     });
 	
 	it('adjusts to how far time is moved', function(done) {
-	  Zurvan.advanceTime(TimeUnit.days(10)).then(function() {
+	  zurvan.advanceTime(TimeUnit.days(10)).then(function() {
 	    var nowDate = new Date();
 	    assert.equal(nowDate.toISOString(), "1970-01-11T00:00:00.000Z");
-		return Zurvan.advanceTime(TimeUnit.nanoseconds(17e9 + 673e6));
+		return zurvan.advanceTime(TimeUnit.nanoseconds(17e9 + 673e6));
 	  }).then(function() {
 	    var nowDate = new Date();
 		assert.equal(nowDate.toISOString(), "1970-01-11T00:00:17.673Z");
-		return Zurvan.advanceTime(TimeUnit.minutes(86));
+		return zurvan.advanceTime(TimeUnit.minutes(86));
 	  }).then(function() {
 	    var nowDate = new Date();
 		var origFromString = new Date(Date.UTC(2020, 3, 5, 2, 5, 6, 78));
@@ -60,15 +60,15 @@ describe('Zurvan', function() {
 	
 	it('allows Date to be called as function as in original', function(done) {
 	  var date = Date();
-	  assert(TypeUtils.isString(date));
+	  assert(TypeChecks.isString(date));
 	  
 	  var dateObj = new Date(date);
-	  assert(TypeUtils.isObject(dateObj));	  
+	  assert(TypeChecks.isObject(dateObj));	  
 	  done();
 	});
 	
 	it('makes it possible to set system timer to arbitrary date', function(done) {
-	  Zurvan.setSystemTimeTo(new Date(Date.UTC(2010, 5, 6, 2, 1, 3)));
+	  zurvan.setSystemTimeTo(new Date(Date.UTC(2010, 5, 6, 2, 1, 3)));
       var nowDate = new Date();
 	  
 	  assert.equal(nowDate.toISOString(), "2010-06-06T02:01:03.000Z");
@@ -76,7 +76,7 @@ describe('Zurvan', function() {
 	});
 
 	it('makes it possible to set system timer to arbitrary date from parseable string', function(done) {
-	  Zurvan.setSystemTimeTo(new Date(Date.UTC(2005, 5, 6, 2, 1, 3)).toISOString());
+	  zurvan.setSystemTimeTo(new Date(Date.UTC(2005, 5, 6, 2, 1, 3)).toISOString());
       var nowDate = new Date();
 	  
 	  assert.equal(nowDate.toISOString(), "2005-06-06T02:01:03.000Z");
@@ -84,7 +84,7 @@ describe('Zurvan', function() {
 	});
 	
 	it('makes it possible to set system timer to arbitrary date from timestamp', function(done) {
-	  Zurvan.setSystemTimeTo(Date.UTC(2005, 5, 13, 2, 1, 3));
+	  zurvan.setSystemTimeTo(Date.UTC(2005, 5, 13, 2, 1, 3));
       var nowDate = new Date();
 	  
 	  assert.equal(nowDate.toISOString(), "2005-06-13T02:01:03.000Z");
@@ -92,8 +92,8 @@ describe('Zurvan', function() {
 	});
 	
 	it('properly synchronizes system timer even if changed after startup', function(done) {
-	  Zurvan.advanceTime(TimeUnit.days(10)).then(function() {
-	    Zurvan.setSystemTimeTo(Date.UTC(1990, 1, 1));
+	  zurvan.advanceTime(TimeUnit.days(10)).then(function() {
+	    zurvan.setSystemTimeTo(Date.UTC(1990, 1, 1));
 		var nowDate = new Date();
 		assert.equal(nowDate.toISOString(), "1990-02-01T00:00:00.000Z");
 		
@@ -102,7 +102,7 @@ describe('Zurvan', function() {
 		  assert.equal(nowDate.toISOString(), "1990-02-01T01:00:00.000Z");
 		}, TimeUnit.hours(1).toMilliseconds());
 		
-		return Zurvan.advanceTime(TimeUnit.days(10));
+		return zurvan.advanceTime(TimeUnit.days(10));
 	  }).then(function() {
 	    var nowDate = new Date();
 		assert.equal(nowDate.toISOString(), "1990-02-11T00:00:00.000Z");

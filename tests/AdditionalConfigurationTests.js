@@ -1,16 +1,16 @@
 var TimeUnit = require("../TimeUnit");
-var Zurvan = require("../Zurvan");
+var zurvan = require("../zurvan");
 var FieldOverrider = require("../detail/FieldOverrider");
 
 var assert = require("assert");
 
-describe('Zurvan', function() {
+describe('zurvan', function() {
   describe('by default', function() {
     beforeEach(function(done) {
-	  Zurvan.stopTime().then(done, done);
+	  zurvan.stopTime().then(done, done);
 	});
 	afterEach(function(done) {
-	  Zurvan.startTime().then(done, done);
+	  zurvan.startTime().then(done, done);
 	});
 	
     it('denies timers that use eval (they do not work in nodejs)', function(done) {
@@ -28,7 +28,7 @@ describe('Zurvan', function() {
 	  setTimeout(function() {called = true;}, {invalid:"type",of:"dueTime"});
 	  assert.equal(0, process.uptime());
 	  
-      Zurvan.expireAllTimeouts().then(function() {
+      zurvan.expireAllTimeouts().then(function() {
 	    assert(called === true);
       }).then(done, done);
 	});
@@ -48,75 +48,75 @@ describe('Zurvan', function() {
 	});
 	
     it('timer or interval set with string will be evaluated', function(done) {
-      Zurvan.stopTime({acceptEvalTimers: true}).then(function() {
+      zurvan.stopTime({acceptEvalTimers: true}).then(function() {
 	    setTimeout("global.timeoutCalled = true;", 75);
 	    setInterval("global.intervalCalled = global.intervalCalled || 0; ++global.intervalCalled;", 50);
-        return Zurvan.advanceTime(100);
+        return zurvan.advanceTime(100);
 	  }).then(function() {
 	      assert(global.intervalCalled === 2);
 	      assert(global.timeoutCalled === true);
-    	  return Zurvan.startTime();
+    	  return zurvan.startTime();
 	  }).then(done, done);
 	});
 	
 	it('denies implicit timeout time (0)', function(done) {
 	  var called;
-	  Zurvan.stopTime({denyImplicitTimer: true}).then(function() {
+	  zurvan.stopTime({denyImplicitTimer: true}).then(function() {
 	    setTimeout(function(){called = true;}, function(){});
 	  }).then(function() {
 	    return done(new Error("Implicit timer shall be denied and setting timer shall throw"));
 	  }, function() {
-     	return Zurvan.startTime().then(done, done);
+     	return zurvan.startTime().then(done, done);
 	  });
 	});
 	
 	it('runs at arbitrary time since process startup', function(done) {
-	  Zurvan.stopTime({timeSinceStartup: 4}).then(function() {
+	  zurvan.stopTime({timeSinceStartup: 4}).then(function() {
 	    assert.equal(4, process.uptime());
 		assert.deepEqual([4, 0], process.hrtime());
-		return Zurvan.startTime();
+		return zurvan.startTime();
 	  }).then(function() {
-	    return Zurvan.stopTime({timeSinceStartup: [100, 132587951]});
+	    return zurvan.stopTime({timeSinceStartup: [100, 132587951]});
 	  }).then(function() {
 	    assert(Math.abs(100.132587951 - process.uptime()) < 1e-12);
 		assert.deepEqual([100, 132587951], process.hrtime());
-		return Zurvan.startTime();
+		return zurvan.startTime();
 	  }).then(function() {
-	    return Zurvan.stopTime({timeSinceStartup: TimeUnit.microseconds(12e8 + 100)});
+	    return zurvan.stopTime({timeSinceStartup: TimeUnit.microseconds(12e8 + 100)});
 	  }).then(function() {
 	    assert(Math.abs(1200.0001 - process.uptime()) < 1e-12);
 		assert.deepEqual([1200, 100000], process.hrtime());
-		return Zurvan.startTime();
+		return zurvan.startTime();
 	  }).then(function() {
-	    return Zurvan.stopTime({timeSinceStartup: [0, 1e10]});
+	    return zurvan.stopTime({timeSinceStartup: [0, 1e10]});
 	  }).then(function() {
 	    assert.equal(10, process.uptime());
 		assert.deepEqual([10, 0], process.hrtime());
-		return Zurvan.startTime();
+		return zurvan.startTime();
 	  }).then(done, done);
 	});
 	
 	it('runs at any required system time', function(done) {
-	  Zurvan.stopTime({systemTime: Date.UTC(2015, 0, 5)}).then(function() {
+	  zurvan.stopTime({systemTime: Date.UTC(2015, 0, 5)}).then(function() {
 	    var nowDate = new Date();
 		assert.equal(nowDate.toISOString(), "2015-01-05T00:00:00.000Z");
 		assert.equal(0, process.uptime());
-		return Zurvan.startTime();
+		return zurvan.startTime();
 	  }).then(function() {
-	    return Zurvan.stopTime({systemTime: new Date(Date.UTC(2010, 5, 6))});
+	    return zurvan.stopTime({systemTime: new Date(Date.UTC(2010, 5, 6))});
 	  }).then(function() {
   	    var nowDate = new Date();
 	    assert.equal(nowDate.toISOString(), "2010-06-06T00:00:00.000Z");
 		assert.equal(0, process.uptime());
-		return Zurvan.startTime();
+		return zurvan.startTime();
 	  }).then(function() {
-	    return Zurvan.stopTime({systemTime: new Date(Date.UTC(1999, 9, 8, 15)).toString(),
+	    return zurvan.stopTime({systemTime: new Date(Date.UTC(1999, 9, 8, 15)).toString(),
 		  timeSinceStartup: TimeUnit.seconds(45)});
 	  }).then(function() {
 	    var nowDate = new Date();
         assert(nowDate.toISOString(), "1999-10-08T15:00:00.000Z");
 		assert.equal(45, process.uptime());
-		return Zurvan.startTime();
+		return zurvan.startTime();
 	  }).then(done, done);
 	});
   });

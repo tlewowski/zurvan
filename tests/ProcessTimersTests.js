@@ -1,14 +1,14 @@
 var assert = require("assert");
-var Zurvan = require("../Zurvan");
+var zurvan = require("../zurvan");
 
-describe('Zurvan', function() {
+describe('zurvan', function() {
   describe('extended stopping time', function() {
     beforeEach(function(done) {
-	  Zurvan.stopTime().then(done, done);
+	  zurvan.stopTime().then(done, done);
 	});
 	
 	afterEach(function(done) {
-	  Zurvan.startTime().then(done);
+	  zurvan.startTime().then(done);
 	});
 
     it('resets process timers', function(done) {
@@ -23,7 +23,7 @@ describe('Zurvan', function() {
 		assert.deepEqual([1, 523e6], process.hrtime());
 	  }, 1523);
 	  
-	  Zurvan.advanceTime(1600).then(function() {
+	  zurvan.advanceTime(1600).then(function() {
 	    assert.equal(1.6, process.uptime());
 		assert.deepEqual([1, 600e6], process.hrtime());
 	    done();
@@ -44,7 +44,7 @@ describe('Zurvan', function() {
 		}, 8721);
 	  }, 1523);
 	  
-	  Zurvan.advanceTime(11000);
+	  zurvan.advanceTime(11000);
 	});
 
   });

@@ -27,5 +27,5 @@
     "test": "grunt"
   },
   
-  "main": "Zurvan.js"
+  "main": "zurvan.js"
 }

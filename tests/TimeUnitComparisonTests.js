@@ -1,5 +1,5 @@
 var TimeUnit = require("../TimeUnit");
-var Zurvan = require("../Zurvan");
+var zurvan = require("../zurvan");
 var FieldOverrider = require("../detail/FieldOverrider");
 
 var assert = require("assert");

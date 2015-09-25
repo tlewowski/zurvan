@@ -1,13 +1,13 @@
 var assert = require("assert");
-var Zurvan = require("../Zurvan");
+var zurvan = require("../zurvan");
 
-describe('Zurvan', function() {
+describe('zurvan', function() {
   describe('extended stopping time', function() {
     beforeEach(function(done) {
-	  Zurvan.stopTime().then(done, done);
+	  zurvan.stopTime().then(done, done);
 	});
 	afterEach(function(done) {
-	  Zurvan.startTime().then(done);
+	  zurvan.startTime().then(done);
 	});
 	
 	it('expires timers at advancing time', function(done) {
@@ -18,11 +18,11 @@ describe('Zurvan', function() {
 	  
 	  setTimeout(calls.push.bind(calls, 1), 1000);
 	  
-	  Zurvan.advanceTime(1001).then(done);
+	  zurvan.advanceTime(1001).then(done);
 	});
 		
 	it('rejects attempt to move time backwards', function(done) {
-	  Zurvan.advanceTime(-1).catch(function(err) {
+	  zurvan.advanceTime(-1).catch(function(err) {
         done();
 	  });
 	});
@@ -33,9 +33,9 @@ describe('Zurvan', function() {
 	    called = true;
 	  }, 100);
 	  
-	  Zurvan.advanceTime(50).then(function() {
+	  zurvan.advanceTime(50).then(function() {
 	    assert(!called);
-	    return Zurvan.advanceTime(50);
+	    return zurvan.advanceTime(50);
 	  }).then(function() {
 	    assert(called);
 		done();
@@ -51,7 +51,7 @@ describe('Zurvan', function() {
 		done();
 	  }, 410);
 	  
-	  Zurvan.advanceTime(410);
+	  zurvan.advanceTime(410);
 	});
 	
 	it('can call both timeouts and intervals', function(done) {
@@ -66,7 +66,7 @@ describe('Zurvan', function() {
 		done();
 	  }, 41);
 	  
-	  Zurvan.advanceTime(42);
+	  zurvan.advanceTime(42);
 	});
 
 	it('can pass arguments to timers', function(done) {
@@ -82,8 +82,8 @@ describe('Zurvan', function() {
         done();
 	  }, 1050);
 
-	  Zurvan.advanceTime(50).then(function() {
-	    return Zurvan.advanceTime(1000);
+	  zurvan.advanceTime(50).then(function() {
+	    return zurvan.advanceTime(1000);
 	  });	  
 	});
 	
@@ -97,7 +97,7 @@ describe('Zurvan', function() {
 	    done();
 	  }, 1000);
 	  
-	  Zurvan.advanceTime(1500);
+	  zurvan.advanceTime(1500);
 	});
 	
 	
@@ -114,7 +114,7 @@ describe('Zurvan', function() {
 		done();
 	  }, 150);
 	  
-	  Zurvan.advanceTime(150);
+	  zurvan.advanceTime(150);
 	});
 	
 	it('executes async callbacks extended all immediates (queue) is cleared', function(done) {
@@ -133,7 +133,7 @@ describe('Zurvan', function() {
 		done();
 	  }, 100);
 	  
-	  Zurvan.advanceTime(100);
+	  zurvan.advanceTime(100);
 	});
 	
 	it('expires timeouts one-by-one', function(done) {
@@ -141,18 +141,18 @@ describe('Zurvan', function() {
 	    setTimeout(done, 100);
 	  }, 100);
 	  
-	  Zurvan.advanceTime(200);  
+	  zurvan.advanceTime(200);  
 	});
 	
 	it('throws when time is advanced from two places simultaneously', function(done) {
       setTimeout(function() {
-    	  Zurvan.advanceTime(100)
+    	  zurvan.advanceTime(100)
 		    .catch(function(err) {
 		      done();
 		    });
 	  }, 50);
       
-	  Zurvan.advanceTime(100);
+	  zurvan.advanceTime(100);
 	});
 	
 	it('immediates are called shortened timeouts', function(done) {
@@ -171,7 +171,7 @@ describe('Zurvan', function() {
 		}, 50);
 	  }, 50);
 	  
-	  Zurvan.advanceTime(100);
+	  zurvan.advanceTime(100);
 	});
 	
 	it('takes into account setTimeouts in setImmediates when forwarding time', function(done) {
@@ -186,7 +186,7 @@ describe('Zurvan', function() {
 		done();
 	  }, 100);
 	  
-	  Zurvan.advanceTime(100);
+	  zurvan.advanceTime(100);
 	});
 	
 	it('takes into account setTimeout in process.nextTick when forwarding time', function(done) {
@@ -201,7 +201,7 @@ describe('Zurvan', function() {
 		done();
 	  }, 20);
 	  
-	  Zurvan.advanceTime(20);
+	  zurvan.advanceTime(20);
 	});
   });
 });

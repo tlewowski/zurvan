@@ -1,5 +1,5 @@
 var FieldOverrider = require("./FieldOverrider");
-var TypeUtils = require("./TypeUtils");
+var TypeChecks = require("./TypeChecks");
 
 var forwardedCalls = ["valueOf", "toUTCString", "toTimeString", "toString", "toSource",
   "toLocaleTimeString", "toLocaleFormat", "toLocaleDateString", "toGMTString", "toJSON",
@@ -16,7 +16,7 @@ function fakeDate(timeServer) {
   var OriginalDate = global.Date;  
 
   function makeOriginalDateFromArgs(yearOrTimeAsStringOrTimestamp, month, day, hour, minute, second, millisecond) {
-    if(TypeUtils.isString(yearOrTimeAsStringOrTimestamp)) {
+    if(TypeChecks.isString(yearOrTimeAsStringOrTimestamp)) {
 	  return new OriginalDate(yearOrTimeAsStringOrTimestamp);
 	}
 	
@@ -39,7 +39,7 @@ function fakeDate(timeServer) {
   }
 
   forwardedCalls.forEach(function(property) {
-    if(TypeUtils.isFunction(OriginalDate.prototype[property])) {
+    if(TypeChecks.isFunction(OriginalDate.prototype[property])) {
 	  FakeDate.prototype[property] = function() {
 	    return this._date[property].apply(this._date, [].splice.call(arguments, 0));
 	  };

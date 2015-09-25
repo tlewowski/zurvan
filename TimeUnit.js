@@ -1,5 +1,5 @@
 var assert = require("assert");
-var TypeUtils = require("./detail/TypeUtils");
+var TypeChecks = require("./detail/TypeChecks");
 
 function standardTime(coefficient) {
   var StandardTimer = function(value) {
@@ -21,7 +21,7 @@ standardTimers.days = standardTime(24 * standardTimers.hours.coefficient);
 standardTimers.weeks = standardTime(7 * standardTimers.days.coefficient);
 
 function TimeUnit(value) {
-  assert(TypeUtils.isNumber(value));
+  assert(TypeChecks.isNumber(value));
   this.value = value;
 }
 
