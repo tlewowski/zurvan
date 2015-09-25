@@ -104,7 +104,7 @@ All of them work only on `TimeUnit` objects, but work smoothly on cross-unit bas
  
 ## Examples
 
-For now, please refer to `tests` directory.
+For now, please refer to `tests` directory for executable examples.
 
 ## Other
 
