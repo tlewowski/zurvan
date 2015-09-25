@@ -2,7 +2,7 @@ var ImmediateInterceptor = require("./detail/ImmediateInterceptor");
 var TimerInterceptor = require("./detail/TimerInterceptor");
 var ProcessTimerInterceptor = require("./detail/ProcessTimerInterceptor");
 var DateInterceptor = require("./detail/DateInterceptor");
-var TypeUtils = require("./detail/TypeUtils");
+var TypeChecks = require("./detail/TypeChecks");
 var APIHelper = require("./detail/APIHelper");
 var TimeUnit = require("./TimeUnit");
 
@@ -54,7 +54,7 @@ Zurvan.prototype.stopTime = function(config) {
 };
 
 Zurvan.prototype.setupTime = function(timeSinceStartup, systemTime) {
-  if(TypeUtils.isNumber(timeSinceStartup)) {
+  if(TypeChecks.isNumber(timeSinceStartup)) {
     this.currentTime = TimeUnit.seconds(timeSinceStartup);
   }
   else if (timeSinceStartup && timeSinceStartup.length === 2){
@@ -84,7 +84,7 @@ Zurvan.prototype.isExpiringEvents = function() {
 };
 
 Zurvan.prototype.advanceTime = function(timeToForward) {
-  var advanceStep = (TypeUtils.isNumber(timeToForward)) ? TimeUnit.milliseconds(timeToForward) : timeToForward;  
+  var advanceStep = (TypeChecks.isNumber(timeToForward)) ? TimeUnit.milliseconds(timeToForward) : timeToForward;  
   var that = this;
   return new Promise(function(resolve, reject) {
     if(advanceStep.isShorterThan(TimeUnit.milliseconds(0))) {
@@ -130,10 +130,10 @@ Zurvan.prototype.advanceTime = function(timeToForward) {
 };
 
 Zurvan.prototype.setSystemTimeTo = function(value) {
-  if(TypeUtils.isString(value)) {
+  if(TypeChecks.isString(value)) {
     value = new Date(value);
   }
-  else if(TypeUtils.isNumber(value)) {
+  else if(TypeChecks.isNumber(value)) {
     value = new Date(value);
   }
   
@@ -162,7 +162,7 @@ Zurvan.prototype.forwardTimeToNextTimer = function() {
 };
 
 Zurvan.prototype.blockSystem = function(timeToBlock) {
-  var blockStep = (TypeUtils.isNumber(timeToBlock)) ? TimeUnit.milliseconds(timeToBlock) : timeToBlock;  
+  var blockStep = (TypeChecks.isNumber(timeToBlock)) ? TimeUnit.milliseconds(timeToBlock) : timeToBlock;  
 
   var that = this;  
   return new Promise(function(resolve, reject) {
