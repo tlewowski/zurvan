@@ -3,7 +3,9 @@ var TimerInterceptor = require("./detail/TimerInterceptor");
 var ProcessTimerInterceptor = require("./detail/ProcessTimerInterceptor");
 var DateInterceptor = require("./detail/DateInterceptor");
 var TypeUtils = require("./detail/TypeUtils");
+var APIHelper = require("./detail/APIHelper");
 var TimeUnit = require("./TimeUnit");
+
 var assert = require("assert");
 
 function Zurvan() {
@@ -185,13 +187,21 @@ Zurvan.prototype.blockSystem = function(timeToBlock) {
   	resolve();
   }).then(function() {
     if(!that.isExpiringEvents()) {
-      return that.advanceTime(0);
+      return that.waitForEmptyQueue();
 	}
   });
 };
 
-function createZurvan() {
-  return new Zurvan();
+Zurvan.prototype.waitForEmptyQueue = function() {
+  return this.advanceTime(0);
+};
+
+function createZurvanAPI() {
+  var apiFunctions = ["startTime", "stopTime", "advanceTime", 
+    "blockSystem", "setSystemTimeTo", "expireAllTimeouts", 
+	"forwardTimeToNextTimer", "waitForEmptyQueue"];
+  
+  return APIHelper.createAPI(new Zurvan(), apiFunctions);
 }
 
-module.exports = createZurvan();
+module.exports = createZurvanAPI();
