@@ -7,10 +7,10 @@ var assert = require("assert");
 describe('zurvan', function() {
   describe('when faking Date', function() {
     beforeEach(function(done) {
-      zurvan.stopTime().then(done, done);
+      zurvan.interceptTimers().then(done, done);
     });
     afterEach(function(done) {
-	  zurvan.startTime().then(done, done);
+	  zurvan.releaseTimers().then(done, done);
     });
 	
     it('intercepts Date and by default resets timestamp to 0', function(done) {
@@ -68,7 +68,7 @@ describe('zurvan', function() {
 	});
 	
 	it('makes it possible to set system timer to arbitrary date', function(done) {
-	  zurvan.setSystemTimeTo(new Date(Date.UTC(2010, 5, 6, 2, 1, 3)));
+	  zurvan.setSystemTime(new Date(Date.UTC(2010, 5, 6, 2, 1, 3)));
       var nowDate = new Date();
 	  
 	  assert.equal(nowDate.toISOString(), "2010-06-06T02:01:03.000Z");
@@ -76,7 +76,7 @@ describe('zurvan', function() {
 	});
 
 	it('makes it possible to set system timer to arbitrary date from parseable string', function(done) {
-	  zurvan.setSystemTimeTo(new Date(Date.UTC(2005, 5, 6, 2, 1, 3)).toISOString());
+	  zurvan.setSystemTime(new Date(Date.UTC(2005, 5, 6, 2, 1, 3)).toISOString());
       var nowDate = new Date();
 	  
 	  assert.equal(nowDate.toISOString(), "2005-06-06T02:01:03.000Z");
@@ -84,7 +84,7 @@ describe('zurvan', function() {
 	});
 	
 	it('makes it possible to set system timer to arbitrary date from timestamp', function(done) {
-	  zurvan.setSystemTimeTo(Date.UTC(2005, 5, 13, 2, 1, 3));
+	  zurvan.setSystemTime(Date.UTC(2005, 5, 13, 2, 1, 3));
       var nowDate = new Date();
 	  
 	  assert.equal(nowDate.toISOString(), "2005-06-13T02:01:03.000Z");
@@ -93,7 +93,7 @@ describe('zurvan', function() {
 	
 	it('properly synchronizes system timer even if changed after startup', function(done) {
 	  zurvan.advanceTime(TimeUnit.days(10)).then(function() {
-	    zurvan.setSystemTimeTo(Date.UTC(1990, 1, 1));
+	    zurvan.setSystemTime(Date.UTC(1990, 1, 1));
 		var nowDate = new Date();
 		assert.equal(nowDate.toISOString(), "1990-02-01T00:00:00.000Z");
 		

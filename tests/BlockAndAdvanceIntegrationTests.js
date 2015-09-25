@@ -4,10 +4,10 @@ var zurvan = require("../zurvan");
 describe('zurvan', function() {
   describe('while manages time', function() {
     beforeEach(function(done) {
-	  zurvan.stopTime().then(done, done);
+	  zurvan.interceptTimers().then(done, done);
 	});
 	afterEach(function(done) {
-	  zurvan.startTime().then(done, done);
+	  zurvan.releaseTimers().then(done, done);
 	});
 	
 	it('can integrate advancing time and blocking', function(done) {

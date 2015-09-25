@@ -13,7 +13,7 @@ function Zurvan() {
   this.isStopped = false;
 }
 
-Zurvan.prototype.startTime = function() {
+Zurvan.prototype.releaseTimers = function() {
   var that = this;
   return new Promise(function(resolve, reject) {
     if(that.isStopped && !that.isExpiringEvents()) {
@@ -31,7 +31,7 @@ Zurvan.prototype.startTime = function() {
   });
 };
 
-Zurvan.prototype.stopTime = function(config) {
+Zurvan.prototype.interceptTimers = function(config) {
   var that = this;
   return new Promise(function(resolve, reject) {
     if(that.isStopped) {
@@ -68,7 +68,7 @@ Zurvan.prototype.setupTime = function(timeSinceStartup, systemTime) {
   }
   
   this.targetTime = this.currentTime.copy();
-  this.setSystemTimeTo(systemTime || 0);
+  this.setSystemTime(systemTime || 0);
 };
 
 Zurvan.prototype.stopExpiringEvents = function() {
@@ -129,7 +129,7 @@ Zurvan.prototype.advanceTime = function(timeToForward) {
   });  
 };
 
-Zurvan.prototype.setSystemTimeTo = function(value) {
+Zurvan.prototype.setSystemTime = function(value) {
   if(TypeChecks.isString(value)) {
     value = new Date(value);
   }
@@ -200,8 +200,8 @@ Zurvan.prototype.waitForEmptyQueue = function() {
 };
 
 function createZurvanAPI() {
-  var apiFunctions = ["startTime", "stopTime", "advanceTime", 
-    "blockSystem", "setSystemTimeTo", "expireAllTimeouts", 
+  var apiFunctions = ["releaseTimers", "interceptTimers", "advanceTime", 
+    "blockSystem", "setSystemTime", "expireAllTimeouts", 
 	"forwardTimeToNextTimer", "waitForEmptyQueue"];
   
   return APIHelper.createAPI(new Zurvan(), apiFunctions);

@@ -5,11 +5,11 @@ var TimeUnit = require("../TimeUnit");
 describe('zurvan', function() {
   describe('during blocking call', function() {
     beforeEach(function(done) {
-	  zurvan.stopTime().then(done, done);
+	  zurvan.interceptTimers().then(done, done);
 	});
 	
 	afterEach(function(done) {
-	  zurvan.startTime().then(done, done);
+	  zurvan.releaseTimers().then(done, done);
 	});
 
     it('expires all timeouts at once in proper order', function(done) {

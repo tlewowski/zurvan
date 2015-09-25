@@ -4,10 +4,10 @@ var zurvan = require("../zurvan");
 describe('zurvan', function() {
   describe('extended stopping time', function() {
     beforeEach(function(done) {
-	  zurvan.stopTime().then(done, done);
+	  zurvan.interceptTimers().then(done, done);
 	});
 	afterEach(function(done) {
-	  zurvan.startTime().then(done);
+	  zurvan.releaseTimers().then(done);
 	});
 	
 	it('expires timers at advancing time', function(done) {

@@ -5,10 +5,10 @@ var TimeUnit = require("../TimeUnit");
 describe('zurvan', function() {
   describe('extended stopping time', function(done) {
     beforeEach(function(done) {
-	  zurvan.stopTime().then(done, done);
+	  zurvan.interceptTimers().then(done, done);
 	});
 	afterEach(function(done) {
-	  zurvan.startTime().then(done, done);
+	  zurvan.releaseTimers().then(done, done);
 	});
 	it('supports any combination of setTimeout, setImmediate and process.nextTick', function(done) {
 	  var calls = [];

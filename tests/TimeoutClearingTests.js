@@ -4,11 +4,11 @@ var zurvan = require("../zurvan");
 describe('zurvan', function() {
   describe('extended stopping time', function() {
     beforeEach(function(done) {
-	  zurvan.stopTime().then(done, done);
+	  zurvan.interceptTimers().then(done, done);
 	});
 	
 	afterEach(function(done) {
-	  zurvan.startTime().then(done, done);
+	  zurvan.releaseTimers().then(done, done);
 	});
 
     it('does not call cleared immediates', function(done) {
@@ -59,9 +59,9 @@ describe('zurvan', function() {
   describe('extended requesting to start time', function() {	
 	it('rejects if time has not yet passed', function(done) {
 	  var rejected;
-	  zurvan.stopTime().then(function() {
+	  zurvan.interceptTimers().then(function() {
 	    setTimeout(function() {
-	      zurvan.startTime().then(function() {
+	      zurvan.releaseTimers().then(function() {
             rejected = false;
 		  }, function() {
 		    rejected = true;
@@ -71,12 +71,12 @@ describe('zurvan', function() {
         return zurvan.advanceTime(50);
 	  }).then(function() {
         assert(rejected === true);
-		return zurvan.startTime();
+		return zurvan.releaseTimers();
 	  }).then(done, done);
 	});
 	
 	it('rejects if time was not stopped', function(done) {
-	  zurvan.startTime().then(function() {
+	  zurvan.releaseTimers().then(function() {
 	    done(new Error("Time was not stopped yet - starting shall be rejected"));
 	  }, function() {
 	    done();
@@ -86,12 +86,12 @@ describe('zurvan', function() {
   
   describe('extended stopping time', function() {
     it('rejects stopping it again', function(done) {
-	  zurvan.stopTime().then(function() {
-	    return zurvan.stopTime();
+	  zurvan.interceptTimers().then(function() {
+	    return zurvan.interceptTimers();
 	  }).then(function() {
 	    done(new Error("Time was already stopped - shall not be able to stop it again"));
 	  }, function() {
-	    zurvan.startTime().then(done, done);
+	    zurvan.releaseTimers().then(done, done);
 	  });
 	});
   });
