@@ -50,7 +50,7 @@ function fakeDate(timeServer) {
   FakeDate.UTC = Date.UTC;
   FakeDate.parse = Date.parse;
   FakeDate.now = function()  {
-    return Math.floor(timeServer.currentTime.toMilliseconds() + timeServer.systemTimeOffset);
+    return Math.floor(timeServer.systemTimeOffset.extended(timeServer.currentTime).toMilliseconds());
   };
   
   return FakeDate;

@@ -134,7 +134,7 @@ Zurvan.prototype.setSystemTimeTo = function(value) {
     value = new Date(value);
   }
   
-  this.systemTimeOffset = value.getTime() - this.currentTime.toMilliseconds();
+  this.systemTimeOffset = TimeUnit.milliseconds(value.getTime() - this.currentTime.toMilliseconds());
 };
 
 Zurvan.prototype.expireAllTimeouts = function() {
