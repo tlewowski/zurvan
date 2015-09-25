@@ -1,6 +1,6 @@
 {
   "name": "zurvan",
-  "version": "0.0.2",
+  "version": "0.1.1",
   "keywords": ["testing","timeouts","time","timers"],
   "description": "A library for faking timers in Node.js",
   "author": "Tomasz Lewowski",
