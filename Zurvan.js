@@ -63,6 +63,7 @@ Zurvan.prototype.setupTime = function(timeSinceStartup) {
   }
   
   this.targetTime = this.currentTime.copy();
+  this.systemTimeOffset = 0;
 };
 
 Zurvan.prototype.stopExpiringEvents = function() {
@@ -121,6 +122,17 @@ Zurvan.prototype.advanceTime = function(timeToForward) {
       }
     }
   });  
+};
+
+Zurvan.prototype.setSystemTimeTo = function(value) {
+  if(TypeUtils.isString(value)) {
+    value = new Date(value);
+  }
+  else if(TypeUtils.isNumber(value)) {
+    value = new Date(value);
+  }
+  
+  this.systemTimeOffset = value.getTime();
 };
 
 Zurvan.prototype.expireAllTimeouts = function() {

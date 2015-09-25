@@ -12,7 +12,7 @@ var forwardedCalls = ["valueOf", "toUTCString", "toTimeString", "toString", "toS
   "getMinutes", "getMilliseconds", "getHours", "getFullYear", "getDay", "getDate"];
   
   
-function fakeDate(currentTime) {
+function fakeDate(timeServer) {
   var OriginalDate = global.Date;  
 
   function makeOriginalDateFromArgs(yearOrTimeAsStringOrTimestamp, month, day, hour, minute, second, millisecond) {
@@ -50,7 +50,7 @@ function fakeDate(currentTime) {
   FakeDate.UTC = Date.UTC;
   FakeDate.parse = Date.parse;
   FakeDate.now = function()  {
-    return Math.floor(currentTime.toMilliseconds());
+    return Math.floor(timeServer.currentTime.toMilliseconds() + timeServer.systemTimeOffset);
   };
   
   return FakeDate;
@@ -61,7 +61,7 @@ DateInterceptor.prototype.restore = function() {
 };
 
 function DateInterceptor(timeServer) {
-  var fakeDateCreator = fakeDate(timeServer.currentTime);
+  var fakeDateCreator = fakeDate(timeServer);
   this.dateOverrider = new FieldOverrider(global, "Date", fakeDateCreator);
 }
 

@@ -66,5 +66,29 @@ describe('Zurvan', function() {
 	  assert(TypeUtils.isObject(dateObj));	  
 	  done();
 	});
+	
+	it('makes it possible to set system timer to arbitrary date', function(done) {
+	  Zurvan.setSystemTimeTo(new Date(Date.UTC(2010, 5, 6, 2, 1, 3)));
+      var nowDate = new Date();
+	  
+	  assert.equal(nowDate.toISOString(), "2010-06-06T02:01:03.000Z");
+	  done();	
+	});
+
+	it('makes it possible to set system timer to arbitrary date from parseable string', function(done) {
+	  Zurvan.setSystemTimeTo(new Date(Date.UTC(2005, 5, 6, 2, 1, 3)).toISOString());
+      var nowDate = new Date();
+	  
+	  assert.equal(nowDate.toISOString(), "2005-06-06T02:01:03.000Z");
+	  done();	
+	});
+	
+	it('makes it possible to set system timer to arbitrary date from timestamp', function(done) {
+	  Zurvan.setSystemTimeTo(Date.UTC(2005, 5, 13, 2, 1, 3));
+      var nowDate = new Date();
+	  
+	  assert.equal(nowDate.toISOString(), "2005-06-13T02:01:03.000Z");
+	  done();	
+	});
   });
 });
