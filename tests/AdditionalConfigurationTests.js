@@ -95,5 +95,29 @@ describe('Zurvan', function() {
 		return Zurvan.startTime();
 	  }).then(done, done);
 	});
+	
+	it('runs at any required system time', function(done) {
+	  Zurvan.stopTime({systemTime: Date.UTC(2015, 0, 5)}).then(function() {
+	    var nowDate = new Date();
+		assert.equal(nowDate.toISOString(), "2015-01-05T00:00:00.000Z");
+		assert.equal(0, process.uptime());
+		return Zurvan.startTime();
+	  }).then(function() {
+	    return Zurvan.stopTime({systemTime: new Date(Date.UTC(2010, 5, 6))});
+	  }).then(function() {
+  	    var nowDate = new Date();
+	    assert.equal(nowDate.toISOString(), "2010-06-06T00:00:00.000Z");
+		assert.equal(0, process.uptime());
+		return Zurvan.startTime();
+	  }).then(function() {
+	    return Zurvan.stopTime({systemTime: new Date(Date.UTC(1999, 9, 8, 15)).toString(),
+		  timeSinceStartup: TimeUnit.seconds(45)});
+	  }).then(function() {
+	    var nowDate = new Date();
+        assert(nowDate.toISOString(), "1999-10-08T15:00:00.000Z");
+		assert.equal(45, process.uptime());
+		return Zurvan.startTime();
+	  }).then(done, done);
+	});
   });
 });

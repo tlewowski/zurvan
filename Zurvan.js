@@ -40,7 +40,7 @@ Zurvan.prototype.stopTime = function(config) {
   }).then(function() {
     that.config = config || {};
     that.isStopped = true;
-	that.setupTime(that.config.timeSinceStartup);
+	that.setupTime(that.config.timeSinceStartup, that.config.systemTime);
 
     that.timerInterceptor = new TimerInterceptor(that, that.config);
     that.processTimerInterceptor = new ProcessTimerInterceptor(that);
@@ -50,7 +50,7 @@ Zurvan.prototype.stopTime = function(config) {
   
 };
 
-Zurvan.prototype.setupTime = function(timeSinceStartup) {
+Zurvan.prototype.setupTime = function(timeSinceStartup, systemTime) {
   if(TypeUtils.isNumber(timeSinceStartup)) {
     this.currentTime = TimeUnit.seconds(timeSinceStartup);
   }
@@ -65,7 +65,7 @@ Zurvan.prototype.setupTime = function(timeSinceStartup) {
   }
   
   this.targetTime = this.currentTime.copy();
-  this.systemTimeOffset = 0;
+  this.setSystemTimeTo(systemTime || 0);
 };
 
 Zurvan.prototype.stopExpiringEvents = function() {
@@ -134,7 +134,7 @@ Zurvan.prototype.setSystemTimeTo = function(value) {
     value = new Date(value);
   }
   
-  this.systemTimeOffset = value.getTime();
+  this.systemTimeOffset = value.getTime() - this.currentTime.toMilliseconds();
 };
 
 Zurvan.prototype.expireAllTimeouts = function() {

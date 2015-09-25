@@ -90,5 +90,24 @@ describe('Zurvan', function() {
 	  assert.equal(nowDate.toISOString(), "2005-06-13T02:01:03.000Z");
 	  done();	
 	});
+	
+	it('properly synchronizes system timer even if changed after startup', function(done) {
+	  Zurvan.advanceTime(TimeUnit.days(10)).then(function() {
+	    Zurvan.setSystemTimeTo(Date.UTC(1990, 1, 1));
+		var nowDate = new Date();
+		assert.equal(nowDate.toISOString(), "1990-02-01T00:00:00.000Z");
+		
+		setTimeout(function() {
+		  var nowDate = new Date();
+		  assert.equal(nowDate.toISOString(), "1990-02-01T01:00:00.000Z");
+		}, TimeUnit.hours(1).toMilliseconds());
+		
+		return Zurvan.advanceTime(TimeUnit.days(10));
+	  }).then(function() {
+	    var nowDate = new Date();
+		assert.equal(nowDate.toISOString(), "1990-02-11T00:00:00.000Z");
+	  }).then(done, done);
+	});
+	
   });
 });
