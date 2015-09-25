@@ -27,6 +27,7 @@ Zurvan.prototype.startTime = function() {
     that.processTimerInterceptor.restore();
     that.timerInterceptor.restore();
 	that.dateInterceptor.restore();
+	return that.waitForEmptyQueue();
   });
 };
 
@@ -46,6 +47,8 @@ Zurvan.prototype.stopTime = function(config) {
     that.processTimerInterceptor = new ProcessTimerInterceptor(that);
     that.immediateInterceptor = new ImmediateInterceptor();	
 	that.dateInterceptor = new DateInterceptor(that);
+	
+	return that.waitForEmptyQueue();
   });
   
 };
