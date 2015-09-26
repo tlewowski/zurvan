@@ -51,16 +51,18 @@ Argument may be either a number (it is then interpreted as millisecond) or a `Ti
 #### `zurvan.blockSystem(blockingTime)`
 
 Simulates a blocking call - expires all timers up to due time at once, without actually executing them (during expiration).
+Argument may be either a number (it is then interpreted as millisecond) or a `TimeUnit` object.
 
 Returns a Promise that is resolved when the calls are finally executed, and entire event queue is clear.
 
 #### `zurvan.setSystemTime(newSystemTime)`
 
 Sets values returned by `new Date` and `Date.now` at given point of time (returned values will be of course adjusted with advancing time).
+Argument is expected to be "castable" to `Date` - this means a `Date` object, `string` which is valid argument to `Date.parse` or `number` (which is then treated as timestamp).
 
 #### `zurvan.expireAllTimeouts()`
 
-Forwards time up to the point when there is no timeout set any more. Intervals will remain.
+Advances time up to the point when there is no timeout set any more. Intervals will remain.
 
 *Warning!* Under certain circumstances this function may result in an infinite loop. Example:
 ```
@@ -73,11 +75,13 @@ Returns a `Promise` that is resolved when all timeouts are already called;
 
 #### `zurvan.forwardTimeToNextTimer()`
 
-Returns a `Promise` that is resolved when time is forwarded to nearest timer and all timers with this dueTime are expired.
+Forwards the time to the nearest timer and exipires all timers with same due time.
+
+Returns a `Promise` that is resolved when all callbacks are executed and event queue is empty.
 
 #### `zurvan.waitForEmptyQueue()`
 
-Returns a `Promise` that is resolved when all immediates are already called. Also timers with zero time will become expired;
+Returns a `Promise` that is resolved when all immediates are already called. Also timers with zero time will be expired
 
 ### TimeUnit
 
