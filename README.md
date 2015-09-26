@@ -14,7 +14,10 @@ _Zurvan_ is an asynchronous library for faking whole real-time dependency of nod
 _Zurvan_ includes fake implementations for `setTimeout`, `clearTimeout`, `setInterval`, `clearInterval`, 
 `Date.now`, `Date`, `process.uptime` and `process.hrtime`. Also several other functions are taken into account,
 such as `setImmediate`, `clearImmediate` and `process.nextTick`, but they are not faked - library utilizes asynchronous
-execution heavily (under assumption that since time is asynchronous by default, it's better to leave this feature).
+execution heavily (under assumption that since time is asynchronous by default, it's better to leave it this way).
+
+_Zurvan_ is currently *not* tested in the browser, so if you want to use it there, you can either hack it yourself (see: [Zurvan requirements](#requirements)) or 
+contact me.
 
 ## API overview
 
@@ -106,11 +109,24 @@ All of them work only on `TimeUnit` objects, but work smoothly on cross-unit bas
 
 For now, please refer to `tests` directory for executable examples.
 
+## <a name="requirements"></a> Requirements
+
+Obviously, JavaScript environment is much bigger than just Node.js, and you might need to fake timers in other environments, such as the browser.
+If you do, your environment has to fulfill several requirements:
+
+ - implement at least ECMAScript 5 (ES6 is better)
+ - have a basic implementation of promises (ES6 promises are sufficient or any basically compatible library, like <a href="https://www.npmjs.com/package/bluebird">bluebird</a>)
+ - implement `setImmediate/clearImmediate` (if your environment doesn't, you can try out library: <https://github.com/YuzuJS/setImmediate>)
+ - implement `process.uptime` and `process.hrtime` (this requirement is going to be removed in 0.2.0 release) - at minimum a global `process` object is required
+
+See <a href="doc/configuration.md">configuration documentation</a> to check out possible compatibility options (e.g. evaluating strings in `setTimeout`)
+Of course, if you have trouble with running _Zurvan_ on your custom target, feel free to contact me for support
+
 ## Other
 
 _Zurvan_ is available as package on NPM
 
-Name is taken after babilonian deity of infinite time, Zurvan. For more details see: https://en.wikipedia.org/wiki/Zurvanism
+Name is taken after babilonian deity of infinite time, _Zurvan_. For more details see: https://en.wikipedia.org/wiki/Zurvanism
 
 If you encouter a bug when using _Zurvan_, please report it as an issue on GitHub. Of course, if you are willing to issue a pull request, they are welcome.
 
