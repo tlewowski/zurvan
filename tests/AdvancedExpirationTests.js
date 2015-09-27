@@ -106,6 +106,8 @@ describe('zurvan', function() {
 	});
 	
 	it('clears all tasks in the microqueue before resolving', function(done) {
+	
+	  // queue priorities: 1. Promise 2. nextTick 3. setImmediate
 	  var calls = [];
 	  setTimeout(function() {
 	    calls.push(1);
@@ -129,12 +131,31 @@ describe('zurvan', function() {
 						  calls.push(10);
 						  setImmediate(function() {
 						    calls.push(11);
-							process.nextTick(function() {
+							Promise.resolve().then(function() {
 							  calls.push(12);
-							  process.nextTick(function() {
-							    calls.push(13);
+							}).then(function() {
+							  calls.push(13);
+							  return Promise.resolve();
+							}).then(function() {
+						      process.nextTick(function() {
+							    calls.push(19);
 								assert.equal(process.uptime(), 5);
+							  })
+							  calls.push(14);
+							  return Promise.resolve();
+							}).then(function() {
+							  calls.push(15);
+							}).then(function() {
+							  calls.push(16)
+							}).then(function() {
+							  calls.push(17);
+							  process.nextTick(function() {
+							    calls.push(20);
 							  });
+							  return Promise.reject();
+							}).catch(function() {
+							  calls.push(18);
+							  assert.equal(process.uptime(), 5);
 							});
 						  });
 						});
@@ -150,7 +171,7 @@ describe('zurvan', function() {
 	  
 	  zurvan.advanceTime(TimeUnit.seconds(10)).then(function() {
 	    assert.equal(process.uptime(), 10);
-		assert.deepEqual(calls, [1,2,3,4,5,6,7,8,9,10,11,12,13]);
+		assert.deepEqual(calls, [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]);
 	  }).then(done, done);
 	});
   });

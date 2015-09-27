@@ -146,6 +146,9 @@ If you do, your environment has to fulfill several requirements:
 
 See <a href="doc/configuration.md">configuration documentation</a> to check out possible compatibility options (e.g. evaluating strings in `setTimeout`)
 Of course, if you have trouble with running _Zurvan_ on your custom target, feel free to contact me for support
+Be careful about scheduling - some asynchronous features used by browsers (such as `MutationObserver`, `postMessage`, `requestAnimationFrame`) are not faked by `zurvan`. Since this is only a time-faking library, it fakes only time-based async actions.
+Additionally, `Promise.resolve` and `Promise.reject` are both specified to be executed asynchronously, but engine implementation is free to use either microqueue or macroqueue. Additionally, if it doesn't use API functions (`setImmediate`) for 
+scheduling macroqueue tasks, then there will be cases where _Zurvan_ won't behave correctly. Currently there are no such known cases for Node.js - and if they will be found, they are a bug and shall be fixed.
 
 If you're trying to run on Node.js older than 0.10 - you will have trouble, as in these Nodes `setImmediate` was not implemented and `process.nextTick` was used to handle the macroqueue. Again - contact me if you need support.
 
