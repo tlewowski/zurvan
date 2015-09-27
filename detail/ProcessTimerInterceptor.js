@@ -4,8 +4,6 @@ var TimeUnit = require("../TimeUnit");
 
 function ProcessTimerInterceptor(timeServer) {
   this.timeServer = timeServer;
-  this.uptimeOverrider = new FieldOverrider(process, "uptime", this.uptime.bind(this));
-  this.hrtimeOverrider = new FieldOverrider(process, "hrtime", this.hrtime.bind(this));
 }
 
 ProcessTimerInterceptor.prototype.uptime = function() {
@@ -24,6 +22,11 @@ ProcessTimerInterceptor.prototype.hrtime = function(previousValue) {
   }
   
   return toHrtimeFormat(this.timeServer.currentTime);
+};
+
+ProcessTimerInterceptor.prototype.intercept = function() {
+  this.uptimeOverrider = new FieldOverrider(process, "uptime", this.uptime.bind(this));
+  this.hrtimeOverrider = new FieldOverrider(process, "hrtime", this.hrtime.bind(this));  
 };
 
 ProcessTimerInterceptor.prototype.restore = function() {

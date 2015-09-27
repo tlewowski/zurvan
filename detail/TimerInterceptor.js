@@ -48,11 +48,15 @@ function TimerInterceptor(timeServer, config) {
   this.timeServer = timeServer;
   this.config = config;
   this.timerRepository = new TimerRepository();
+}
+
+TimerInterceptor.prototype.intercept = function(config) {
+  this.config = config;
   this.setTimeouts = new FieldOverrider(global, "setTimeout", this.addTimer.bind(this, TimeoutTimer));
   this.clearTimeouts = new FieldOverrider(global, "clearTimeout", this.clearTimer.bind(this));
   this.setIntervals = new FieldOverrider(global, "setInterval", this.addTimer.bind(this, IntervalTimer));
   this.clearIntervals = new FieldOverrider(global, "clearInterval", this.clearTimer.bind(this));
-}
+};
 
 TimerInterceptor.prototype.restore = function() {
   this.setTimeouts.restore();

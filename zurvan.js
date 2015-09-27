@@ -8,9 +8,15 @@ var TimeUnit = require("./TimeUnit");
 
 var assert = require("assert");
 
-function Zurvan() {
+function Zurvan(config) {
   this.timeForwardingOngoing = false;
   this.isStopped = false;
+  this.config = config || {};
+   
+  this.timerInterceptor = new TimerInterceptor(this, this.config);
+  this.immediateInterceptor = new ImmediateInterceptor();	
+  this.dateInterceptor = new DateInterceptor(this);
+  this.processTimerInterceptor = new ProcessTimerInterceptor(this);
 }
 
 Zurvan.prototype.releaseTimers = function() {
@@ -24,8 +30,7 @@ Zurvan.prototype.releaseTimers = function() {
   }).then(function() {
     that.isStopped = false;
     that.immediateInterceptor.restore();
-	
-	
+		
 	if(!that.config.ignoreProcessTimers) {
       that.processTimerInterceptor.restore();
 	}
@@ -47,15 +52,14 @@ Zurvan.prototype.interceptTimers = function(config) {
     that.config = config || {};
     that.isStopped = true;
 	that.setupTime(that.config.timeSinceStartup, that.config.systemTime);
-
-    that.timerInterceptor = new TimerInterceptor(that, that.config);
+  
+    that.timerInterceptor.intercept(that.config);
+    that.immediateInterceptor.intercept();	
+    that.dateInterceptor.intercept();
 	
 	if(!that.config.ignoreProcessTimers) {
-      that.processTimerInterceptor = new ProcessTimerInterceptor(that);
+      that.processTimerInterceptor.intercept();
 	}
-	
-    that.immediateInterceptor = new ImmediateInterceptor();	
-	that.dateInterceptor = new DateInterceptor(that);
 	
 	return that.waitForEmptyQueue();
   });
