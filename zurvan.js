@@ -128,13 +128,13 @@ Zurvan.prototype.advanceTime = function(timeToForward) {
   
     that.startExpiringEvents();
     setImmediate(function() {
-	  advanceTimeHelper();
+	  fireTimersOneByOne();
     });
   
-    function advanceTimeHelper() {
+    function fireTimersOneByOne() {
       if(that.immediateInterceptor.areAwaiting()) {
         setImmediate(function() {
-          advanceTimeHelper();
+          fireTimersOneByOne();
         });
         return;
       }
@@ -145,10 +145,11 @@ Zurvan.prototype.advanceTime = function(timeToForward) {
         that.currentTime.setTo(closestTimer.dueTime);
         setImmediate(function() {
   	      closestTimer.expire();
-		  
+		 
 		  // schedule on macroqueue, to make sure that all microqueue tasks already expired
+		  // clearing macroqueue is handled in the beginning of this function
 		  setImmediate(function() {
-            advanceTimeHelper();
+            fireTimersOneByOne();
 		  });
         });
       }
@@ -193,34 +194,36 @@ Zurvan.prototype.forwardTimeToNextTimer = function() {
   return Promise.resolve();
 };
 
+Zurvan.prototype.fireAllOutdatedTimers = function() {
+  var closestTimer = this.timerInterceptor.nextTimer();
+  while(closestTimer && !closestTimer.dueTime.isLongerThan(this.currentTime)) {
+    this.timerInterceptor.clearTimer(closestTimer.uid);
+    setImmediate(closestTimer.expire.bind(closestTimer));
+    closestTimer = this.timerInterceptor.nextTimer();
+  }
+}
+
 Zurvan.prototype.blockSystem = function(timeToBlock) {
   var blockStep = (TypeChecks.isNumber(timeToBlock)) ? TimeUnit.milliseconds(timeToBlock) : timeToBlock;
-  var that = this;  
  
   if(blockStep.isShorterThan(TimeUnit.milliseconds(0))) {
     throw new Error("Even Zurvan cannot move back in time!");
   }
 	
-  if(!that.isActiveInterceptor) {
+  if(!this.isActiveInterceptor) {
 	throw new Error("Cannot block system if timers are not intercepted!");
   }
 	
-  if(!that.isExpiringEvents()) {
-	assert(that.targetTime.isEqualTo(that.currentTime));
-    that.targetTime.add(blockStep);
+  if(!this.isExpiringEvents()) {
+	assert(this.targetTime.isEqualTo(this.currentTime));
+    this.targetTime.add(blockStep);
   }
-  else if(that.targetTime.isShorterThan(that.currentTime.extended(blockStep))) {
+  else if(this.targetTime.isShorterThan(this.currentTime.extended(blockStep))) {
     throw new Error("Cannot block system during advancing for longer than requested advance time");
   }
 	
-  that.currentTime.add(blockStep);
-		
-  var closestTimer = that.timerInterceptor.nextTimer();
-  while(closestTimer && !closestTimer.dueTime.isLongerThan(that.currentTime)) {
-    that.timerInterceptor.clearTimer(closestTimer.uid);
-    setImmediate(closestTimer.expire.bind(closestTimer));
-    closestTimer = that.timerInterceptor.nextTimer();
-  }
+  this.currentTime.add(blockStep);
+  this.fireAllOutdatedTimers();
 };
 
 Zurvan.prototype.waitForEmptyQueue = function() {
