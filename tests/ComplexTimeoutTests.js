@@ -184,7 +184,7 @@ describe('zurvan', function() {
 	  clearImmediate(immediate1);
 	  
 	  setTimeout(function() {
-	    calls.push(3)
+	    calls.push(3);
 	  }, 200);
 	  
 	  zurvan.advanceTime(200).then(function() {
