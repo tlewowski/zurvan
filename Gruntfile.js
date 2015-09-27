@@ -6,17 +6,16 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-mocha-istanbul');
   grunt.loadNpmTasks('grunt-madge');
 
-  var allFiles = ['*.js', 'detail', 'tests' ];
+  var allFiles = ['*.js', 'detail', 'tests', 'examples' ];
   
   grunt.initConfig({
-    // Configure a mochaTest task
     mochaTest: {
       test: {
         options: {
           reporter: 'spec',
-          captureFile: 'results.txt', // Optionally capture the reporter output to a file
+          captureFile: 'results.txt',
         },
-        src: ['tests/*.js']
+        src: ['tests/*.js', 'examples/*.js']
       }
     },
     watch : {
@@ -31,7 +30,7 @@ module.exports = function(grunt) {
 	},
     mocha_istanbul: {
         coverage: {
-            src: 'tests'
+            src: ['tests', 'examples']
         }
     }
   });

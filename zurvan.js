@@ -23,8 +23,13 @@ Zurvan.prototype.releaseTimers = function() {
 	return reject(Error("Cannot start time during event expiration"));
   }).then(function() {
     that.isStopped = false;
-    that.immediateInterceptor.restore();	
-    that.processTimerInterceptor.restore();
+    that.immediateInterceptor.restore();
+	
+	
+	if(!that.config.ignoreProcessTimers) {
+      that.processTimerInterceptor.restore();
+	}
+	
     that.timerInterceptor.restore();
 	that.dateInterceptor.restore();
 	return that.waitForEmptyQueue();
@@ -44,7 +49,11 @@ Zurvan.prototype.interceptTimers = function(config) {
 	that.setupTime(that.config.timeSinceStartup, that.config.systemTime);
 
     that.timerInterceptor = new TimerInterceptor(that, that.config);
-    that.processTimerInterceptor = new ProcessTimerInterceptor(that);
+	
+	if(!that.config.ignoreProcessTimers) {
+      that.processTimerInterceptor = new ProcessTimerInterceptor(that);
+	}
+	
     that.immediateInterceptor = new ImmediateInterceptor();	
 	that.dateInterceptor = new DateInterceptor(that);
 	

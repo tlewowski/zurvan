@@ -47,6 +47,16 @@ describe('zurvan', function() {
 	  intervalCalledOverrider.restore();
 	});
 	
+	it('does not intercept process timers', function(done) {
+	  zurvan.interceptTimers({ignoreProcessTimers: true}).then(function() {
+	    assert(process.uptime() !== 0);
+		
+		var hrtime = process.hrtime();
+		assert(hrtime[0] !== 0 || hrtime[1] !== 0);		
+		return zurvan.releaseTimers();
+	  }).then(done, done);
+	});
+	
     it('timer or interval set with string will be evaluated', function(done) {
       zurvan.interceptTimers({acceptEvalTimers: true}).then(function() {
 	    setTimeout("global.timeoutCalled = true;", 75);
