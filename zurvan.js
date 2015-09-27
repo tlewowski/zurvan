@@ -28,6 +28,7 @@ function mergeConfigurations(localConfiguration, globalConfiguration) {
 
 function Zurvan(config) {
   this.timeForwardingOngoing = false;
+  this.isActiveInterceptor = false;
   this.globalConfig = config;
    
   this.timerInterceptor = new TimerInterceptor(this);
@@ -46,6 +47,7 @@ Zurvan.prototype.interceptTimers = function(config) {
   }).then(function() {
     that.config = mergeConfigurations(config, that.globalConfig);
     areTimersIntercepted = true;
+	that.isActiveInterceptor = true;
 	that.setupTime(that.config.timeSinceStartup, that.config.systemTime);
   
     that.timerInterceptor.intercept(that.config);
@@ -73,16 +75,18 @@ Zurvan.prototype.releaseTimers = function() {
   
     return resolve();
   }).then(function() {
-    areTimersIntercepted = false;
-    that.immediateInterceptor.release();
-		
-	if(!that.config.ignoreProcessTimers) {
+    return that.waitForEmptyQueue();
+  }).then(function() {
+  	if(!that.config.ignoreProcessTimers) {
       that.processTimerInterceptor.release();
 	}
 	
-    that.timerInterceptor.release();
 	that.dateInterceptor.release();
-	return that.waitForEmptyQueue();
+    that.immediateInterceptor.release();
+	that.timerInterceptor.release();
+
+    areTimersIntercepted = false;
+	that.isActiveInterceptor = false;
   });
 };
 
@@ -123,11 +127,15 @@ Zurvan.prototype.advanceTime = function(timeToForward) {
     if(advanceStep.isShorterThan(TimeUnit.milliseconds(0))) {
       reject("Even Zurvan cannot move back in time!");
     }
-
+	
     if(that.isExpiringEvents()) {
       return reject(Error("Cannot forward time shortened previous forwarding ends. Currently at: " + 
 	    that.currentTime.toMilliseconds() + " ms, target: " + that.targetTime.toMilliseconds() + " ms"));
     }
+	
+	if(!that.isActiveInterceptor) {
+	  return reject(Error("Cannot advance time if timers are not intercepted!"));
+	};
 
     that.targetTime = that.currentTime.extended(advanceStep);
   
@@ -150,13 +158,17 @@ Zurvan.prototype.advanceTime = function(timeToForward) {
         that.currentTime.setTo(closestTimer.dueTime);
         setImmediate(function() {
   	      closestTimer.expire();
-          advanceTimeHelper();
+		  
+		  // schedule on macroqueue, to make sure that all microqueue tasks already expired
+		  setImmediate(function() {
+            advanceTimeHelper();
+		  });
         });
       }
 	  else {
         that.currentTime.setTo(that.targetTime);
         that.stopExpiringEvents();
-		resolve();
+        resolve();
       }
     }
   });  
@@ -202,6 +214,10 @@ Zurvan.prototype.blockSystem = function(timeToBlock) {
     if(blockStep.isShorterThan(TimeUnit.milliseconds(0))) {
       return reject(Error("Even Zurvan cannot move back in time!"));
     }
+	
+	if(!that.isActiveInterceptor) {
+	  return reject(Error("Cannot block system if timers are not intercepted!"));
+	};
 	
 	if(!that.isExpiringEvents()) {
 	  assert(that.targetTime.isEqualTo(that.currentTime));

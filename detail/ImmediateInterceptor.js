@@ -10,6 +10,7 @@ function ImmediateInterceptor() {
 ImmediateInterceptor.prototype.intercept = function() {
   this.setImmediates = new FieldOverrider(global, "setImmediate", this.addImmediate.bind(this));
   this.clearImmediates = new FieldOverrider(global, "clearImmediate", this.removeImmediate.bind(this));
+  
   this.enqueue = this.setImmediates.oldValue;
   this.dequeue = this.clearImmediates.oldValue;
 };

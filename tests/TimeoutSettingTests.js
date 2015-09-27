@@ -2,7 +2,7 @@ var assert = require("assert");
 var zurvan = require("../zurvan");
 
 describe('zurvan', function() {
-  describe('extended stopping time', function() {
+  describe('after intercepting timers', function() {
     beforeEach(function(done) {
 	  zurvan.interceptTimers().then(done, done);
 	});
@@ -47,11 +47,12 @@ describe('zurvan', function() {
 	  setInterval(calls.push.bind(calls, 1), 100);
 	  
 	  setTimeout(function() {
-	    assert.deepEqual([1,1,1,1], calls);
-		done();
+	    calls.push(4);
 	  }, 410);
 	  
-	  zurvan.advanceTime(410);
+	  zurvan.advanceTime(410).then(function() {
+		assert.deepEqual([1,1,1,1, 4], calls);	    
+	  }).then(done, done);
 	});
 	
 	it('can call both timeouts and intervals', function(done) {
@@ -62,11 +63,12 @@ describe('zurvan', function() {
 	  }, 10);
 	  
 	  setTimeout(function() {
-	    assert.deepEqual([1,1,2,1,2,1,2], calls);
-		done();
+	    calls.push(5);
 	  }, 41);
 	  
-	  zurvan.advanceTime(42);
+	  zurvan.advanceTime(42).then(function() {
+	    assert.deepEqual([1,1,2,1,2,1,2,5], calls);
+	  }).then(done, done);
 	});
 
 	it('can pass arguments to timers', function(done) {
@@ -78,13 +80,15 @@ describe('zurvan', function() {
 	  }, 50, 2, 5);
 	  
 	  setTimeout(function() {
-        assert.deepEqual(calls, [2, 5]);
-        done();
+	    calls.push(10);
 	  }, 1050);
 
 	  zurvan.advanceTime(50).then(function() {
-	    return zurvan.advanceTime(1000);
-	  });	  
+	    assert.deepEqual(calls, [2, 5]);
+		return zurvan.advanceTime(1000);
+	  }).then(function() {
+	    assert.deepEqual(calls, [2, 5, 10]);
+	  }).then(done, done);
 	});
 	
 	it('is called in order of dueTime', function(done) {
@@ -93,11 +97,13 @@ describe('zurvan', function() {
 	  setTimeout(calls.push.bind(calls, 1), 50);
 
 	  setTimeout(function() {
-	    assert.deepEqual(calls, [1]);
-	    done();
+	    calls.push(2);
 	  }, 1000);
 	  
-	  zurvan.advanceTime(1500);
+	  zurvan.advanceTime(1500).then(function() {
+	    assert.equal(process.uptime(), 1.5);
+	    assert.deepEqual(calls, [1, 2]);
+	  }).then(done, done);
 	});
 	
 	
@@ -110,11 +116,12 @@ describe('zurvan', function() {
 	  }, 50);
 	
 	  setTimeout(function() {
-	    assert.deepEqual(calls, [1,2]);
-		done();
+        calls.push(100);
 	  }, 150);
 	  
-	  zurvan.advanceTime(150);
+	  zurvan.advanceTime(150).then(function() {
+	    assert.deepEqual(calls, [1,2,100]);
+	  }).then(done, done);
 	});
 	
 	it('executes async callbacks extended all immediates (queue) is cleared', function(done) {
@@ -128,20 +135,13 @@ describe('zurvan', function() {
 		});
 	  }, 50);
 	  
-	  setTimeout(function() {
-	    assert.deepEqual(calls, [1,2,3]);
-		done();
-	  }, 100);
+	  setTimeout(function(a) {
+	    calls.push(a);
+	  }, 100, 12);
 	  
-	  zurvan.advanceTime(100);
-	});
-	
-	it('expires timeouts one-by-one', function(done) {
-	  setTimeout(function() {
-	    setTimeout(done, 100);
-	  }, 100);
-	  
-	  zurvan.advanceTime(200);  
+	  zurvan.advanceTime(100).then(function() {
+		assert.deepEqual(calls, [1,2,3,12]);
+	  }).then(done, done);
 	});
 	
 	it('throws when time is advanced from two places simultaneously', function(done) {
@@ -155,7 +155,7 @@ describe('zurvan', function() {
 	  zurvan.advanceTime(100);
 	});
 	
-	it('immediates are called shortened timeouts', function(done) {
+	it('immediates are called befored timeouts', function(done) {
 	  var calls = [];
 	  setImmediate(function() {
 	    calls.push(1); 
@@ -166,12 +166,13 @@ describe('zurvan', function() {
 	    calls.push(2);
 		setImmediate(function() {calls.push(3);});
 	    setTimeout(function() {
-		  assert.deepEqual([1, 4, 2, 3], calls);
-		  done();
+		  calls.push(45);
 		}, 50);
 	  }, 50);
 	  
-	  zurvan.advanceTime(100);
+	  zurvan.advanceTime(100).then(function() {
+        assert.deepEqual([1, 4, 2, 3, 45], calls);
+	  }).then(done, done);
 	});
 	
 	it('takes into account setTimeouts in setImmediates when forwarding time', function(done) {
@@ -182,11 +183,12 @@ describe('zurvan', function() {
 	  });
 	  
 	  setTimeout(function() {
-	    assert.deepEqual([1,2], calls);
-		done();
+	    calls.push(3);
 	  }, 100);
 	  
-	  zurvan.advanceTime(100);
+	  zurvan.advanceTime(100).then(function() {
+	    assert.deepEqual([1,2,3], calls);
+	  }).then(done, done);
 	});
 	
 	it('takes into account setTimeout in process.nextTick when forwarding time', function(done) {
@@ -197,11 +199,12 @@ describe('zurvan', function() {
 	  });
 	  
 	  setTimeout(function() {
-	    assert.deepEqual([1,2], calls);
-		done();
+	    calls.push(10);
 	  }, 20);
 	  
-	  zurvan.advanceTime(20);
+	  zurvan.advanceTime(20).then(function() {
+	    assert.deepEqual([1,2,10], calls);
+	  }).then(done, done);
 	});
   });
 });

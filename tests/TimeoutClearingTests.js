@@ -2,7 +2,7 @@ var assert = require("assert");
 var zurvan = require("../zurvan");
 
 describe('zurvan', function() {
-  describe('extended stopping time', function() {
+  describe('after intercepting timers', function() {
     beforeEach(function(done) {
 	  zurvan.interceptTimers().then(done, done);
 	});
@@ -46,8 +46,8 @@ describe('zurvan', function() {
 
 	it('creates unstrigifiable handles', function(done) {
 	  var immediateHandle = setImmediate(function() {});
-	  var timeoutHandle = setTimeout(function() {});
-	  var intervalHandle = setInterval(function() {});
+	  var timeoutHandle = setTimeout(function() {}, 0);
+	  var intervalHandle = setInterval(function() {}, 1);
 	  
 	  assert.throws(function() {JSON.stringify(immediateHandle);});
 	  assert.throws(function() {JSON.stringify(timeoutHandle);});
@@ -56,40 +56,41 @@ describe('zurvan', function() {
 	});
   });
   
-  describe('extended requesting to start time', function() {	
+  describe('after requesting to intercept timers', function() {	
 	it('rejects if time has not yet passed', function(done) {
 	  var rejected;
 	  zurvan.interceptTimers().then(function() {
 	    setTimeout(function() {
-	      zurvan.releaseTimers().then(function() {
+	      zurvan.releaseTimers().then(function(err) {
             rejected = false;
-		  }, function() {
+		  }, function(err) {
 		    rejected = true;
 		  });
 	    }, 25);
 
         return zurvan.advanceTime(50);
 	  }).then(function() {
+	    assert.equal(process.uptime(), 0.05);
         assert(rejected === true);
 		return zurvan.releaseTimers();
 	  }).then(done, done);
 	});
 	
-	it('rejects if time was not stopped', function(done) {
+	it('rejects if timers were not intercepted', function(done) {
 	  zurvan.releaseTimers().then(function() {
-	    done(new Error("Time was not stopped yet - starting shall be rejected"));
+	    done(new Error("Timers were not intercepted yet - releasing shall be rejected"));
 	  }, function() {
 	    done();
 	  });
 	});
   });
   
-  describe('extended stopping time', function() {
-    it('rejects stopping it again', function(done) {
+  describe('after intercepting timers', function() {
+    it('rejects request to intercept them again', function(done) {
 	  zurvan.interceptTimers().then(function() {
 	    return zurvan.interceptTimers();
 	  }).then(function() {
-	    done(new Error("Time was already stopped - shall not be able to stop it again"));
+	    done(new Error("Timers were already intercepted - shall not be able to intercept them again"));
 	  }, function() {
 	    zurvan.releaseTimers().then(done, done);
 	  });

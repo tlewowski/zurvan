@@ -33,20 +33,31 @@ This is the main module of the library. Typical forwarding of time is done step 
 
 `zurvan.blockSystem` is an exception, described below.
 
-#### `zurvan.interceptTimers(config)`
+#### `zurvan.interceptTimers([config])`
 
 Library setup. Causes timers to be intercepted, i.e. all required functions are overridden after this call.
 Returns a Promise that is resolved when timers are faked and event queue is empty and rejected if interception was not possible (e.g. timers were already intercepted)
-It takes an optional configuration object as parameter. Details of configuration options are described in detailed <a href="doc/configuration.md">configuration documentation</a>.
+It takes an optional configuration object as parameter, which takes precedence over global configuration. 
+Details of configuration options are described in detailed <a href="doc/configuration.md">configuration documentation</a>.
 
 #### `zurvan.releaseTimers()`
 
 Library teardown. Causes timers to be restored, i.e. all original functions are set back. 
 Returns a Promise that is resolved when timers are faked and event queue is empty and rejected if interception was not possible (e.g. timers were already intercepted)
 
+#### `zurvan.withDefaultConfiguration(config)`
+
+Returns a new library object (new `zurvan` instance) with modified default configuration. 
+This means that after calling `.withDefaultConfiguration`, there are two instances of `zurvan`. However, they should not be used in parallel,
+i.e. only one of them should intercept timers at the same time. If another one already does, promise returned by `interceptTimers` will be rejected.
+Chain of `withDefaultConfiguration(config)` causes all `config`s to be merged (newer configurations override their fields, rest is taken from previous).
+
+Configuration options are described in <a href="doc/configuration.md">configuration documentation</a>.
+
 #### `zurvan.advanceTime(timeToAdvance)`
 
-Returns a `Promise` that is resolved when time is forwarded by given time and all timers with this dueTime are expired.
+Returns a `Promise` that is resolved when time is forwarded by given time and all timers with this dueTime are expired,
+or rejected it time cannot be forwarded (e.g. timers were not intercepted yet).
 
 Argument may be either a number (it is then interpreted as millisecond) or a `TimeUnit` object.
 
@@ -55,7 +66,7 @@ Argument may be either a number (it is then interpreted as millisecond) or a `Ti
 Simulates a blocking call - expires all timers up to due time at once, without actually executing them (during expiration).
 Argument may be either a number (it is then interpreted as millisecond) or a `TimeUnit` object.
 
-Returns a Promise that is resolved when the calls are finally executed, and entire event queue is clear.
+Returns a Promise that is resolved when the calls are finally executed, and entire event queue is clear or rejected it time cannot be forwarded (e.g. timers were not intercepted yet).
 
 #### `zurvan.setSystemTime(newSystemTime)`
 
@@ -73,24 +84,18 @@ function f() {
 }
 ```
 
-Returns a `Promise` that is resolved when all timeouts are already called;
+Returns a `Promise` that is resolved when all timeouts are already called or rejected it time cannot be forwarded (e.g. timers were not intercepted yet).
 
-#### `zurvan.withDefaultConfiguration()`
-
-Returns a new library object (new `zurvan` instance) with modified default configuration. 
-This means that after calling `.withDefaultConfiguration`, there are two instances of `zurvan`. However, they should not be used in parallel,
-i.e. only one of them should intercept timers at the same time. If another one already does, promise returned by `interceptTimers` will be rejected.
-
-Configuration options are described in <a href="doc/configuration.md">configuration documentation</a>.
 #### `zurvan.forwardTimeToNextTimer()`
 
 Forwards the time to the nearest timer and exipires all timers with same due time.
 
-Returns a `Promise` that is resolved when all callbacks are executed and event queue is empty.
+Returns a `Promise` that is resolved when all callbacks are executed and event queue is empty or rejected it time cannot be forwarded (e.g. timers were not intercepted yet)..
 
 #### `zurvan.waitForEmptyQueue()`
 
-Returns a `Promise` that is resolved when all immediates are already called. Also timers with zero time will be expired
+Returns a `Promise` that is resolved when all immediates are already called or rejected it time cannot be forwarded (e.g. timers were not intercepted yet).
+Also timers with zero time will be expired.
 
 ### TimeUnit
 

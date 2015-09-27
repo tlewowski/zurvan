@@ -40,11 +40,12 @@ describe('zurvan', function() {
 		  var hrtimeDiff = process.hrtime(previousHrtime);
 		  assert.deepEqual([10, 244e6], process.hrtime());
 		  assert.deepEqual([8, 721e6], hrtimeDiff);
-		  done();
 		}, 8721);
 	  }, 1523);
 	  
-	  zurvan.advanceTime(11000);
+	  zurvan.advanceTime(11000).then(function() {
+	    assert.deepEqual(process.hrtime(), [11, 0]);
+	  }).then(done, done);
 	});
 
   });

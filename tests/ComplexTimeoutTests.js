@@ -3,7 +3,7 @@ var zurvan = require("../zurvan");
 var TimeUnit = require("../TimeUnit");
 
 describe('zurvan', function() {
-  describe('extended stopping time', function(done) {
+  describe('after intercepting timers', function(done) {
     beforeEach(function(done) {
 	  zurvan.interceptTimers().then(done, done);
 	});
@@ -184,11 +184,12 @@ describe('zurvan', function() {
 	  clearImmediate(immediate1);
 	  
 	  setTimeout(function() {
-	    assert.deepEqual([2], calls);
-		done();
+	    calls.push(3)
 	  }, 200);
 	  
-	  zurvan.advanceTime(200);
+	  zurvan.advanceTime(200).then(function() {
+	    assert.deepEqual([2, 3], calls);		
+	  }).then(done, done);
 	});
   });
 });
