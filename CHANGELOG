@@ -1,6 +1,7 @@
 0.2.0:
  - *BREAKING CHANGE* blockSystem does no longer return a Promise, and is a synchronous call instead
  - added option to ignore faking process timers (process.hrtime and process.uptime)
+ - added option to throw on values < 1 passed to setTimeout / setInterval
  - extended set of executable examples
  - documentation fixes
  - option for adding per-module configuration

@@ -112,7 +112,7 @@ Zurvan.prototype.advanceTime = function(timeToForward) {
   var that = this;
   return new Promise(function(resolve, reject) {
     if(advanceStep.isShorterThan(TimeUnit.milliseconds(0))) {
-      reject("Even Zurvan cannot move back in time!");
+      return reject(Error("Even Zurvan cannot move back in time!"));
     }
 	
 	if(!that.isActiveInterceptor) {
@@ -232,6 +232,7 @@ var defaultZurvanConfiguration = {
   systemTime: 0,
   acceptEvalTimers: false,
   denyImplicitTimer: false,
+  denyTimersShorterThan1Ms: false,
   ignoreProcessTimers: false
 };
 

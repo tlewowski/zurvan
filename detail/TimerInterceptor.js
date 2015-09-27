@@ -93,6 +93,13 @@ TimerInterceptor.prototype.addTimer = function(TimerType, callbk, callDelay) {
 	
 	callDelay = 1; // default value in nodejs - 1 millisecond
   }
+  else if(callDelay < 1) {
+    if(this.config.denyTimersShorterThan1Ms) {
+	  throw new Error("Call delay in timer must be >= 1");
+	}
+	
+	callDelay = 1;
+  }
   
   var timer = new TimerType(callback, this.timerRepository, this.timeServer.currentTime, callDelay);
   return this.timerRepository.insertTimer(timer);

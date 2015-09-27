@@ -33,6 +33,17 @@ describe('zurvan', function() {
 		assert.equal(process.uptime(), 0.001);
       }).then(done, done);
 	});
+	
+	it('executes after 1 millisecond when setting timer with negative time', function(done) {
+	  var called;
+	  setTimeout(function() {called = true;}, -100);
+	  assert.equal(0, process.uptime());
+	  
+      zurvan.expireAllTimeouts().then(function() {
+	    assert(called === true);
+		assert.equal(process.uptime(), 0.001);
+      }).then(done, done);
+	});
   });
   
 
@@ -71,10 +82,21 @@ describe('zurvan', function() {
 	  }).then(done, done);
 	});
 	
-	it('denies implicit timeout time (1 millisecond) - it shall not be used, as is not safe at all', function(done) {
+	it('denies implicit timeout time (by default set to 1 millisecond) - it is a mighty bad habit, possibly an error', function(done) {
 	  var called;
 	  zurvan.interceptTimers({denyImplicitTimer: true}).then(function() {
 	    setTimeout(function(){called = true;}, function(){});
+	  }).then(function() {
+	    return done(new Error("Implicit timer shall be denied and setting timer shall throw"));
+	  }, function() {
+     	return zurvan.releaseTimers().then(done, done);
+	  });
+	});
+	
+	it('denies negative timeout time (by default set to 1 millisecond) - it is a mighty bad habit, possibly an error', function(done) {
+	  var called;
+	  zurvan.interceptTimers({denyTimersShorterThan1Ms: true}).then(function() {
+	    setTimeout(function(){called = true;}, -1);
 	  }).then(function() {
 	    return done(new Error("Implicit timer shall be denied and setting timer shall throw"));
 	  }, function() {
