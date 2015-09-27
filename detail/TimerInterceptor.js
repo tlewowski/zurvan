@@ -44,9 +44,8 @@ Callback.prototype.call = function() {
   this.f.apply(undefined, this.args);
 };
 
-function TimerInterceptor(timeServer, config) {
+function TimerInterceptor(timeServer) {
   this.timeServer = timeServer;
-  this.config = config;
   this.timerRepository = new TimerRepository();
 }
 

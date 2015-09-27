@@ -8,12 +8,11 @@ var TimeUnit = require("./TimeUnit");
 
 var assert = require("assert");
 
-function Zurvan(config) {
+function Zurvan() {
   this.timeForwardingOngoing = false;
   this.isStopped = false;
-  this.config = config || {};
    
-  this.timerInterceptor = new TimerInterceptor(this, this.config);
+  this.timerInterceptor = new TimerInterceptor(this);
   this.immediateInterceptor = new ImmediateInterceptor();	
   this.dateInterceptor = new DateInterceptor(this);
   this.processTimerInterceptor = new ProcessTimerInterceptor(this);
