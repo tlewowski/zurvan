@@ -3,6 +3,7 @@
  - extended set of executable examples
  - documentation fixes
  - option for adding per-module configuration
+ - fixed bug: microqueue tasks in last timeout were not executed before resolving advanceTime promises
 
 0.1.1:
  - readme fixes
