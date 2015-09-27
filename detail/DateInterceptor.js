@@ -60,12 +60,12 @@ function DateInterceptor(timeServer) {
   this._fakeDateCreator = fakeDate(timeServer);
 }
 
-DateInterceptor.prototype.restore = function() {
-  this.dateOverrider.restore();
-};
-
 DateInterceptor.prototype.intercept = function() {
   this.dateOverrider = new FieldOverrider(global, "Date", this._fakeDateCreator);
 }
+
+DateInterceptor.prototype.release = function() {
+  this.dateOverrider.restore();
+};
 
 module.exports = DateInterceptor;

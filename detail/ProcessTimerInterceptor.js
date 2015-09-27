@@ -6,6 +6,16 @@ function ProcessTimerInterceptor(timeServer) {
   this.timeServer = timeServer;
 }
 
+ProcessTimerInterceptor.prototype.intercept = function() {
+  this.uptimeOverrider = new FieldOverrider(process, "uptime", this.uptime.bind(this));
+  this.hrtimeOverrider = new FieldOverrider(process, "hrtime", this.hrtime.bind(this));  
+};
+
+ProcessTimerInterceptor.prototype.release = function() {
+  this.uptimeOverrider.restore();
+  this.hrtimeOverrider.restore();
+};
+
 ProcessTimerInterceptor.prototype.uptime = function() {
   return this.timeServer.currentTime.toSeconds();
 };
@@ -22,16 +32,6 @@ ProcessTimerInterceptor.prototype.hrtime = function(previousValue) {
   }
   
   return toHrtimeFormat(this.timeServer.currentTime);
-};
-
-ProcessTimerInterceptor.prototype.intercept = function() {
-  this.uptimeOverrider = new FieldOverrider(process, "uptime", this.uptime.bind(this));
-  this.hrtimeOverrider = new FieldOverrider(process, "hrtime", this.hrtime.bind(this));  
-};
-
-ProcessTimerInterceptor.prototype.restore = function() {
-  this.uptimeOverrider.restore();
-  this.hrtimeOverrider.restore();
 };
 
 module.exports = ProcessTimerInterceptor;

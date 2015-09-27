@@ -58,7 +58,7 @@ TimerInterceptor.prototype.intercept = function(config) {
   this.clearIntervals = new FieldOverrider(global, "clearInterval", this.clearTimer.bind(this));
 };
 
-TimerInterceptor.prototype.restore = function() {
+TimerInterceptor.prototype.release = function() {
   this.setTimeouts.restore();
   this.clearTimeouts.restore();
   this.setIntervals.restore();
