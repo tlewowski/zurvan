@@ -4,6 +4,7 @@ var ProcessTimerInterceptor = require("./detail/ProcessTimerInterceptor");
 var DateInterceptor = require("./detail/DateInterceptor");
 var TypeChecks = require("./detail/TypeChecks");
 var APICreator = require("./detail/APICreator");
+var Configurator = require("./detail/Configurator");
 var TimeUnit = require("./TimeUnit");
 
 var assert = require("assert");
@@ -11,20 +12,6 @@ var assert = require("assert");
 // me sad, but timeouts are global stuff :(
 var areTimersIntercepted = false;
 
-function mergeConfigurations(localConfiguration, globalConfiguration) {
-  var finalConfiguration = {};
-  
-  Object.keys(globalConfiguration).forEach(function(key) {
-    finalConfiguration[key] = globalConfiguration[key];
-  });
-  
-  if(localConfiguration !== undefined) {
-    Object.keys(localConfiguration).forEach(function(key) {
-      finalConfiguration[key] = localConfiguration[key];
-    });
-  }  
-  return finalConfiguration;
-};
 
 function Zurvan(config) {
   this.timeForwardingOngoing = false;
@@ -45,7 +32,7 @@ Zurvan.prototype.interceptTimers = function(config) {
 	}
 	return resolve();
   }).then(function() {
-    that.config = mergeConfigurations(config, that.globalConfig);
+    that.config = Configurator.merge(config, that.globalConfig);
     areTimersIntercepted = true;
 	that.isActiveInterceptor = true;
 	that.setupTime(that.config.timeSinceStartup, that.config.systemTime);
@@ -262,12 +249,11 @@ function createZurvanAPI(newDefaultConfig) {
     "blockSystem", "setSystemTime", "expireAllTimeouts", 
 	"forwardTimeToNextTimer", "waitForEmptyQueue"];
   
-  var configuration = mergeConfigurations(newDefaultConfig, defaultZurvanConfiguration);
-  
+  var configuration = Configurator.merge(newDefaultConfig, defaultZurvanConfiguration);
   var api = APICreator.createAPI(new Zurvan(configuration), apiFunctions);
   
   api.withDefaultConfiguration = function(config) {
-    return createZurvanAPI(mergeConfigurations(config, configuration));
+    return createZurvanAPI(Configurator.merge(config, configuration));
   }
   
   return api; 

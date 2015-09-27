@@ -91,7 +91,7 @@ TimerInterceptor.prototype.addTimer = function(TimerType, callbk, callDelay) {
       throw new Error("Call delay in timer call must be a numeric value");
 	}
 	
-	callDelay = 0;
+	callDelay = 1; // default value in nodejs - 1 millisecond
   }
   
   var timer = new TimerType(callback, this.timerRepository, this.timeServer.currentTime, callDelay);
