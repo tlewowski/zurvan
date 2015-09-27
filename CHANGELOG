@@ -1,9 +1,8 @@
-
-
 0.2.0:
  - added option to ignore faking process timers (process.hrtime and process.uptime)
  - extended set of executable examples
  - documentation fixes
+ - option for adding per-module configuration
 
 0.1.1:
  - readme fixes

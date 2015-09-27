@@ -19,6 +19,8 @@ execution heavily (under assumption that since time is asynchronous by default, 
 _Zurvan_ is currently *not* tested in the browser, so if you want to use it there, you can either hack it yourself (see: [Zurvan requirements](#requirements)) or 
 contact me.
 
+Multiple testcases cannot be ran in parallel when using _Zurvan_, as there is only a single time stream for forwarding.
+
 ## API overview
 
 ### `zurvan`

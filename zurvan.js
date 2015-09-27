@@ -8,15 +8,55 @@ var TimeUnit = require("./TimeUnit");
 
 var assert = require("assert");
 
-function Zurvan() {
+function mergeConfigurations(localConfiguration, globalConfiguration) {
+  var finalConfiguration = {};
+  
+  Object.keys(globalConfiguration).forEach(function(key) {
+    finalConfiguration[key] = globalConfiguration[key];
+  });
+  
+  if(localConfiguration !== undefined) {
+    Object.keys(localConfiguration).forEach(function(key) {
+      finalConfiguration[key] = localConfiguration[key];
+    });
+  }  
+  return finalConfiguration;
+};
+
+function Zurvan(config) {
   this.timeForwardingOngoing = false;
   this.isStopped = false;
+  this.globalConfig = config;
    
   this.timerInterceptor = new TimerInterceptor(this);
   this.immediateInterceptor = new ImmediateInterceptor();	
   this.dateInterceptor = new DateInterceptor(this);
   this.processTimerInterceptor = new ProcessTimerInterceptor(this);
 }
+
+Zurvan.prototype.interceptTimers = function(config) {
+  var that = this;
+  return new Promise(function(resolve, reject) {
+    if(that.isStopped) {
+	  return reject(Error("Cannot stop time that is already stopped"));
+	}
+	return resolve();
+  }).then(function() {
+    that.config = mergeConfigurations(config, that.globalConfig);
+    that.isStopped = true;
+	that.setupTime(that.config.timeSinceStartup, that.config.systemTime);
+  
+    that.timerInterceptor.intercept(that.config);
+    that.immediateInterceptor.intercept();	
+    that.dateInterceptor.intercept();
+	
+	if(!that.config.ignoreProcessTimers) {
+      that.processTimerInterceptor.intercept();
+	}
+	
+	return that.waitForEmptyQueue();
+  });
+};
 
 Zurvan.prototype.releaseTimers = function() {
   var that = this;
@@ -38,31 +78,6 @@ Zurvan.prototype.releaseTimers = function() {
 	that.dateInterceptor.release();
 	return that.waitForEmptyQueue();
   });
-};
-
-Zurvan.prototype.interceptTimers = function(config) {
-  var that = this;
-  return new Promise(function(resolve, reject) {
-    if(that.isStopped) {
-	  return reject(Error("Cannot stop time that is already stopped"));
-	}
-	return resolve();
-  }).then(function() {
-    that.config = config || {};
-    that.isStopped = true;
-	that.setupTime(that.config.timeSinceStartup, that.config.systemTime);
-  
-    that.timerInterceptor.intercept(that.config);
-    that.immediateInterceptor.intercept();	
-    that.dateInterceptor.intercept();
-	
-	if(!that.config.ignoreProcessTimers) {
-      that.processTimerInterceptor.intercept();
-	}
-	
-	return that.waitForEmptyQueue();
-  });
-  
 };
 
 Zurvan.prototype.setupTime = function(timeSinceStartup, systemTime) {
@@ -211,12 +226,23 @@ Zurvan.prototype.waitForEmptyQueue = function() {
   return this.advanceTime(0);
 };
 
-function createZurvanAPI() {
+var defaultZurvanConfiguration = {
+
+};
+
+function createZurvanAPI(newDefaultConfig) {
   var apiFunctions = ["releaseTimers", "interceptTimers", "advanceTime", 
     "blockSystem", "setSystemTime", "expireAllTimeouts", 
 	"forwardTimeToNextTimer", "waitForEmptyQueue"];
   
-  return APIHelper.createAPI(new Zurvan(), apiFunctions);
+  var configuration = mergeConfigurations(newDefaultConfig, defaultZurvanConfiguration);
+  var api = APIHelper.createAPI(new Zurvan(configuration), apiFunctions);
+  
+  api.withDefaultConfiguration = function(config) {
+    return createZurvanAPI(config);
+  }
+  
+  return api; 
 }
 
 module.exports = createZurvanAPI();
