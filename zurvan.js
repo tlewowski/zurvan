@@ -227,7 +227,11 @@ Zurvan.prototype.waitForEmptyQueue = function() {
 };
 
 var defaultZurvanConfiguration = {
-
+  timeSinceStartup: 0,
+  systemTime: 0,
+  acceptEvalTimers: false,
+  denyImplicitTimer: false,
+  ignoreProcessTimers: false
 };
 
 function createZurvanAPI(newDefaultConfig) {

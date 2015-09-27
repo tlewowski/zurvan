@@ -73,10 +73,15 @@ function f() {
 }
 ```
 
-#### `zurvan.withDefaultConfiguration()`
-
 Returns a `Promise` that is resolved when all timeouts are already called;
 
+#### `zurvan.withDefaultConfiguration()`
+
+Returns a new library object (new `zurvan` instance) with modified default configuration. 
+This means that after calling `.withDefaultConfiguration`, there are two instances of `zurvan`. However, they cannot be used in parallel,
+i.e. only one of them may intercept timers at the same time.
+
+Configuration options are described in <a href="doc/configuration.md">configuration documentation</a>.
 #### `zurvan.forwardTimeToNextTimer()`
 
 Forwards the time to the nearest timer and exipires all timers with same due time.
