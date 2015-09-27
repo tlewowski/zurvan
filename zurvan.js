@@ -241,15 +241,17 @@ var defaultZurvanConfiguration = {
 };
 
 function createZurvanAPI(newDefaultConfig) {
+
   var apiFunctions = ["releaseTimers", "interceptTimers", "advanceTime", 
     "blockSystem", "setSystemTime", "expireAllTimeouts", 
 	"forwardTimeToNextTimer", "waitForEmptyQueue"];
   
   var configuration = mergeConfigurations(newDefaultConfig, defaultZurvanConfiguration);
+  
   var api = APICreator.createAPI(new Zurvan(configuration), apiFunctions);
   
   api.withDefaultConfiguration = function(config) {
-    return createZurvanAPI(config);
+    return createZurvanAPI(mergeConfigurations(config, configuration));
   }
   
   return api; 

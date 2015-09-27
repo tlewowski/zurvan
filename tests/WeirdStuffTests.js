@@ -15,4 +15,17 @@ describe('zurvan', function() {
 	  return zurvan.releaseTimers().then(done, done);
 	});
   });
+  
+  it('second zurvan inherits configuration of previous one and only overrides own fields', function(done) {
+    var zurvan2 = zurvan.withDefaultConfiguration({timeSinceStartup: 60});
+	zurvan2.interceptTimers().then(function() {
+	  assert.equal(process.uptime(), 60);
+	  assert.equal(new Date().toISOString(), "2015-09-01T00:00:00.000Z");
+	  return zurvan2.advanceTime(TimeUnit.minutes(1));
+	}).then(function() {
+	  assert.equal(process.uptime(), 120);
+	  assert.equal(new Date().toISOString(), "2015-09-01T00:01:00.000Z");
+	  return zurvan2.releaseTimers();
+	}).then(done, done);
+  });
 });
