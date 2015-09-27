@@ -8,6 +8,9 @@ var TimeUnit = require("./TimeUnit");
 
 var assert = require("assert");
 
+// me sad, but timeouts are global stuff :(
+var areTimersIntercepted = false;
+
 function mergeConfigurations(localConfiguration, globalConfiguration) {
   var finalConfiguration = {};
   
@@ -25,7 +28,6 @@ function mergeConfigurations(localConfiguration, globalConfiguration) {
 
 function Zurvan(config) {
   this.timeForwardingOngoing = false;
-  this.isStopped = false;
   this.globalConfig = config;
    
   this.timerInterceptor = new TimerInterceptor(this);
@@ -37,13 +39,13 @@ function Zurvan(config) {
 Zurvan.prototype.interceptTimers = function(config) {
   var that = this;
   return new Promise(function(resolve, reject) {
-    if(that.isStopped) {
-	  return reject(Error("Cannot stop time that is already stopped"));
+    if(areTimersIntercepted) {
+	  return reject(Error("Cannot intercept timers that are already intercepted!"));
 	}
 	return resolve();
   }).then(function() {
     that.config = mergeConfigurations(config, that.globalConfig);
-    that.isStopped = true;
+    areTimersIntercepted = true;
 	that.setupTime(that.config.timeSinceStartup, that.config.systemTime);
   
     that.timerInterceptor.intercept(that.config);
@@ -61,13 +63,17 @@ Zurvan.prototype.interceptTimers = function(config) {
 Zurvan.prototype.releaseTimers = function() {
   var that = this;
   return new Promise(function(resolve, reject) {
-    if(that.isStopped && !that.isExpiringEvents()) {
-	  return resolve();
+    if(!areTimersIntercepted) {
+      return reject(Error("Cannot release timers that were not intercepted"));
 	}
 	
-	return reject(Error("Cannot start time during event expiration"));
+	if(that.isExpiringEvents()) {
+	  return reject(Error("Cannot release timers during event expiration"));
+	}
+  
+    return resolve();
   }).then(function() {
-    that.isStopped = false;
+    areTimersIntercepted = false;
     that.immediateInterceptor.release();
 		
 	if(!that.config.ignoreProcessTimers) {

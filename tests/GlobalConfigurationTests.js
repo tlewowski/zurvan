@@ -44,5 +44,5 @@ describe('zurvan with globally configured time to 2015-09-01T00:00:00.000Z', fun
 	  assert.equal(process.uptime(), 64);
 	  return zurvan.releaseTimers();
 	}).then(done, done);  
-  });
+  });  
 });

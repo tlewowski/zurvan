@@ -78,8 +78,8 @@ Returns a `Promise` that is resolved when all timeouts are already called;
 #### `zurvan.withDefaultConfiguration()`
 
 Returns a new library object (new `zurvan` instance) with modified default configuration. 
-This means that after calling `.withDefaultConfiguration`, there are two instances of `zurvan`. However, they cannot be used in parallel,
-i.e. only one of them may intercept timers at the same time.
+This means that after calling `.withDefaultConfiguration`, there are two instances of `zurvan`. However, they should not be used in parallel,
+i.e. only one of them should intercept timers at the same time. If another one already does, promise returned by `interceptTimers` will be rejected.
 
 Configuration options are described in <a href="doc/configuration.md">configuration documentation</a>.
 #### `zurvan.forwardTimeToNextTimer()`
