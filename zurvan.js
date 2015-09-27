@@ -3,7 +3,7 @@ var TimerInterceptor = require("./detail/TimerInterceptor");
 var ProcessTimerInterceptor = require("./detail/ProcessTimerInterceptor");
 var DateInterceptor = require("./detail/DateInterceptor");
 var TypeChecks = require("./detail/TypeChecks");
-var APIHelper = require("./detail/APIHelper");
+var APICreator = require("./detail/APICreator");
 var TimeUnit = require("./TimeUnit");
 
 var assert = require("assert");
@@ -246,7 +246,7 @@ function createZurvanAPI(newDefaultConfig) {
 	"forwardTimeToNextTimer", "waitForEmptyQueue"];
   
   var configuration = mergeConfigurations(newDefaultConfig, defaultZurvanConfiguration);
-  var api = APIHelper.createAPI(new Zurvan(configuration), apiFunctions);
+  var api = APICreator.createAPI(new Zurvan(configuration), apiFunctions);
   
   api.withDefaultConfiguration = function(config) {
     return createZurvanAPI(config);
