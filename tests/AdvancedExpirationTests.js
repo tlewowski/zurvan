@@ -1,4 +1,5 @@
 var assert = require("assert");
+var TimeUnit = require("../TimeUnit");
 var zurvan = require("../zurvan");
 
 describe('zurvan', function() {
@@ -68,7 +69,7 @@ describe('zurvan', function() {
 	  }).then(done, done);
 	});
 	
-	it('forwarding to next timer takes into account timers and intervals', function(done) {
+	it('takes into account timers and intervals when forwarding to next timer', function(done) {
 	  var calls = [];
 	  setImmediate(function() {
 	    calls.push(1);
@@ -101,6 +102,55 @@ describe('zurvan', function() {
 		return zurvan.forwardTimeToNextTimer();
 	  }).then(function() {
 	    assert.deepEqual([1,2,5,3,4,6,4,6], calls);
+	  }).then(done, done);
+	});
+	
+	it('clears all tasks in the microqueue before resolving', function(done) {
+	  var calls = [];
+	  setTimeout(function() {
+	    calls.push(1);
+	    process.nextTick(function() {
+		  calls.push(2);
+	      process.nextTick(function() {
+		    calls.push(3);
+			process.nextTick(function() {
+			  calls.push(4);
+			  process.nextTick(function() {
+			    calls.push(5);
+				setImmediate(function() {
+				  calls.push(6);
+				  process.nextTick(function() {
+				    calls.push(7);
+					process.nextTick(function() {
+					  calls.push(8);
+					  process.nextTick(function() {
+					    calls.push(9);
+						setImmediate(function() {
+						  calls.push(10);
+						  setImmediate(function() {
+						    calls.push(11);
+							process.nextTick(function() {
+							  calls.push(12);
+							  process.nextTick(function() {
+							    calls.push(13);
+								assert.equal(process.uptime(), 5);
+							  });
+							});
+						  });
+						});
+					  });
+					});
+				  });
+				});
+			  });
+			});
+		  });
+	    });
+	  }, TimeUnit.seconds(5).toMilliseconds());
+	  
+	  zurvan.advanceTime(TimeUnit.seconds(10)).then(function() {
+	    assert.equal(process.uptime(), 10);
+		assert.deepEqual(calls, [1,2,3,4,5,6,7,8,9,10,11,12,13]);
 	  }).then(done, done);
 	});
   });

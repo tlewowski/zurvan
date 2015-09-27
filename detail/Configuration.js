@@ -1,4 +1,3 @@
-
 function mergeConfigurations(localConfiguration, globalConfiguration) {
   var finalConfiguration = {};
   
@@ -12,6 +11,6 @@ function mergeConfigurations(localConfiguration, globalConfiguration) {
     });
   }
   return finalConfiguration;
-};
+}
 
 module.exports.merge = mergeConfigurations;

@@ -24,7 +24,11 @@ describe('zurvan', function() {
 	    calls.push(2);
 	  }, 2000);
 	
-	  zurvan.blockSystem(5000).then(function() {
+	  zurvan.blockSystem(5000);
+	  
+      assert.equal(process.uptime(), 5);
+	  zurvan.waitForEmptyQueue().then(function() {
+        assert.equal(process.uptime(), 5);
 	    assert.deepEqual([1,2], calls);
 	  }).then(done, done);
 	});
@@ -47,8 +51,8 @@ describe('zurvan', function() {
 	    calls.push(3);
 	  }, 200);
 	  
-	  zurvan.blockSystem(1000)
-	    .then(function() {
+	  zurvan.blockSystem(1000);
+	  zurvan.waitForEmptyQueue().then(function() {
 		  assert.deepEqual([0,1,2,3], calls);
 		}).then(done, done);
 	});
@@ -66,17 +70,15 @@ describe('zurvan', function() {
 	    calls.push(3);
 	  }, 40);
 	  
-	  zurvan.blockSystem(TimeUnit.seconds(1)).then(function() {
+	  zurvan.blockSystem(TimeUnit.seconds(1));
+	  zurvan.waitForEmptyQueue().then(function() {
 	    assert.deepEqual([1,3,2], calls);
 	  }).then(done, done);
 	});
 
-    it('rejects negative time', function(done) {
-      zurvan.blockSystem(-1).then(function() {
-	    done(new Error("Should not be possible to block for negative time"));
-  	  }, function() {
-	    done();
-	  });
-    });
+    it('thows at negative time', function(done) {
+      assert.throws(zurvan.blockSystem.bind(zurvan, -1));
+      done();
+	});
   });
 });

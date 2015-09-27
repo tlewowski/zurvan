@@ -26,7 +26,9 @@ describe('zurvan', function() {
 	    calls.push(3);
 	  }, 50);
 	  
-	  zurvan.blockSystem(45).then(function() {
+	  zurvan.blockSystem(45);
+	  
+	  zurvan.waitForEmptyQueue().then(function() {
 	    return zurvan.advanceTime(40);
 	  }).then(function() {
 	    assert.deepEqual([1,2,3,4,2,2], calls);
@@ -38,9 +40,8 @@ describe('zurvan', function() {
 	  setTimeout(function() {
 	    assert.deepEqual([5, 0], process.hrtime());
 	    calls.push(1);
-		zurvan.blockSystem(1000).then(function() {
-		  assert.equal(6, process.uptime());
-		});
+		zurvan.blockSystem(1000);
+        assert.equal(6, process.uptime());
 	  }, 5000);
 	  
 	  setTimeout(function() {
@@ -56,7 +57,7 @@ describe('zurvan', function() {
 	
 	it('cannot block system for longer than requested advance time', function(done) {
 	  setTimeout(function() {
-	    zurvan.blockSystem(2000);
+    	assert.throws(zurvan.blockSystem.bind(zurvan, 2000));
 	  }, 50);
 	  
 	  setTimeout(function() {
@@ -77,7 +78,8 @@ describe('zurvan', function() {
 		});
 	  }, 1000);
 	  
-	  zurvan.blockSystem(2000).then(function() {
+	  zurvan.blockSystem(2000);
+	  zurvan.waitForEmptyQueue().then(function() {
 	    assert.equal(2, process.uptime());
 		assert(rejected);
 	  }).then(done, done);

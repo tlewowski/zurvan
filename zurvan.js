@@ -4,7 +4,7 @@ var ProcessTimerInterceptor = require("./detail/ProcessTimerInterceptor");
 var DateInterceptor = require("./detail/DateInterceptor");
 var TypeChecks = require("./detail/TypeChecks");
 var APICreator = require("./detail/APICreator");
-var Configurator = require("./detail/Configurator");
+var Configuration = require("./detail/Configuration");
 var TimeUnit = require("./TimeUnit");
 
 var assert = require("assert");
@@ -32,7 +32,7 @@ Zurvan.prototype.interceptTimers = function(config) {
 	}
 	return resolve();
   }).then(function() {
-    that.config = Configurator.merge(config, that.globalConfig);
+    that.config = Configuration.merge(config, that.globalConfig);
     areTimersIntercepted = true;
 	that.isActiveInterceptor = true;
 	that.setupTime(that.config.timeSinceStartup, that.config.systemTime);
@@ -115,15 +115,15 @@ Zurvan.prototype.advanceTime = function(timeToForward) {
       reject("Even Zurvan cannot move back in time!");
     }
 	
+	if(!that.isActiveInterceptor) {
+	  return reject(Error("Cannot advance time if timers are not intercepted!"));
+	}
+	
     if(that.isExpiringEvents()) {
       return reject(Error("Cannot forward time shortened previous forwarding ends. Currently at: " + 
 	    that.currentTime.toMilliseconds() + " ms, target: " + that.targetTime.toMilliseconds() + " ms"));
     }
 	
-	if(!that.isActiveInterceptor) {
-	  return reject(Error("Cannot advance time if timers are not intercepted!"));
-	};
-
     that.targetTime = that.currentTime.extended(advanceStep);
   
     that.startExpiringEvents();
@@ -194,41 +194,33 @@ Zurvan.prototype.forwardTimeToNextTimer = function() {
 };
 
 Zurvan.prototype.blockSystem = function(timeToBlock) {
-  var blockStep = (TypeChecks.isNumber(timeToBlock)) ? TimeUnit.milliseconds(timeToBlock) : timeToBlock;  
-
+  var blockStep = (TypeChecks.isNumber(timeToBlock)) ? TimeUnit.milliseconds(timeToBlock) : timeToBlock;
   var that = this;  
-  return new Promise(function(resolve, reject) {
-    if(blockStep.isShorterThan(TimeUnit.milliseconds(0))) {
-      return reject(Error("Even Zurvan cannot move back in time!"));
-    }
+ 
+  if(blockStep.isShorterThan(TimeUnit.milliseconds(0))) {
+    throw new Error("Even Zurvan cannot move back in time!");
+  }
 	
-	if(!that.isActiveInterceptor) {
-	  return reject(Error("Cannot block system if timers are not intercepted!"));
-	};
+  if(!that.isActiveInterceptor) {
+	throw new Error("Cannot block system if timers are not intercepted!");
+  }
 	
-	if(!that.isExpiringEvents()) {
-	  assert(that.targetTime.isEqualTo(that.currentTime));
-	  that.targetTime.add(blockStep);
-	}
-	else if(that.targetTime.isShorterThan(that.currentTime.extended(blockStep))) {
-	  return reject(Error("Cannot block system during advancing for longer than requested advance time"));
-	}
+  if(!that.isExpiringEvents()) {
+	assert(that.targetTime.isEqualTo(that.currentTime));
+    that.targetTime.add(blockStep);
+  }
+  else if(that.targetTime.isShorterThan(that.currentTime.extended(blockStep))) {
+    throw new Error("Cannot block system during advancing for longer than requested advance time");
+  }
 	
-    that.currentTime.add(blockStep);
+  that.currentTime.add(blockStep);
 		
-    var closestTimer = that.timerInterceptor.nextTimer();
-    while(closestTimer && !closestTimer.dueTime.isLongerThan(that.currentTime)) {
-      that.timerInterceptor.clearTimer(closestTimer.uid);
-  	  setImmediate(closestTimer.expire.bind(closestTimer));
-      closestTimer = that.timerInterceptor.nextTimer();
-    }
-	
-  	resolve();
-  }).then(function() {
-    if(!that.isExpiringEvents()) {
-      return that.waitForEmptyQueue();
-	}
-  });
+  var closestTimer = that.timerInterceptor.nextTimer();
+  while(closestTimer && !closestTimer.dueTime.isLongerThan(that.currentTime)) {
+    that.timerInterceptor.clearTimer(closestTimer.uid);
+    setImmediate(closestTimer.expire.bind(closestTimer));
+    closestTimer = that.timerInterceptor.nextTimer();
+  }
 };
 
 Zurvan.prototype.waitForEmptyQueue = function() {
@@ -243,20 +235,20 @@ var defaultZurvanConfiguration = {
   ignoreProcessTimers: false
 };
 
-function createZurvanAPI(newDefaultConfig) {
+var apiFunctions = ["releaseTimers", "interceptTimers", "advanceTime", 
+  "blockSystem", "setSystemTime", "expireAllTimeouts", 
+  "forwardTimeToNextTimer", "waitForEmptyQueue"];
 
-  var apiFunctions = ["releaseTimers", "interceptTimers", "advanceTime", 
-    "blockSystem", "setSystemTime", "expireAllTimeouts", 
-	"forwardTimeToNextTimer", "waitForEmptyQueue"];
-  
-  var configuration = Configurator.merge(newDefaultConfig, defaultZurvanConfiguration);
+
+function createZurvanAPI(newDefaultConfig) {
+  var configuration = Configuration.merge(newDefaultConfig, defaultZurvanConfiguration);
   var api = APICreator.createAPI(new Zurvan(configuration), apiFunctions);
   
   api.withDefaultConfiguration = function(config) {
-    return createZurvanAPI(Configurator.merge(config, configuration));
+    return createZurvanAPI(Configuration.merge(config, configuration));
   }
   
-  return api; 
+  return api;
 }
 
 module.exports = createZurvanAPI();

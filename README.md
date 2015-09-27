@@ -63,10 +63,12 @@ Argument may be either a number (it is then interpreted as millisecond) or a `Ti
 
 #### `zurvan.blockSystem(blockingTime)`
 
-Simulates a blocking call - expires all timers up to due time at once, without actually executing them (during expiration).
+Simulates a blocking call - expires *synchronously* all timers up to due time at once, without actually executing them (during expiration).
 Argument may be either a number (it is then interpreted as millisecond) or a `TimeUnit` object.
 
-Returns a Promise that is resolved when the calls are finally executed, and entire event queue is clear or rejected it time cannot be forwarded (e.g. timers were not intercepted yet).
+To read about why is this function needed, and why does it require a synchronous API, see: <a href="doc/blockingCalls.md">blocking calls explaination</a>.
+
+Does not return anything. Throws if time cannot be forwarded (e.g. timers were not intercepted yet).
 
 #### `zurvan.setSystemTime(newSystemTime)`
 
@@ -123,6 +125,11 @@ Provide factory functions for `TimeUnit` object, that represents time duration:
  
 All of them work only on `TimeUnit` objects, but work smoothly on cross-unit basis.
  
+ 
+### Other
+There are no other API functions. All functions and modules in `detail` directory are library internal and are not guaranteed to expose a stable set of methods. Please do not use them directly.
+If you do - do it at your own risk. But if you do, and you find any of these functions useful (which I doubt - that's why they are in `detail`), contact me to make it part of stable API.
+
 ## Examples
 
 For now, please refer to `tests` directory for executable examples.
@@ -139,6 +146,8 @@ If you do, your environment has to fulfill several requirements:
 
 See <a href="doc/configuration.md">configuration documentation</a> to check out possible compatibility options (e.g. evaluating strings in `setTimeout`)
 Of course, if you have trouble with running _Zurvan_ on your custom target, feel free to contact me for support
+
+If you're trying to run on Node.js older than 0.10 - you will have trouble, as in these Nodes `setImmediate` was not implemented and `process.nextTick` was used to handle the macroqueue. Again - contact me if you need support.
 
 ## Other
 

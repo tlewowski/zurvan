@@ -42,8 +42,9 @@ describe('second zurvan', function() {
 	  done(Error("Zurvan should not be able to advance time before intercepting it"));
 	}, function(err) {
 	  assert.equal(process.uptime(), 0);
-	  zurvan.releaseTimers().then(done, done);
-	});
+	  assert.throws(zurvan2.blockSystem.bind(zurvan2, TimeUnit.minutes(1)));
+	  return zurvan.releaseTimers();
+	}).then(done, done);
 	
   });
 });
