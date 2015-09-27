@@ -120,8 +120,8 @@ If you do, your environment has to fulfill several requirements:
 
  - implement at least ECMAScript 5 (ES6 is better)
  - have a basic implementation of promises (ES6 promises are sufficient or any basically compatible library, like <a href="https://www.npmjs.com/package/bluebird">bluebird</a>)
- - implement `setImmediate/clearImmediate` (if your environment doesn't, you can try out library: <https://github.com/YuzuJS/setImmediate>)
- - implement `process.uptime` and `process.hrtime` (this requirement is going to be removed in 0.2.0 release) - at minimum a global `process` object is required
+ - implement `setImmediate/clearImmediate` - they *cannot* be implemented as wrappers over `setTimeout/clearTimeout`, at least for now.
+ - implement `process.uptime` and `process.hrtime` - if it doesn't, _Zurvan_ has to be ran with compatibility option: `ignoreProcessTimers: true`
 
 See <a href="doc/configuration.md">configuration documentation</a> to check out possible compatibility options (e.g. evaluating strings in `setTimeout`)
 Of course, if you have trouble with running _Zurvan_ on your custom target, feel free to contact me for support

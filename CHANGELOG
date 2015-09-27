@@ -1,0 +1,12 @@
+
+
+0.2.0:
+ - added option to ignore faking process timers (process.hrtime and process.uptime)
+ - extended set of executable examples
+ - documentation fixes
+
+0.1.1:
+ - readme fixes
+
+0.1.0:
+ - fixed critical bugs
