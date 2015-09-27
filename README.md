@@ -73,6 +73,8 @@ function f() {
 }
 ```
 
+#### `zurvan.withDefaultConfiguration()`
+
 Returns a `Promise` that is resolved when all timeouts are already called;
 
 #### `zurvan.forwardTimeToNextTimer()`
