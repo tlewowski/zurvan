@@ -8,6 +8,7 @@ function Timer(callback, timerRepository, currentTime, callDelay) {
   this.callback = callback;
   this.callDelay = TimeUnit.milliseconds(callDelay);
   this.dueTime = currentTime.extended(this.callDelay);
+  this.currentTime = currentTime;
   this.timerRepository = timerRepository;
 }
 
@@ -18,23 +19,23 @@ Timer.prototype.expire = function() {
 
 function TimeoutTimer(callback, timerRepository, currentTime, callDelay) {
   Timer.bind(this)(callback, timerRepository, currentTime, callDelay);
-  this.type = TimerType.timeout;
-  this.precall = function ignore() {};
 }
 
-TimeoutTimer.prototype = Timer.prototype;
+TimeoutTimer.prototype = Object.create(Timer.prototype);
+TimeoutTimer.prototype.type = TimerType.timeout;
+TimeoutTimer.prototype.precall = function ignore() {};
 
 function IntervalTimer(callback, timerRepository, currentTime, callDelay) {
   Timer.bind(this)(callback, timerRepository, currentTime, callDelay);
-  this.type = TimerType.interval;
-  this.precall = function reschedule() {
-    this.dueTime = currentTime.extended(this.callDelay);
-    this.timerRepository.insertTimer(this);
-  };
 }
 
-IntervalTimer.prototype = Timer.prototype;
-
+IntervalTimer.prototype = Object.create(Timer.prototype);
+IntervalTimer.prototype.type = TimerType.interval;
+IntervalTimer.prototype.precall = function reschedule() {
+  this.dueTime = this.currentTime.extended(this.callDelay);
+  this.timerRepository.insertTimer(this);
+};
+  
 function Callback(f, args) {
   this.f = f;
   this.args = args;
