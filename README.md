@@ -140,7 +140,9 @@ Obviously, JavaScript environment is much bigger than just Node.js, and you migh
 If you do, your environment has to fulfill several requirements:
 
  - implement at least ECMAScript 5 (ES6 is better)
- - have a basic implementation of promises (ES6 promises are sufficient or any basically compatible library, like <a href="https://www.npmjs.com/package/bluebird">bluebird</a>)
+ - have a basic implementation of promises (ES6 promises are sufficient or any basically compatible library - be careful though. Promises shall be implemented as microqueue tasks, or at least scheduled by global `setImmediate` - otherwise, 
+`zurvan` has to be started (not loaded - started. timers have to be intercepted) _before_ promise library in _every_ module they both occur. Additionally, promise library alone cannot be required by any file evaluated before first one requiring _zurvan_)
+For compatibility options with specific libraries (e.g. <a href="https://www.npmjs.com/package/bluebird">bluebird</a>), see: <a href="doc/compatibility.md">compatibility options</a>
  - implement `setImmediate/clearImmediate` - they *cannot* be implemented as wrappers over `setTimeout/clearTimeout`, at least for now.
  - implement `process.uptime` and `process.hrtime` - if it doesn't, _Zurvan_ has to be ran with compatibility option: `ignoreProcessTimers: true`
 
@@ -150,13 +152,13 @@ Be careful about scheduling - some asynchronous features used by browsers (such 
 Additionally, `Promise.resolve` and `Promise.reject` are both specified to be executed asynchronously, but engine implementation is free to use either microqueue or macroqueue. Additionally, if it doesn't use API functions (`setImmediate`) for 
 scheduling macroqueue tasks, then there will be cases where _Zurvan_ won't behave correctly. Currently there are no such known cases for Node.js - and if they will be found, they are a bug and shall be fixed.
 
-If you're trying to run on Node.js older than 0.10 - you will have trouble, as in these Nodes `setImmediate` was not implemented and `process.nextTick` was used to handle the macroqueue. Again - contact me if you need support.
+If you're trying to run on Node.js older than 0.10 - you will have trouble, as in these Nodes `setImmediate` was not implemented and `process.nextTick` was used to handle the macroqueue. However, 
+`process.nextTick` is not a function faked by `zurvan`. Again - contact me if you need support.
 
 ## Other
 
 _Zurvan_ is available as package on NPM
 
-Name is taken after babilonian deity of infinite time, _Zurvan_. For more details see: https://en.wikipedia.org/wiki/Zurvanism
+Name is taken after babilonian deity of infinite time, _Zurvan_. For more details see: <https://en.wikipedia.org/wiki/Zurvanism>
 
 If you encouter a bug when using _Zurvan_, please report it as an issue on GitHub. Of course, if you are willing to issue a pull request, they are welcome.
-

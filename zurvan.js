@@ -61,7 +61,7 @@ Zurvan.prototype.interceptTimers = function(config) {
 	that.timeServer.setupTime(that.config.timeSinceStartup, that.config.systemTime);
   
     that.timerInterceptor.intercept(that.config);
-    that.immediateInterceptor.intercept();	
+    that.immediateInterceptor.intercept(that.config);	
     that.dateInterceptor.intercept();
 	
 	if(!that.config.ignoreProcessTimers) {
@@ -113,7 +113,8 @@ var defaultZurvanConfiguration = {
   acceptEvalTimers: false,
   denyImplicitTimer: false,
   denyTimersShorterThan1Ms: false,
-  ignoreProcessTimers: false
+  ignoreProcessTimers: false,
+  fakeOriginalSetImmediateMethods: false
 };
 
 var apiFunctions = ["releaseTimers", "interceptTimers", "setSystemTime", "advanceTime", 

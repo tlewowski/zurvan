@@ -7,9 +7,26 @@ function ImmediateInterceptor() {
   this.uidGenerator = new UIDGenerator();
 }
 
-ImmediateInterceptor.prototype.intercept = function() {
+ImmediateInterceptor.prototype.intercept = function(config) {
+  this.config = config;
+  
+  this.overriddenOriginalImmediateMethods = [];
+  var globalSetImmediate = global.setImmediate;
+  var globalClearImmediate = global.clearImmediate;
+  
   this.setImmediates = new FieldOverrider(global, "setImmediate", this.addImmediate.bind(this));
   this.clearImmediates = new FieldOverrider(global, "clearImmediate", this.removeImmediate.bind(this));
+
+  if(this.config.fakeOriginalSetImmediateMethods) {
+	var that = this;
+    this.overriddenOriginalImmediateMethods.push(new FieldOverrider(globalSetImmediate, "call", setImmediate.call.bind(setImmediate)));
+    this.overriddenOriginalImmediateMethods.push(new FieldOverrider(globalSetImmediate, "apply", setImmediate.apply.bind(setImmediate)));
+    this.overriddenOriginalImmediateMethods.push(new FieldOverrider(globalSetImmediate, "bind", setImmediate.bind.bind(setImmediate)));
+
+    this.overriddenOriginalImmediateMethods.push(new FieldOverrider(globalClearImmediate, "call", clearImmediate.call.bind(clearImmediate)));
+    this.overriddenOriginalImmediateMethods.push(new FieldOverrider(globalClearImmediate, "apply", clearImmediate.apply.bind(clearImmediate)));
+    this.overriddenOriginalImmediateMethods.push(new FieldOverrider(globalClearImmediate, "bind", clearImmediate.bind.bind(clearImmediate)));
+  }
   
   this.enqueue = this.setImmediates.oldValue;
   this.dequeue = this.clearImmediates.oldValue;
@@ -24,6 +41,12 @@ ImmediateInterceptor.prototype.release = function() {
 
   this.setImmediates.restore();
   this.clearImmediates.restore();
+  
+  this.overriddenOriginalImmediateMethods.forEach(function(method) {
+    method.restore();
+  });
+  
+  this.overriddenOriginalImmediateMethods = [];
   
   this.enqueue = undefined;
   this.dequeue = undefined;
