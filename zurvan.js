@@ -14,11 +14,19 @@ function enterRejectingState(actor) {
   actor.forwardTimeToNextTimer = Promise.reject.bind(undefined, Error("Cannot forward time if timers are not intercepted!"));
 }
 
-function leaveRejectingState(actor) {
-  actor.advanceTime = Zurvan.prototype.advanceTime;
-  actor.blockSystem = Zurvan.prototype.blockSystem;
-  actor.expireAllTimeouts = Zurvan.prototype.expireAllTimeouts;
-  actor.forwardTimeToNextTimer = Zurvan.prototype.forwardTimeToNextTimer;
+function enterForwardingState(actor) {
+  actor.advanceTime = function(timeToForward) {
+    return this.timeForwarder.advanceTime(timeToForward);
+  };
+  actor.blockSystem = function(timeToBlock) {
+    return this.timeForwarder.blockSystem(timeToBlock);	
+  };
+  actor.expireAllTimeouts = function() {
+    return this.timeForwarder.expireAllTimeouts();
+  };
+  actor.forwardTimeToNextTimer = function() {
+    return this.timeForwarder.forwardTimeToNextTimer();
+  };
 }
 
 // me sad, but timeouts are global stuff :(
@@ -60,7 +68,7 @@ Zurvan.prototype.interceptTimers = function(config) {
       that.processTimerInterceptor.intercept();
 	}
     
-    leaveRejectingState(that);	
+    enterForwardingState(that);	
 	return that.waitForEmptyQueue();
   });
 };
@@ -93,22 +101,6 @@ Zurvan.prototype.releaseTimers = function() {
 
 Zurvan.prototype.setSystemTime = function(newSystemTime) {
   return this.timeServer.setSystemTime(newSystemTime);
-};
-
-Zurvan.prototype.advanceTime = function(timeToForward) {
-  return this.timeForwarder.advanceTime(timeToForward);
-};
-
-Zurvan.prototype.blockSystem = function(timeToBlock) {
-  return this.timeForwarder.blockSystem(timeToBlock);	
-};
-
-Zurvan.prototype.expireAllTimeouts = function() {
-  return this.timeForwarder.expireAllTimeouts();
-};
-
-Zurvan.prototype.forwardTimeToNextTimer = function() {
-  return this.timeForwarder.forwardTimeToNextTimer();
 };
 
 Zurvan.prototype.waitForEmptyQueue = function() {
