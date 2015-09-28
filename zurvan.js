@@ -4,27 +4,39 @@ var ProcessTimerInterceptor = require("./detail/ProcessTimerInterceptor");
 var DateInterceptor = require("./detail/DateInterceptor");
 var TimeForwarder = require("./detail/TimeForwarder");
 var TimeServer = require("./detail/TimeServer");
-var TypeChecks = require("./detail/TypeChecks");
 var APICreator = require("./detail/APICreator");
 var Configuration = require("./detail/Configuration");
-var TimeUnit = require("./TimeUnit");
 
-var assert = require("assert");
+function enterRejectingState(actor) {
+  actor.advanceTime = Promise.reject.bind(undefined, Error("Cannot advance time if timers are not intercepted!"));
+  actor.blockSystem = Promise.reject.bind(undefined, Error("Cannot block system if timers are not intercepted!"));
+  actor.expireAllTimeouts = Promise.reject.bind(undefined, Error("Cannot expire timeouts if timers are not intercepted!"));
+  actor.forwardTimeToNextTimer = Promise.reject.bind(undefined, Error("Cannot forward time if timers are not intercepted!"));
+}
+
+function leaveRejectingState(actor) {
+  actor.advanceTime = Zurvan.prototype.advanceTime;
+  actor.blockSystem = Zurvan.prototype.blockSystem;
+  actor.expireAllTimeouts = Zurvan.prototype.expireAllTimeouts;
+  actor.forwardTimeToNextTimer = Zurvan.prototype.forwardTimeToNextTimer;
+}
 
 // me sad, but timeouts are global stuff :(
 var areTimersIntercepted = false;
 
-function Zurvan(config) {
-  this.isActiveInterceptor = false;
+function Zurvan(config) { 
   this.globalConfig = config;
   this.timeServer = new TimeServer();
    
   this.immediateInterceptor = new ImmediateInterceptor();
   this.timerInterceptor = new TimerInterceptor(this.timeServer);
+  
   this.timeForwarder = new TimeForwarder(this.timeServer, this.timerInterceptor, this.immediateInterceptor);
   
   this.processTimerInterceptor = new ProcessTimerInterceptor(this.timeServer);
   this.dateInterceptor = new DateInterceptor(this.timeServer);
+  
+  enterRejectingState(this);
 }
 
 Zurvan.prototype.interceptTimers = function(config) {
@@ -47,7 +59,8 @@ Zurvan.prototype.interceptTimers = function(config) {
 	if(!that.config.ignoreProcessTimers) {
       that.processTimerInterceptor.intercept();
 	}
-	
+    
+    leaveRejectingState(that);	
 	return that.waitForEmptyQueue();
   });
 };
@@ -74,7 +87,7 @@ Zurvan.prototype.releaseTimers = function() {
 	that.timerInterceptor.release();
 
     areTimersIntercepted = false;
-	that.isActiveInterceptor = false;
+    enterRejectingState(that);
   });
 };
 
@@ -83,34 +96,18 @@ Zurvan.prototype.setSystemTime = function(newSystemTime) {
 };
 
 Zurvan.prototype.advanceTime = function(timeToForward) {
-  if(!this.isActiveInterceptor) {
-	  return Promise.reject(Error("Cannot advance time if timers are not intercepted!"));
-  }
-  
   return this.timeForwarder.advanceTime(timeToForward);
 };
 
 Zurvan.prototype.blockSystem = function(timeToBlock) {
-  if(!this.isActiveInterceptor) {
-	throw new Error("Cannot advance time if timers are not intercepted!");
-  }
-  
   return this.timeForwarder.blockSystem(timeToBlock);	
 };
 
 Zurvan.prototype.expireAllTimeouts = function() {
-  if(!this.isActiveInterceptor) {
-	throw new Error("Cannot advance time if timers are not intercepted!");
-  }
-  
   return this.timeForwarder.expireAllTimeouts();
 };
 
 Zurvan.prototype.forwardTimeToNextTimer = function() {
-  if(!this.isActiveInterceptor) {
-	throw new Error("Cannot advance time if timers are not intercepted!");
-  }
-  
   return this.timeForwarder.forwardTimeToNextTimer();
 };
 
