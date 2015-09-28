@@ -30,7 +30,6 @@ ImmediateInterceptor.prototype.release = function() {
 };
 
 ImmediateInterceptor.prototype.addImmediate = function(callback) {
-  
   var uid = this.uidGenerator.generate();
   
   var that = this;
