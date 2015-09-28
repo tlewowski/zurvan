@@ -15,3 +15,7 @@
  Default value is `false` and typical Node.js behavior is used (setting delay to 1 ms). It is recommended to set this value to `true`, to catch some mistakes during testing.
  - `ignoreProcessTimers` - a `boolean`. When `true`, `process.uptime` and `process.hrtime` are not faked. By default `false`. It is recommended to 
  leave it `false`, unless you're trying to run `zurvan` in the browser.
+ - `fakeOriginalSetImmediateMethods` -  a `boolean`. When `true`, `.call`, `.apply` and `.bind` methods of *ORIGINAL* `setImmediate` and `clearImmediate` will be faked, and ones from `zurvan` will be used instead.
+ This is basically a compatibilty option for _bluebird_ library, which schedules promises by `setImmediate` that is cached earlier.
+ Luckily, it is done by `setImmediate.call`, so it may be faked. Keep in mind that buffering `setImmediate` and calling it explicitly (not via `.call` or `.apply`) will result in inconsistent behavior,
+ as `zurvan` is not able to reliably supervise macroqueue when other mechanisms are also used to push to it. By default `false`, recommended to keep that way if you don't need _bluebird_.
