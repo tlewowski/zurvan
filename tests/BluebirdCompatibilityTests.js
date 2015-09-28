@@ -22,8 +22,8 @@ describe('zurvan', function() {
 			  originalSetImmediate.call(global, function(a) {
 			    called = called + a;
 			  }, 100);
-			})
-		  })
+			});
+		  });
 		});
 		
 		return zurvan.waitForEmptyQueue();
@@ -57,8 +57,8 @@ describe('zurvan', function() {
 			  originalSetImmediate.call(global, function() {
 			    ++called;
 			  });
-			})
-		  })
+			});
+		  });
 		});
 		
 		return zurvan.waitForEmptyQueue();
@@ -71,8 +71,8 @@ describe('zurvan', function() {
 			  originalSetImmediate.apply(global, [function(d) {
 			    called = called + a + b + c + d;
 			  }, 10]);
-			}, 100])
-		  }, 1000])
+			}, 100]);
+		  }, 1000]);
 		}, 10000]);
 		
 		return zurvan.waitForEmptyQueue();
