@@ -38,7 +38,7 @@ This is the main module of the library. Typical forwarding of time is done step 
 Library setup. Causes timers to be intercepted, i.e. all required functions are overridden after this call.
 Returns a Promise that is resolved when timers are faked and event queue is empty and rejected if interception was not possible (e.g. timers were already intercepted)
 It takes an optional configuration object as parameter, which takes precedence over global configuration. 
-Details of configuration options are described in detailed <a href="doc/configuration.md">configuration documentation</a>.
+Details of configuration options are described in <a href="doc/configuration.md">configuration documentation</a>.
 
 #### `zurvan.releaseTimers()`
 

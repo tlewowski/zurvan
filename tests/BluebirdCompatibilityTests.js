@@ -30,6 +30,8 @@ describe('zurvan', function() {
 	  }).then(function() {
 	    assert.equal(called, 0);
 		return zurvan.releaseTimers();
+	  }).then(function() {
+	  	assert.strictEqual(originalSetImmediate, setImmediate);
 	  }).then(done, done);
     });
   });
@@ -92,6 +94,8 @@ describe('zurvan', function() {
 	  }).then(function() {
 	    assert.equal(11111, called);		
 	    return zurvan.releaseTimers();
+	  }).then(function() {
+	  	assert.strictEqual(originalSetImmediate, setImmediate);
 	  }).then(done, done);
 	});
   });
