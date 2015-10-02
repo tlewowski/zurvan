@@ -1,3 +1,7 @@
+0.2.1:
+ - *BREAKING CHANGE* removed hack for modifying original setImmediate fields for bluebird compatibility. 
+ Now bluebird.setScheduler is used
+
 0.2.0:
  - *BREAKING CHANGE* blockSystem does no longer return a Promise, and is a synchronous call instead
  - added option to ignore faking process timers (process.hrtime and process.uptime)

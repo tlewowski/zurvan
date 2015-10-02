@@ -74,4 +74,8 @@ describe('zurvan had a problem', function() {
 	  return zurvan.releaseTimers();
 	}).then(done, done);
   });
+  
+  it('ticks from immediates scheduled before waitForQueue requests were not executed', function(done) {
+    
+  });
 });

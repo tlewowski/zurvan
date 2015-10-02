@@ -48,14 +48,20 @@ TimeForwarder.prototype.advanceTime = function(timeToForward) {
 	
     that.timeServer.targetTime = that.timeServer.currentTime.extended(advanceStep);
     that.startExpiringEvents();
+    
+	// why twice, you ask? because node's event loop is fucked up, and may execute macroqueue tasks before microqueue ones
+	// details: http://dailyjs.com/2013/03/11/node-stable/
+	// https://github.com/nodejs/node-v0.x-archive/issues/14820
     setImmediate(function() {
-      fireTimersOneByOne();
+	  setImmediate(function() {
+        fireTimersOneByOne();
+	  });
     });
   
     function fireTimersOneByOne() {
-      if(that.immediateInterceptor.areAwaiting()) {
+	  if(that.immediateInterceptor.areAwaiting()) {
         setImmediate(function() {
-          fireTimersOneByOne();
+	      fireTimersOneByOne();
         });
         return;
       }
@@ -66,10 +72,7 @@ TimeForwarder.prototype.advanceTime = function(timeToForward) {
         that.timeServer.currentTime.setTo(closestTimer.dueTime);
         setImmediate(function() {
   	      closestTimer.expire();
-	
-	      // schedule on macroqueue, to make sure that all microqueue tasks already expired
-		  // clearing macroqueue is handled in the beginning of this function
-		  setImmediate(function() {
+	      setImmediate(function() {
             fireTimersOneByOne();
 		  });
         });
