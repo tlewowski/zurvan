@@ -20,7 +20,7 @@ ImmediateInterceptor.prototype.intercept = function(config) {
     this.previousBluebirdScheduler = this.config.bluebird.setScheduler(setImmediate.bind(global));
   }
   else if(this.config.bluebird !== undefined) {
-    assert("bluebird configuration parameter to zurvan must be an object");
+    throw new Error("bluebird configuration parameter to zurvan must be an object");
   }
 };
 

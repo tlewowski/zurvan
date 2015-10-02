@@ -52,5 +52,12 @@ describe('zurvan', function() {
   // so making setImmediate.call look like faked setImmediate does the trick. For version 3.0 and earlier
   describe('under special configuration (for compatibility with external libraries)', function() {
     it('specially for bluebird changes its scheduler', bluebirdCompatibilityTestcase({bluebird:bluebird}, 1));
+	it('throws on wrong type of bluebird configuration parameter', function(done) {
+      zurvan.interceptTimers({bluebird:{}}).then(function() {
+	    done(new Error("Should not accept object as bluebird"));
+	  }, function() {
+	    done();
+	  });
+	});
   });
 });

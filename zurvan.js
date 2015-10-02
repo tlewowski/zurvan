@@ -55,21 +55,36 @@ Zurvan.prototype.interceptTimers = function(config) {
 	}
 	return resolve();
   }).then(function() {
-    that.config = Configuration.merge(config, that.globalConfig);
-    areTimersIntercepted = true;
-	that.isActiveInterceptor = true;
-	that.timeServer.setupTime(that.config.timeSinceStartup, that.config.systemTime);
+    return new Promise(function(resolve, reject) {
+      that.config = Configuration.merge(config, that.globalConfig);
+      areTimersIntercepted = true;
+	  that.timeServer.setupTime(that.config.timeSinceStartup, that.config.systemTime);
   
-    that.timerInterceptor.intercept(that.config);
-    that.immediateInterceptor.intercept(that.config);	
-    that.dateInterceptor.intercept();
+      that.timerInterceptor.intercept(that.config);
+      that.immediateInterceptor.intercept(that.config);	
+      that.dateInterceptor.intercept();
 	
-	if(!that.config.ignoreProcessTimers) {
-      that.processTimerInterceptor.intercept();
-	}
+  	  if(!that.config.ignoreProcessTimers) {
+        that.processTimerInterceptor.intercept();
+	  }
     
-    enterForwardingState(that);	
-	return that.waitForEmptyQueue();
+      enterForwardingState(that);
+	  resolve();
+	}).then(function() {
+	  return that.waitForEmptyQueue();
+	}).catch(function() {
+      if(!that.config.ignoreProcessTimers) {
+        that.processTimerInterceptor.release();
+	  }
+	
+  	  that.dateInterceptor.release();
+      that.immediateInterceptor.release();
+	  that.timerInterceptor.release();
+
+      areTimersIntercepted = false;
+      enterRejectingState(that);
+	  return Promise.reject();
+    });
   });
 };
 
