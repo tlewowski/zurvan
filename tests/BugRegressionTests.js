@@ -75,7 +75,50 @@ describe('zurvan had a problem', function() {
 	}).then(done, done);
   });
   
+  // event loop goes like this: timers & intervals, process.nextTick, I/O, process.nextTick, 
+  // setImmediate, process.nextTick - in bunches. so if immediates started, they'll execute till the end
   it('ticks from immediates scheduled before waitForQueue requests were not executed', function(done) {
-    
+	var calls = [];
+	
+	zurvan.interceptTimers().then(function() {
+	  setImmediate(function() {
+	    calls.push(1);
+		process.nextTick(function() {
+          calls.push(3);
+		  setImmediate(function() {
+		    calls.push(5);
+		  });
+		  process.nextTick(function() {
+		    calls.push(4);
+		  });
+		  setImmediate(function() {
+		    calls.push(6);
+			process.nextTick(function() {
+			  calls.push(7);
+			  setImmediate(function() {
+			    calls.push(8);
+				setImmediate(function() {
+				  calls.push(9);
+				  process.nextTick(function() {
+				    calls.push(11);
+				  });
+				});
+				setImmediate(function() {
+				  calls.push(10);
+				});;
+			  });
+			});
+		  });
+		});
+	  });
+	  setImmediate(function() {
+	    calls.push(2);
+	  });
+	  
+      return zurvan.waitForEmptyQueue();	  
+	}).then(function() {
+	  assert.deepEqual(calls, [1,2,3,4,5,6,7,8,9,10,11]);
+	  return zurvan.releaseTimers();
+	}).then(done, done);
   });
 });
