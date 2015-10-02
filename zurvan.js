@@ -55,7 +55,7 @@ Zurvan.prototype.interceptTimers = function(config) {
 	}
 	return resolve();
   }).then(function() {
-    return new Promise(function(resolve, reject) {
+    return new Promise(function(resolve) {
       that.config = Configuration.merge(config, that.globalConfig);
       areTimersIntercepted = true;
 	  that.timeServer.setupTime(that.config.timeSinceStartup, that.config.systemTime);

@@ -105,7 +105,7 @@ describe('zurvan had a problem', function() {
 				});
 				setImmediate(function() {
 				  calls.push(10);
-				});;
+				});
 			  });
 			});
 		  });

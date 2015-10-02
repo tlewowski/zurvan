@@ -15,7 +15,6 @@ ImmediateInterceptor.prototype.intercept = function(config) {
   this.enqueue = this.setImmediates.oldValue;
   this.dequeue = this.clearImmediates.oldValue;
 
-  var that = this;
   if(typeof this.config.bluebird === 'function') {
     this.previousBluebirdScheduler = this.config.bluebird.setScheduler(setImmediate.bind(global));
   }
