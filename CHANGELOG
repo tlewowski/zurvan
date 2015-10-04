@@ -1,7 +1,8 @@
 0.2.1:
  - *BREAKING CHANGE* removed hack for modifying original setImmediate fields for bluebird compatibility. 
  Now bluebird.setScheduler is used
- - fixed a bug - waitForEmptyQueue() waits now longer (previously there was a problem in scenario setImmediate(process.nextTick(setImmediate)))
+ - fixed a bug - waitForEmptyQueue() waits now longer (hopefully until queue is cleared)
+previously there was a problem in scenario setImmediate(process.nextTick(setImmediate)))
 
 0.2.0:
  - *BREAKING CHANGE* blockSystem does no longer return a Promise, and is a synchronous call instead
