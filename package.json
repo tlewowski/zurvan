@@ -10,7 +10,7 @@
   },
   "devDependencies": {
     "mocha": "2.3.x",
-	"istanbul": "~0.3.20",
+	"istanbul": "^0.4.0",
     "grunt": "~0.4.4",
     "grunt-cli": "~0.1.13",
     "grunt-contrib-jshint": "~0.11.3",
@@ -19,7 +19,7 @@
 	"grunt-mocha-istanbul": "~3.0.1",
 	"grunt-madge": "~0.0.6",
 	"codeclimate-test-reporter": "0.1.1",
-	"bluebird": "^2.0.0"
+	"bluebird": "^3.0.0"
   },
   "bugs": "https://github.com/Lewerow/Thoth/issues",
   "engines": {"node": ">=0.11.0"},
