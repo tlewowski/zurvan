@@ -1,41 +1,7 @@
 var FieldOverrider = require("./FieldOverrider");
 var TimerRepository = require("./TimerRepository");
-var TimerType = require("./TimerType");
 var TypeChecks = require("./TypeChecks");
-var TimeUnit = require("../TimeUnit");
-
-function Timer(callback, timerRepository, currentTime, callDelay) {
-  this.callback = callback;
-  this.callDelay = TimeUnit.milliseconds(callDelay);
-  this.dueTime = currentTime.extended(this.callDelay);
-  this.currentTime = currentTime;
-  this.timerRepository = timerRepository;
-}
-
-Timer.prototype.expire = function() {
-  this.precall();
-  this.callback.call();
-};
-
-function TimeoutTimer(callback, timerRepository, currentTime, callDelay) {
-  Timer.bind(this)(callback, timerRepository, currentTime, callDelay);
-}
-
-TimeoutTimer.prototype = Object.create(Timer.prototype);
-TimeoutTimer.prototype.type = TimerType.timeout;
-TimeoutTimer.prototype.precall = function ignore() {};
-
-function IntervalTimer(callback, timerRepository, currentTime, callDelay) {
-  Timer.bind(this)(callback, timerRepository, currentTime, callDelay);
-}
-
-IntervalTimer.prototype = Object.create(Timer.prototype);
-IntervalTimer.prototype.type = TimerType.interval;
-IntervalTimer.prototype.precall = function reschedule() {
-  this.dueTime = this.currentTime.extended(this.callDelay);
-  this.timerRepository.insertTimer(this);
-};
-  
+ 
 function Callback(f, args) {
   this.f = f;
   this.args = args;
@@ -45,24 +11,21 @@ Callback.prototype.call = function() {
   this.f.apply(undefined, this.args);
 };
 
-function TimerInterceptor(timeServer) {
+function TimerInterceptor(timeServer, timerType) {
   this.timeServer = timeServer;
-  this.timerRepository = new TimerRepository();
+  this.timerType = timerType;
 }
 
-TimerInterceptor.prototype.intercept = function(config) {
+TimerInterceptor.prototype.intercept = function(config, uidGenerator) {
   this.config = config;
-  this.setTimeouts = new FieldOverrider(global, "setTimeout", this.addTimer.bind(this, TimeoutTimer));
-  this.clearTimeouts = new FieldOverrider(global, "clearTimeout", this.clearTimer.bind(this));
-  this.setIntervals = new FieldOverrider(global, "setInterval", this.addTimer.bind(this, IntervalTimer));
-  this.clearIntervals = new FieldOverrider(global, "clearInterval", this.clearTimer.bind(this));
+  this.timerRepository = new TimerRepository(this.config, uidGenerator);
+  this.setTimers = new FieldOverrider(this.timerType.context, this.timerType.setName, this.addTimer.bind(this, this.timerType.type));
+  this.clearTimers = new FieldOverrider(this.timerType.context, this.timerType.clearName, this.clearTimer.bind(this));
 };
 
 TimerInterceptor.prototype.release = function() {
-  this.setTimeouts.restore();
-  this.clearTimeouts.restore();
-  this.setIntervals.restore();
-  this.clearIntervals.restore();
+  this.setTimers.restore();
+  this.clearTimers.restore();
   this.timerRepository.clearAll();
 };
 
@@ -70,8 +33,8 @@ TimerInterceptor.prototype.nextTimer = function() {
   return this.timerRepository.nextTimer();
 };
 
-TimerInterceptor.prototype.lastTimeout = function() {
-  return this.timerRepository.lastTimeout();
+TimerInterceptor.prototype.lastTimer = function() {
+  return this.timerRepository.lastTimer();
 };
 
 TimerInterceptor.prototype.addTimer = function(TimerType, callbk, callDelay) {

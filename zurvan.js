@@ -1,5 +1,5 @@
 var ImmediateInterceptor = require("./detail/ImmediateInterceptor");
-var TimerInterceptor = require("./detail/TimerInterceptor");
+var AllTimersInterceptor = require("./detail/AllTimersInterceptor");
 var ProcessTimerInterceptor = require("./detail/ProcessTimerInterceptor");
 var DateInterceptor = require("./detail/DateInterceptor");
 var TimeForwarder = require("./detail/TimeForwarder");
@@ -37,7 +37,7 @@ function Zurvan(config) {
   this.timeServer = new TimeServer();
    
   this.immediateInterceptor = new ImmediateInterceptor();
-  this.timerInterceptor = new TimerInterceptor(this.timeServer);
+  this.timerInterceptor = new AllTimersInterceptor(this.timeServer);
   
   this.timeForwarder = new TimeForwarder(this.timeServer, this.timerInterceptor, this.immediateInterceptor);
   
@@ -58,20 +58,22 @@ Zurvan.prototype.interceptTimers = function(config) {
     return new Promise(function(resolve) {
       that.config = Configuration.merge(config, that.globalConfig);
       areTimersIntercepted = true;
-	  that.timeServer.setupTime(that.config.timeSinceStartup, that.config.systemTime);
-  
-      that.timerInterceptor.intercept(that.config);
-      that.immediateInterceptor.intercept(that.config);	
-      that.dateInterceptor.intercept();
 	
+      that.timeServer.setupTime(that.config.timeSinceStartup, that.config.systemTime);
+      that.dateInterceptor.intercept();
+      that.immediateInterceptor.intercept(that.config);	
+  
   	  if(!that.config.ignoreProcessTimers) {
         that.processTimerInterceptor.intercept();
 	  }
-    
+
+      that.timerInterceptor.intercept(that.config);
+	
       enterForwardingState(that);
 	  resolve();
 	}).then(function() {
-	  return that.waitForEmptyQueue();
+	  var x = that.waitForEmptyQueue();
+	  return x;
 	}).catch(function() {
       if(!that.config.ignoreProcessTimers) {
         that.processTimerInterceptor.release();
@@ -129,7 +131,8 @@ var defaultZurvanConfiguration = {
   denyImplicitTimer: false,
   denyTimersShorterThan1Ms: false,
   ignoreProcessTimers: false,
-  fakeOriginalSetImmediateMethods: false
+  fakeOriginalSetImmediateMethods: false,
+  throwOnInvalidClearTimer: false
 };
 
 var apiFunctions = ["releaseTimers", "interceptTimers", "setSystemTime", "advanceTime", 

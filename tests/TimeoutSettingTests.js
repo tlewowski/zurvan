@@ -21,7 +21,6 @@ describe('zurvan', function() {
 	  setTimeout(function() {
 	    called = true;
 	  }, 100);
-	  
 	  zurvan.advanceTime(50).then(function() {
 	    assert(!called);
 	    return zurvan.advanceTime(50);

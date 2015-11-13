@@ -54,5 +54,40 @@ describe('zurvan', function() {
 		return zurvan.releaseTimers();
 	  }).then(done, done);
 	});
+	
+	it('throws on invalid clearTimeout/clearInterval request', function(done) {
+	  zurvan.interceptTimers({throwOnInvalidClearTimer: true}).then(function() {
+		assert.throws(function() {
+		  clearTimeout(undefined);
+		}, /undefined/);
+						
+		assert.throws(function() {
+		  clearInterval(3);
+		}, /3/);			
+			
+		assert.throws(function() {
+		  clearInterval({});
+		}, /{}/);
+
+		assert.throws(function() {
+		  clearInterval(function(){var t;});
+		}, /var t;/);
+			
+		assert.throws(function() {
+		  clearTimeout({uid:3});
+		});
+			
+		var trickyRef = {
+		  uid: 1
+		};
+		trickyRef.ref = trickyRef;
+			
+		assert.throws(function() {
+		  clearTimeout(trickyRef);
+		}, /not easily serializable/);
+		
+		return zurvan.releaseTimers();
+	  }).then(done, done);
+	});
   });
 });

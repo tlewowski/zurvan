@@ -45,7 +45,7 @@ TimeForwarder.prototype.advanceTime = function(timeToForward) {
       return reject(Error("Cannot forward time shortened previous forwarding ends. Currently at: " + 
         that.timeServer.currentTime.toMilliseconds() + " ms, target: " + that.timeServer.targetTime.toMilliseconds() + " ms"));
     }
-	
+
     that.timeServer.targetTime = that.timeServer.currentTime.extended(advanceStep);
     that.startExpiringEvents();
     
@@ -68,7 +68,7 @@ TimeForwarder.prototype.advanceTime = function(timeToForward) {
 	
   	  var closestTimer = that.timerInterceptor.nextTimer();
       if(closestTimer && !closestTimer.dueTime.isLongerThan(that.timeServer.targetTime)) {
-	    that.timerInterceptor.clearTimer(closestTimer.uid);
+	    closestTimer.clear();
         that.timeServer.currentTime.setTo(closestTimer.dueTime);
         setImmediate(function() {
   	      closestTimer.expire();
@@ -111,7 +111,7 @@ TimeForwarder.prototype.forwardTimeToNextTimer = function() {
 TimeForwarder.prototype.fireAllOutdatedTimers = function() {
   var closestTimer = this.timerInterceptor.nextTimer();
   while(closestTimer && !closestTimer.dueTime.isLongerThan(this.timeServer.currentTime)) {
-    this.timerInterceptor.clearTimer(closestTimer.uid);
+    closestTimer.clear();
     setImmediate(closestTimer.expire.bind(closestTimer));
     closestTimer = this.timerInterceptor.nextTimer();
   }

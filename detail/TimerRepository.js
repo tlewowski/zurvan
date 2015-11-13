@@ -1,16 +1,18 @@
-var UIDGenerator = require("./UIDGenerator");
-var TimerType = require("./TimerType");
+var UIDManager = require("./UIDManager");
+var TimerType = require("./timers/TimerType");
 
-function TimerRepository() {
-  this.uidGenerator = new UIDGenerator();
+function TimerRepository(config, uidGenerator) {
+  this.config = config;
+  this.uidManager = new UIDManager(uidGenerator);
   this.timers = [];  
 }
 
 TimerRepository.prototype.insertTimer = function(timer) {
 
   if(!timer.uid) {
-    timer.uid = this.uidGenerator.generate();
+    timer.uid = this.uidManager.getUid();
   }
+  timer.sequenceNumber = this.uidManager.nextSequenceNumber();
   
   var i;
   for(i = 0; i < this.timers.length; ++i) {
@@ -25,6 +27,16 @@ TimerRepository.prototype.insertTimer = function(timer) {
 };
 
 TimerRepository.prototype.clearTimer = function(uid) {
+
+  var uidValidation = this.uidManager.isAcceptableUid(uid);
+  if(!uidValidation.passed) {
+	if(this.config.throwOnInvalidClearTimer) {
+	  throw new Error("Invalid UID during clearing timer. Reason: " + uidValidation.failureReason);
+	}
+	
+	return;
+  }
+
   var i;
   for(i = 0; i < this.timers.length; ++i) {
     if (this.timers[i].uid.uid === uid.uid) {
@@ -36,20 +48,15 @@ TimerRepository.prototype.clearTimer = function(uid) {
 
 TimerRepository.prototype.clearAll = function() {
   this.timers = [];
+  this.uidManager.clear();
 };
 
 TimerRepository.prototype.nextTimer = function() {
   return this.timers[0];
 };
 
-TimerRepository.prototype.lastTimeout = function() {
-
-  var i;
-  for(i = this.timers.length - 1; i >= 0; --i) {
-    if(this.timers[i].type === TimerType.timeout) {
-	  return this.timers[i];
-	}
-  }
+TimerRepository.prototype.lastTimer = function() {
+  return this.timers[this.timers.length - 1];
 };
 
 module.exports = TimerRepository;

@@ -1,10 +1,11 @@
 var FieldOverrider = require("./FieldOverrider");
-var UIDGenerator = require("./UIDGenerator");
+var UIDManager = require("./UIDManager");
+var SequenceGenerator = require("./SequenceGenerator");
 var assert = require("assert");
 
 function ImmediateInterceptor() {
   this.awaitingImmediates = {size: 0};
-  this.uidGenerator = new UIDGenerator();
+  this.uidManager = new UIDManager(new SequenceGenerator());
 }
 
 ImmediateInterceptor.prototype.intercept = function(config) {
@@ -43,7 +44,7 @@ ImmediateInterceptor.prototype.release = function() {
 };
 
 ImmediateInterceptor.prototype.addImmediate = function(callback) {
-  var uid = this.uidGenerator.generate();
+  var uid = this.uidManager.getUid();
   
   var that = this;
   var args = [].splice.call(arguments, 1);

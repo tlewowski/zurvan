@@ -16,3 +16,6 @@
  - `ignoreProcessTimers` - a `boolean`. When `true`, `process.uptime` and `process.hrtime` are not faked. By default `false`. It is recommended to 
  leave it `false`, unless you're trying to run `zurvan` in the browser.
  - `bluebird` - an `object`, representing _bluebird_ library (returned from `require('bluebird')`)
+ - `throwOnInvalidClearTimer` - a `boolean`. When `true` calls to `clearTimeout` and `clearInterval` will throw when called with an argument that was not earlier returned by respective `setTimeout` or `setInterval` 
+ (i.e. `clearTimeout` throws when argument was not returned by `setTimeout` and `clearInterval` throws when argument was not returned by `setInterval`). 
+ By default `false`, it is recommended to set to `true` to provide better test assertions.
