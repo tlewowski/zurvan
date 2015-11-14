@@ -1,5 +1,4 @@
 var UIDManager = require("./UIDManager");
-var TimerType = require("./timers/TimerType");
 
 function TimerRepository(config, uidGenerator) {
   this.config = config;

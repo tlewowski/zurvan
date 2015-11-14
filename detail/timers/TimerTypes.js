@@ -1,3 +1,5 @@
+var IntervalTimer = require("./IntervalTimer");
+var TimeoutTimer = require("./TimeoutTimer");
 
 var timeoutType = {
   context: global,
@@ -11,4 +13,9 @@ var intervalType = {
   setName: "setInterval",
   clearName: "clearInterval",
   type: IntervalTimer
+};
+
+module.exports = {
+  interval: intervalType,
+  timeout: timeoutType
 };

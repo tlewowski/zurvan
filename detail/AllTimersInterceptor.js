@@ -1,26 +1,11 @@
 var TimerInterceptor = require("./TimerInterceptor");
-var IntervalTimer = require("./timers/IntervalTimer");
-var TimeoutTimer = require("./timers/TimeoutTimer");
 var SequenceGenerator = require("./SequenceGenerator");
-
-var timeoutType = {
-  context: global,
-  setName: "setTimeout",
-  clearName: "clearTimeout",
-  type: TimeoutTimer
-};
-
-var intervalType = {
-  context: global,
-  setName: "setInterval",
-  clearName: "clearInterval",
-  type: IntervalTimer
-};
+var TimerTypes = require("./timers/TimerTypes");
 
 function AllTimersInterceptor(timeServer) {
   this._sequenceGenerator = new SequenceGenerator();
-  this.timeoutInterceptor = new TimerInterceptor(timeServer, timeoutType);
-  this.intervalInterceptor = new TimerInterceptor(timeServer, intervalType);
+  this.timeoutInterceptor = new TimerInterceptor(timeServer, TimerTypes.timeout);
+  this.intervalInterceptor = new TimerInterceptor(timeServer, TimerTypes.interval);
 }
 
 AllTimersInterceptor.prototype.intercept = function(config) {

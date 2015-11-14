@@ -88,6 +88,24 @@ describe('zurvan', function() {
 		
 		return zurvan.releaseTimers();
 	  }).then(done, done);
+	});	
+	
+	it('throws on invalid clearTimeout from setInterval and vice versa', function(done) {
+	  zurvan.interceptTimers({throwOnInvalidClearTimer: true}).then(function() {
+		var timeoutId = setTimeout(function() {}, 100);
+		assert.throws(function() {
+		  clearInterval(timeoutId);
+		}, /was not issued/);
+
+		clearTimeout(timeoutId);
+		var intervalId = setInterval(function() {}, 100);
+		assert.throws(function() {
+		  clearTimeout(intervalId);
+		}, /was not issued/);
+		clearInterval(intervalId);
+
+		return zurvan.releaseTimers();
+	  }).then(done, done);
 	});
   });
 });
