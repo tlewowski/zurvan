@@ -37,33 +37,42 @@ TimerInterceptor.prototype.lastTimer = function() {
   return this.timerRepository.lastTimer();
 };
 
-TimerInterceptor.prototype.addTimer = function(TimerType, callbk, callDelay) {
-
-  var callback;
-  if(TypeChecks.isFunction(callbk)) {
-    callback = new Callback(callbk, [].splice.call(arguments, 3));
-  }
-  else if(this.config.acceptEvalTimers) {
-    callback = new Callback(function() {return eval(callbk);}, []);
-  }
-  else {
-    throw new Error("Node.js does not accept strings in timers. If you wish, you can configure Zurvan to use them, but beware.");
+TimerInterceptor.prototype.createCallback = function(callback, arguments) {
+  if(TypeChecks.isFunction(callback)) {
+    return new Callback(callback, arguments);
   }
   
-  if(!TypeChecks.isNumber(callDelay)) {
+  if(this.config.acceptEvalTimers) {
+    return new Callback(function() {return eval(callback);}, []);
+  }
+  
+  throw new Error("Node.js does not accept strings in timers. If you wish, you can configure Zurvan to use them, but beware.");  
+};
+
+var MINIMUM_CALL_DELAY = 1;
+TimerInterceptor.prototype.createCallDelay = function(requestedCallDelay) {
+  if(!TypeChecks.isNumber(requestedCallDelay)) {
     if(this.config.denyImplicitTimer) {
       throw new Error("Call delay in timer call must be a numeric value");
 	}
 	
-	callDelay = 1; // default value in nodejs - 1 millisecond
+	return MINIMUM_CALL_DELAY;
   }
-  else if(callDelay < 1) {
+  
+  if(requestedCallDelay < MINIMUM_CALL_DELAY) {
     if(this.config.denyTimersShorterThan1Ms) {
-	  throw new Error("Call delay in timer must be >= 1");
+	  throw new Error("Call delay in timer must be >= " + MINIMUM_CALL_DELAY);
 	}
 	
-	callDelay = 1;
+	return MINIMUM_CALL_DELAY;
   }
+  
+  return requestedCallDelay;
+}
+
+TimerInterceptor.prototype.addTimer = function(TimerType, requestedCallback, requestedCallDelay) {
+  var callback = this.createCallback(requestedCallback, [].splice.call(arguments, 3));
+  var callDelay = this.createCallDelay(requestedCallDelay);
   
   var timer = new TimerType(callback, this.timerRepository, this.timeServer.currentTime, callDelay);
   return this.timerRepository.insertTimer(timer);

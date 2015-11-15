@@ -1,17 +1,17 @@
 var UIDManager = require("./UIDManager");
 
-function TimerRepository(config, uidGenerator) {
+function TimerRepository(config, sequenceGenerator) {
   this.config = config;
-  this.uidManager = new UIDManager(uidGenerator);
-  this.timers = [];  
+  this._sequenceGenerator = sequenceGenerator;
+  this.uidManager = new UIDManager();
+  this.timers = [];
 }
 
 TimerRepository.prototype.insertTimer = function(timer) {
-
   if(!timer.uid) {
     timer.uid = this.uidManager.getUid();
   }
-  timer.sequenceNumber = this.uidManager.nextSequenceNumber();
+  timer.sequenceNumber = this._sequenceGenerator.generate();
   
   var i;
   for(i = 0; i < this.timers.length; ++i) {
@@ -38,7 +38,7 @@ TimerRepository.prototype.clearTimer = function(uid) {
 
   var i;
   for(i = 0; i < this.timers.length; ++i) {
-    if (this.timers[i].uid.uid === uid.uid) {
+    if (this.timers[i].uid === uid) {
       this.timers.splice(i, 1);
 	  break;
 	}

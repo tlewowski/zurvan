@@ -4,18 +4,18 @@ var TimerTypes = require("./timers/TimerTypes");
 
 function AllTimersInterceptor(timeServer) {
   this._sequenceGenerator = new SequenceGenerator();
-  this.timeoutInterceptor = new TimerInterceptor(timeServer, TimerTypes.timeout);
-  this.intervalInterceptor = new TimerInterceptor(timeServer, TimerTypes.interval);
+  this._timeoutInterceptor = new TimerInterceptor(timeServer, TimerTypes.timeout);
+  this._intervalInterceptor = new TimerInterceptor(timeServer, TimerTypes.interval);
 }
 
 AllTimersInterceptor.prototype.intercept = function(config) {
-  this.timeoutInterceptor.intercept(config, this._sequenceGenerator);
-  this.intervalInterceptor.intercept(config, this._sequenceGenerator);
+  this._timeoutInterceptor.intercept(config, this._sequenceGenerator);
+  this._intervalInterceptor.intercept(config, this._sequenceGenerator);
 };
 
 AllTimersInterceptor.prototype.release = function() {
-  this.timeoutInterceptor.release();
-  this.intervalInterceptor.release();
+  this._timeoutInterceptor.release();
+  this._intervalInterceptor.release();
   this._sequenceGenerator.clear();
 };
 
@@ -27,12 +27,12 @@ AllTimersInterceptor.prototype.timerOrderingResolution = function(timeout, inter
   return interval;
 };
 AllTimersInterceptor.prototype.lastTimeout = function() {
-  return this.timeoutInterceptor.lastTimer();
+  return this._timeoutInterceptor.lastTimer();
 }
 
 AllTimersInterceptor.prototype.nextTimer = function() {
-  var nextTimeout = this.timeoutInterceptor.nextTimer();
-  var nextInterval = this.intervalInterceptor.nextTimer();
+  var nextTimeout = this._timeoutInterceptor.nextTimer();
+  var nextInterval = this._intervalInterceptor.nextTimer();
   
   if(!nextTimeout) {
     return nextInterval;

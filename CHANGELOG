@@ -1,6 +1,6 @@
 0.2.2:
- - added option to throw when argument to clearTimeout/clearInterval is not a valid timer
-
+ - added option to throw when argument to clearTimeout/clearInterval is not a valid timer issued by proper set function
+ 
 0.2.1:
  - *BREAKING CHANGE* removed hack for modifying original setImmediate fields for bluebird compatibility. 
  Now bluebird.setScheduler is used

@@ -1,7 +1,8 @@
 var TypeChecks = require("./TypeChecks");
+var SequenceGenerator = require("./SequenceGenerator");
 
-function UIDManager(sequenceGenerator) {
-  this._sequenceGenerator = sequenceGenerator;  
+function UIDManager() {
+  this._sequenceGenerator = new SequenceGenerator();  
   this._issuedUids = {};
 }
 
@@ -46,18 +47,14 @@ UIDManager.prototype.isAcceptableUid = function(uid) {
 };
 
 UIDManager.prototype.getUid = function() {
-  var sequenceNumber = this.nextSequenceNumber();
+  var sequenceNumber = this._sequenceGenerator.generate();
 
-  var uid = {uid: sequenceNumber, sequenceNumber: sequenceNumber};
+  var uid = {uid: sequenceNumber};
   uid.ref = uid;
   
   this._issuedUids[uid.uid] = uid;
 	
   return uid;
-};
-
-UIDManager.prototype.nextSequenceNumber = function() {
-  return this._sequenceGenerator.generate();
 };
 
 UIDManager.prototype.clear = function() {
