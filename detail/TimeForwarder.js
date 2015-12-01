@@ -95,8 +95,8 @@ TimeForwarder.prototype.expireAllTimeouts = function() {
 	  return that.expireAllTimeouts();
 	});
   }
-
-  return Promise.resolve();
+  
+  return this.advanceTime(0);
 };
 
 TimeForwarder.prototype.forwardTimeToNextTimer = function() {

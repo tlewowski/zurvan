@@ -24,6 +24,17 @@ describe('zurvan', function() {
 	  }).then(done, done);
 	});
 	
+	it('if no timeouts available, expiration still clears the queue', function(done) {
+	 var x; 
+   	 setImmediate(function(){
+	   x = true;
+     });
+
+	 return zurvan.expireAllTimeouts().then(function(){
+	    assert(x);
+      }).then(done, done);
+	});
+	
 	it('if no timers available, expiration of single one does not advance time', function(done) {
 	  assert.equal(0, process.uptime());
 	  zurvan.forwardTimeToNextTimer().then(function() {
