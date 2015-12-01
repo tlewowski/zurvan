@@ -104,8 +104,7 @@ TimeForwarder.prototype.forwardTimeToNextTimer = function() {
   if(closestTimer) {
     return this.advanceTime(closestTimer.dueTime.shortened(this.timeServer.currentTime));
   }
-  
-  return Promise.resolve();
+  return this.advanceTime(0);  
 };
 
 TimeForwarder.prototype.fireAllOutdatedTimers = function() {

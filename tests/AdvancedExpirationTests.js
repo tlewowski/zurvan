@@ -2,6 +2,22 @@ var assert = require("assert");
 var TimeUnit = require("../TimeUnit");
 var zurvan = require("../zurvan");
 
+function scheduleDelayedChange(x) {
+  setImmediate(function(){
+    setImmediate(function() {
+	  setImmediate(function() {
+	    setImmediate(function() {
+	      setImmediate(function() {
+		    setImmediate(function() {
+       	      x.x = true;
+		    });
+		  });
+	    });
+	  });
+    });
+  });
+}
+
 describe('zurvan', function() {
   describe('while manages time', function() {
     beforeEach(function(done) {
@@ -25,13 +41,10 @@ describe('zurvan', function() {
 	});
 	
 	it('if no timeouts available, expiration still clears the queue', function(done) {
-	 var x; 
-   	 setImmediate(function(){
-	   x = true;
-     });
-
+	 var x = {}; 
+	 scheduleDelayedChange(x);
 	 return zurvan.expireAllTimeouts().then(function(){
-	    assert(x);
+	    assert(x.x);
       }).then(done, done);
 	});
 	
@@ -40,6 +53,14 @@ describe('zurvan', function() {
 	  zurvan.forwardTimeToNextTimer().then(function() {
 	    assert.equal(0, process.uptime());
 	  }).then(done, done);
+	});
+
+	it('if no timeouts available, expiration still clears the queue', function(done) {
+	 var x = {}; 
+	 scheduleDelayedChange(x);
+	  zurvan.forwardTimeToNextTimer().then(function() {
+	    assert(x.x);
+      }).then(done, done);
 	});
 
 	it('is able to expire all set timeouts', function(done) {
