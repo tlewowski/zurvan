@@ -1,3 +1,4 @@
+"use strict";
 var Timer = require("./Timer");
 
 function TimeoutTimer(callback, timerRepository, currentTime, callDelay) {

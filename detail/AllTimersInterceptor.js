@@ -1,3 +1,4 @@
+"use strict";
 var TimerInterceptor = require("./TimerInterceptor");
 var SequenceGenerator = require("./SequenceGenerator");
 var TimerTypes = require("./timers/TimerTypes");

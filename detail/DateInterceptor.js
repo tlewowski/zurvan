@@ -1,3 +1,4 @@
+"use strict";
 var FieldOverrider = require("./FieldOverrider");
 var TypeChecks = require("./TypeChecks");
 
@@ -27,7 +28,8 @@ function fakeDate(timeServer) {
     return new OriginalDate(yearOrTimeAsStringOrTimestamp, month, day, hour, minute, second, millisecond);
   }
   
-  function FakeDate() {
+  // needs to have 7 arguments to be compliant to length of Date constructor
+  function FakeDate(a,b,c,d,e,f,g) {
     var argsArray = [].splice.call(arguments, 0);
     var date = (argsArray.length === 0) ? new OriginalDate(Date.now()) : makeOriginalDateFromArgs.apply(undefined, argsArray);
 	
@@ -46,7 +48,6 @@ function fakeDate(timeServer) {
 	}
   });
   
-  FakeDate.length = 7; // JS spec says so - max number of constructor arguments
   FakeDate.UTC = Date.UTC;
   FakeDate.parse = Date.parse;
   FakeDate.now = function()  {

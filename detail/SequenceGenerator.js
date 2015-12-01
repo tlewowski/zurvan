@@ -1,3 +1,4 @@
+"use strict";
 function SequenceGenerator() {
   this._sequenceNumber = 0;
 }

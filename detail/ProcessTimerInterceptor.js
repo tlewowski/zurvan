@@ -1,3 +1,4 @@
+"use strict";
 var assert = require("assert");
 var FieldOverrider = require("./FieldOverrider");
 var TimeUnit = require("../TimeUnit");

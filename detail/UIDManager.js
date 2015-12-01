@@ -1,3 +1,4 @@
+"use strict";
 var TypeChecks = require("./TypeChecks");
 var SequenceGenerator = require("./SequenceGenerator");
 

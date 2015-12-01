@@ -1,3 +1,4 @@
+"use strict";
 var FieldOverrider = require("./FieldOverrider");
 var TimerRepository = require("./TimerRepository");
 var TypeChecks = require("./TypeChecks");
@@ -37,9 +38,9 @@ TimerInterceptor.prototype.lastTimer = function() {
   return this.timerRepository.lastTimer();
 };
 
-TimerInterceptor.prototype.createCallback = function(callback, arguments) {
+TimerInterceptor.prototype.createCallback = function(callback, args) {
   if(TypeChecks.isFunction(callback)) {
-    return new Callback(callback, arguments);
+    return new Callback(callback, args);
   }
   
   if(this.config.acceptEvalTimers) {

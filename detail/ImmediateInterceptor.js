@@ -1,3 +1,4 @@
+"use strict";
 var FieldOverrider = require("./FieldOverrider");
 var UIDManager = require("./UIDManager");
 var SequenceGenerator = require("./SequenceGenerator");

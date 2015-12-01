@@ -1,3 +1,4 @@
+"use strict";
 function mergeConfigurations(localConfiguration, globalConfiguration) {
   var finalConfiguration = {};
   

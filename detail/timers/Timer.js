@@ -1,3 +1,4 @@
+"use strict";
 var TimeUnit = require("../../TimeUnit");
 
 function Timer(callback, timerRepository, currentTime, callDelay) {

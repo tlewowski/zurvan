@@ -1,3 +1,4 @@
+"use strict";
 function exportFunction(exportedObject, functionName) {
   return function() {
     return exportedObject[functionName].apply(exportedObject, [].splice.call(arguments, 0));

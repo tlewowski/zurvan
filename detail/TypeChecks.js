@@ -1,3 +1,4 @@
+"use strict";
 module.exports.isFunction = function(f) {
   return typeof f === 'function';
 };
