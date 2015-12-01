@@ -1,3 +1,4 @@
+"use strict";
 var TimeUnit = require("../TimeUnit");
 var zurvan = require("../zurvan");
 var bluebird = require("bluebird");

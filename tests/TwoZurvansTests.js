@@ -1,3 +1,4 @@
+"use strict";
 var TimeUnit = require("../TimeUnit");
 var zurvan = require("../zurvan").withDefaultConfiguration({systemTime: "2015-09-01T00:00:00.000Z"});
 

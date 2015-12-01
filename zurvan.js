@@ -1,3 +1,4 @@
+"use strict";
 var ImmediateInterceptor = require("./detail/ImmediateInterceptor");
 var AllTimersInterceptor = require("./detail/AllTimersInterceptor");
 var ProcessTimerInterceptor = require("./detail/ProcessTimerInterceptor");

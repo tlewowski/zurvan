@@ -1,6 +1,7 @@
 0.2.3:
  - *BREAKING CHANGE* expireAllTimeouts() and forwardTimeToNextTimer clear the queue even if there are no timeouts (previously it was resolved immediately)
-
+ - zurvan is running in strict mode now
+ 
 0.2.2:
  - added option to throw when argument to clearTimeout/clearInterval is not a valid timer issued by proper set function
  - fixed a bug - when clearTimeout/clearInterval is called with undefined, it no longer crashes

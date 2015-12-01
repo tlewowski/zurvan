@@ -1,3 +1,4 @@
+"use strict";
 var zurvan = require("../zurvan");
 var TimeUnit = require ("../TimeUnit");
 var assert = require("assert");

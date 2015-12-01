@@ -1,3 +1,4 @@
+"use strict";
 module.exports = function(grunt) {
 
   // Add the grunt-mocha-test tasks.
