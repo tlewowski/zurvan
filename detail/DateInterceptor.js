@@ -43,7 +43,12 @@ function fakeDate(timeServer) {
   forwardedCalls.forEach(function(property) {
     if(TypeChecks.isFunction(OriginalDate.prototype[property])) {
 	  FakeDate.prototype[property] = function() {
-	    return this._date[property].apply(this._date, [].splice.call(arguments, 0));
+	    var args = [].splice.call(arguments, 0);
+		if(this instanceof OriginalDate) {
+		  return this[property].apply(this, args);
+        }
+		
+		return this._date[property].apply(this._date, args);
 	  };
 	}
   });

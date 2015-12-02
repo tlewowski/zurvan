@@ -8,7 +8,7 @@ describe('zurvan', function() {
 	  zurvan.interceptTimers().then(done, done);
 	});
 	afterEach(function(done) {
-	  zurvan.releaseTimers().then(done);
+	  zurvan.releaseTimers().then(done, done);
 	});
 	
 	it('expires timers at advancing time', function(done) {
