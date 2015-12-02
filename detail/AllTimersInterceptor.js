@@ -23,13 +23,14 @@ AllTimersInterceptor.prototype.release = function() {
 AllTimersInterceptor.prototype.timerOrderingResolution = function(timeout, interval) {
   if(timeout.sequenceNumber < interval.sequenceNumber) {
     return timeout;
-  };	
+  }
   
   return interval;
 };
+
 AllTimersInterceptor.prototype.lastTimeout = function() {
   return this._timeoutInterceptor.lastTimer();
-}
+};
 
 AllTimersInterceptor.prototype.nextTimer = function() {
   var nextTimeout = this._timeoutInterceptor.nextTimer();

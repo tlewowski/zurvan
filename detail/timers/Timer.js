@@ -21,6 +21,6 @@ Timer.prototype.clear = function() {
   }
 
   this._timerRepository.clearTimer(this.uid);
-}
+};
 
 module.exports = Timer;

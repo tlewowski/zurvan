@@ -69,7 +69,7 @@ TimerInterceptor.prototype.createCallDelay = function(requestedCallDelay) {
   }
   
   return requestedCallDelay;
-}
+};
 
 TimerInterceptor.prototype.addTimer = function(TimerType, requestedCallback, requestedCallDelay) {
   var callback = this.createCallback(requestedCallback, [].splice.call(arguments, 3));
