@@ -16,7 +16,7 @@ Timer.prototype.expire = function() {
 };
 
 Timer.prototype.clear = function() {
-  if(!this.uid) {
+  if(this.uid === undefined) {
 	throw new Error("Cannot clear timeout that does not have an UID assigned! It's an SW bug, please report it");
   }
 

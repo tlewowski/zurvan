@@ -7,7 +7,16 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-mocha-istanbul');
   grunt.loadNpmTasks('grunt-madge');
 
-  var allFiles = ['*.js', 'detail', 'tests', 'examples' ];
+  function toFile(dir) {
+    return dir + "/*.js";
+  };
+  
+  var testDirectories = ['tests', 'tests/*', 'examples'];
+  var testFiles = testDirectories.map(toFile);
+  var productionDirectories = ['.', 'detail'];
+  var productionFiles = productionDirectories.map(toFile);
+  
+  var allFiles = productionFiles.concat(testFiles);
   
   grunt.initConfig({
     mochaTest: {
@@ -16,7 +25,7 @@ module.exports = function(grunt) {
           reporter: 'spec',
           captureFile: 'results.txt',
         },
-        src: ['tests/*.js', 'examples/*.js']
+        src: testFiles
       }
     },
     watch : {
@@ -31,7 +40,7 @@ module.exports = function(grunt) {
 	},
     mocha_istanbul: {
         coverage: {
-            src: ['tests', 'examples']
+            src: testFiles
         }
     }
   });
