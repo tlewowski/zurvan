@@ -23,7 +23,7 @@ describe('zurvan', function() {
 		assert.deepEqual([0,0], leftovers.processTime);
 		assert.equal(leftovers.currentTime.toSeconds(), 0);
 		
-        assert.equal(1000, leftovers.timeouts[0].dueTime.toMilliseconds())
+        assert.equal(1000, leftovers.timeouts[0].dueTime.toMilliseconds());
 		leftovers.timeouts[0].callback();
 		leftovers.timeouts[1].callback();
 

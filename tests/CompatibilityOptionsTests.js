@@ -95,7 +95,7 @@ describe('zurvan', function() {
 	  return zurvan.interceptTimers({denyImplicitTimer: true}).then(function() {
 	    setTimeout(function(){called = true;}, function(){});
 	  }).then(function() {
-	    return done(new Error("Implicit timer shall be denied and setting timer shall throw"));
+	    throw new Error("Implicit timer shall be denied and setting timer shall throw");
 	  }, function() {
      	return zurvan.releaseTimers();
 	  });
@@ -106,7 +106,7 @@ describe('zurvan', function() {
 	  return zurvan.interceptTimers({denyTimersShorterThan1Ms: true}).then(function() {
 	    setTimeout(function(){called = true;}, -1);
 	  }).then(function() {
-	    return done(new Error("Implicit timer shall be denied and setting timer shall throw"));
+	    throw new Error("Implicit timer shall be denied and setting timer shall throw");
 	  }, function() {
      	return zurvan.releaseTimers();
 	  });
