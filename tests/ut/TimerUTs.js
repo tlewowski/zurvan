@@ -14,9 +14,16 @@ describe("Timer when cleared", function() {
 	}
   });
 
-  it("with uid - behaves fine", function(done) {
+  it("with falsy uid - behaves fine", function(done) {
     var timer = new Timer(nop, {clearTimer: nop}, TimeUnit.seconds(0), 0);
 	timer.uid = 0;
+    timer.clear();
+	done();
+  });
+
+  it("with truthy uid - behaves fine", function(done) {
+    var timer = new Timer(nop, {clearTimer: nop}, TimeUnit.seconds(0), 0);
+	timer.uid = {};
     timer.clear();
 	done();
   });
