@@ -73,7 +73,8 @@ these fields are defined as:
  A `Timer` object consists of at least two fields: `callback` which is a 0-argument function executing what would be done if it expired and
  `dueTime` which is a `TimeUnit`, informing when would the timer be expired. In case of intervals it must also contain `callDelay` field, which is a `TimeUnit` 
  representing delay between consecutive calls. It may also contain arbitrary other fields, but they shall not be relied upon.
- Order of elements in `remainingTimeouts` and `remainingIntervals` is undefined.
+ Order of elements in `remainingTimeouts` and `remainingIntervals` is undefined. If _zurvan_ is executed with `ignoreProcessTimers` or `ignoreDate` configuration options, 
+ respective fields (`processTime` and `date`) will not be available in `releaseTimers` resolution.
  
  If is rejected, rejection value is `Error` with proper message.
 
@@ -169,7 +170,7 @@ If you do - do it at your own risk. But if you do, and you find any of these fun
 
 ## <a name="limitations"></a> Limitations
 
-After intercepting timers, `Date` object is overridden (if `noDateInterception` configuration option is set to `false`). As a result, some external calls that rely on types may fail.
+After intercepting timers, `Date` object is overridden (if `ignoreDate` configuration option is set to `false`). As a result, some external calls that rely on types may fail.
 This is because for `var d = new Date()` call `Object.prototype.toString(d)` without `zurvan` will return `[object Date]`, and after timer interception, `[object Object]`.
 Please file an issue if this poses a problem for you.
 

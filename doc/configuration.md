@@ -15,6 +15,8 @@
  Default value is `false` and typical Node.js behavior is used (setting delay to 1 ms). It is recommended to set this value to `true`, to catch some mistakes during testing.
  - `ignoreProcessTimers` - a `boolean`. When `true`, `process.uptime` and `process.hrtime` are not faked. By default `false`. It is recommended to 
  leave it `false`, unless you're trying to run `zurvan` in the browser.
+ - `ignoreDate` - a `boolean`. When `true`, original `Date` is replaced by one adjusted to time as forwarded by `zurvan`. If `false`, original one is still used. By default `true`, it is recommended to keep it so, unless
+ you need exactly the behavior of `Date` (see <a href="../README.md#limitations">limitations</a> of current behavior)
  - `bluebird` - an `object`, representing _bluebird_ library (returned from `require('bluebird')`)
  - `throwOnInvalidClearTimer` - a `boolean`. When `true` calls to `clearTimeout` and `clearInterval` will throw when called with an argument that was not earlier returned by respective `setTimeout` or `setInterval` 
  (i.e. `clearTimeout` throws when argument was not returned by `setTimeout` and `clearInterval` throws when argument was not returned by `setInterval`). 

@@ -61,16 +61,19 @@ Zurvan.prototype.interceptTimers = function(config) {
       areTimersIntercepted = true;
 	
       that.timeServer.setupTime(that.config.timeSinceStartup, that.config.systemTime);
-      that.dateInterceptor.intercept();
-      that.immediateInterceptor.intercept(that.config);	
+      if(!that.config.ignoreDate) {
+        that.dateInterceptor.intercept();
+      }
+	  
+	  that.immediateInterceptor.intercept(that.config);	
   
   	  if(!that.config.ignoreProcessTimers) {
         that.processTimerInterceptor.intercept();
 	  }
-
-      that.timerInterceptor.intercept(that.config);
-	
-      enterForwardingState(that);
+	  
+	  that.timerInterceptor.intercept(that.config);
+	  
+	  enterForwardingState(that);
 	  resolve();
 	}).then(function() {
 	  var x = that.waitForEmptyQueue();
@@ -79,8 +82,9 @@ Zurvan.prototype.interceptTimers = function(config) {
       if(!that.config.ignoreProcessTimers) {
         that.processTimerInterceptor.release();
 	  }
-	
-  	  that.dateInterceptor.release();
+	  if(!that.config.ignoreDate) {
+    	that.dateInterceptor.release();
+	  }
       that.immediateInterceptor.release();
 	  that.timerInterceptor.release();
 
@@ -109,8 +113,9 @@ Zurvan.prototype.releaseTimers = function() {
     if(!that.config.ignoreProcessTimers) {
       leftovers.processTime = that.processTimerInterceptor.release();
 	}
-	
-	leftovers.date = that.dateInterceptor.release();
+    if(!that.config.ignoreDate) {
+      leftovers.date = that.dateInterceptor.release();
+	}
     that.immediateInterceptor.release();
 
     var toTimerAPI = function(timer) {
@@ -149,6 +154,7 @@ var defaultZurvanConfiguration = {
   denyImplicitTimer: false,
   denyTimersShorterThan1Ms: false,
   ignoreProcessTimers: false,
+  ignoreDate: false,
   fakeOriginalSetImmediateMethods: false,
   throwOnInvalidClearTimer: false
 };

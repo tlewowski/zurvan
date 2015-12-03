@@ -71,6 +71,13 @@ describe('zurvan', function() {
 	  });
 	});
 	
+	it('does not intercept Date (behavior differs from original Date)', function() {
+	  return zurvan.interceptTimers({ignoreDate: true}).then(function() {
+	    assert(new Date().toISOString() !== "1970-01-01T00:00:00.000Z");
+		return zurvan.releaseTimers();
+	  });
+	});
+	
     it('evaluates timer or interval set with string as first argument (nodejs does not)', function() {
       return zurvan.interceptTimers({acceptEvalTimers: true}).then(function() {
 	    setTimeout("global.timeoutCalled = true;", 75);
