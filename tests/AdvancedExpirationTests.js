@@ -21,11 +21,11 @@ function scheduleDelayedChange(x) {
 
 describe('zurvan', function() {
   describe('while manages time', function() {
-    beforeEach(function(done) {
-	  zurvan.interceptTimers().then(done, done);
+    beforeEach(function() {
+	  return zurvan.interceptTimers();
 	});
-	afterEach(function(done) {
-	  zurvan.releaseTimers().then(done, done);
+	afterEach(function() {
+	  return zurvan.releaseTimers();
 	});
 	
 	it('if no timeouts available, expiration of all does not advance time', function(done) {

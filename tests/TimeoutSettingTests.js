@@ -4,11 +4,11 @@ var zurvan = require("../zurvan");
 
 describe('zurvan', function() {
   describe('after intercepting timers (more sophisticated usage)', function() {
-    beforeEach(function(done) {
-	  zurvan.interceptTimers().then(done, done);
+    beforeEach(function() {
+	  return zurvan.interceptTimers();
 	});
-	afterEach(function(done) {
-	  zurvan.releaseTimers().then(done);
+	afterEach(function() {
+	  return zurvan.releaseTimers();
 	});
 	
 	it('rejects attempt to move time backwards', function(done) {

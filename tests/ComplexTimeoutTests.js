@@ -4,12 +4,12 @@ var zurvan = require("../zurvan");
 var TimeUnit = require("../TimeUnit");
 
 describe('zurvan', function() {
-  describe('after intercepting timers', function(done) {
-    beforeEach(function(done) {
-	  zurvan.interceptTimers().then(done, done);
+  describe('after intercepting timers', function() {
+    beforeEach(function() {
+	  return zurvan.interceptTimers();
 	});
-	afterEach(function(done) {
-	  zurvan.releaseTimers().then(done, done);
+	afterEach(function() {
+	  return zurvan.releaseTimers();
 	});
 	it('supports any combination of setTimeout, setImmediate and process.nextTick', function(done) {
 	  var calls = [];

@@ -3,13 +3,13 @@ var assert = require("assert");
 var zurvan = require("../zurvan");
 
 describe('zurvan', function() {
-  describe('extended stopping time', function() {
-    beforeEach(function(done) {
-	  zurvan.interceptTimers().then(done, done);
+  describe('after stopping time', function() {
+    beforeEach(function() {
+	  return zurvan.interceptTimers();
 	});
 	
-	afterEach(function(done) {
-	  zurvan.releaseTimers().then(done);
+	afterEach(function() {
+	  return zurvan.releaseTimers();
 	});
 
     it('resets process timers', function(done) {

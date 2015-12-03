@@ -15,9 +15,12 @@ AllTimersInterceptor.prototype.intercept = function(config) {
 };
 
 AllTimersInterceptor.prototype.release = function() {
-  this._timeoutInterceptor.release();
-  this._intervalInterceptor.release();
+  var timers = {};
+  timers.timeouts = this._timeoutInterceptor.release();
+  timers.intervals = this._intervalInterceptor.release();
   this._sequenceGenerator.clear();
+  
+  return timers;
 };
 
 AllTimersInterceptor.prototype.timerOrderingResolution = function(timeout, interval) {

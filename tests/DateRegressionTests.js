@@ -5,11 +5,11 @@ var assert = require("assert");
 
 describe('zurvan', function() {
   describe('had a buggy behavior', function() {
-    beforeEach(function(done) {
-	  zurvan.interceptTimers().then(done, done);
+    beforeEach(function() {
+	  return zurvan.interceptTimers();
 	});
-	afterEach(function(done) {
-	  zurvan.releaseTimers().then(done);
+	afterEach(function() {
+	  return zurvan.releaseTimers();
 	});
 	
 	it('when serializing Date via util.format', function(done) {

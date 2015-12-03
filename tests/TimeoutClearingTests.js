@@ -4,12 +4,12 @@ var zurvan = require("../zurvan");
 
 describe('zurvan', function() {
   describe('after intercepting timers', function() {
-    beforeEach(function(done) {
-	  zurvan.interceptTimers().then(done, done);
+    beforeEach(function() {
+	  return zurvan.interceptTimers();
 	});
 	
-	afterEach(function(done) {
-	  zurvan.releaseTimers().then(done, done);
+	afterEach(function() {
+	  return zurvan.releaseTimers();
 	});
 
     it('does not call cleared immediates', function(done) {
@@ -74,7 +74,11 @@ describe('zurvan', function() {
 	    assert.equal(process.uptime(), 0.05);
         assert(rejected === true);
 		return zurvan.releaseTimers();
-	  }).then(done, done);
+	  }).then(function() {
+	    done();
+	  }, function(err) {
+	    done(err);
+	  });
 	});
 	
 	it('rejects if timers were not intercepted', function(done) {
@@ -93,7 +97,11 @@ describe('zurvan', function() {
 	  }).then(function() {
 	    done(new Error("Timers were already intercepted - shall not be able to intercept them again"));
 	  }, function() {
-	    zurvan.releaseTimers().then(done, done);
+	    zurvan.releaseTimers().then(function() {
+		  done();
+		}, function(err) {
+		  done(err);
+		});
 	  });
 	});
   });

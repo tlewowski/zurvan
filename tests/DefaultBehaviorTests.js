@@ -6,8 +6,8 @@ var assert = require("assert");
 
 describe('zurvan', function() {
   describe('by default', function() { 
-	it('ignores invalid clearTimeout/clearInterval request', function(done) {
-	  zurvan.interceptTimers().then(function() {
+	it('ignores invalid clearTimeout/clearInterval request', function() {
+	  return zurvan.interceptTimers().then(function() {
 		clearTimeout(undefined);
 		clearInterval(3);
 		clearInterval({});
@@ -22,7 +22,7 @@ describe('zurvan', function() {
 		clearTimeout(trickyRef);
 		
 		return zurvan.releaseTimers();
-	  }).then(done, done);
+	  });
 	});
   });
 });

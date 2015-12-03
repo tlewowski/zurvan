@@ -4,9 +4,9 @@ var TimeUnit = require ("../TimeUnit");
 var assert = require("assert");
 
 describe('zurvan had a problem', function() {
-  it('advanceTime did not clear all tasks in the microqueue before resolving - that is regression for it', function(done) {
+  it('advanceTime did not clear all tasks in the microqueue before resolving - that is regression for it', function() {
     var calls = [];
-	zurvan.interceptTimers().then(function() {
+	return zurvan.interceptTimers().then(function() {
 	  // queue priorities: 1. Promise 2. nextTick 3. setImmediate
 	  setTimeout(function() {
 	    calls.push(1);
@@ -73,15 +73,15 @@ describe('zurvan had a problem', function() {
 	  assert.equal(process.uptime(), 10);
 	  assert.deepEqual(calls, [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]);
 	  return zurvan.releaseTimers();
-	}).then(done, done);
+	});
   });
   
   // event loop goes like this: timers & intervals, process.nextTick, I/O, process.nextTick, 
   // setImmediate, process.nextTick - in bunches. so if immediates started, they'll execute till the end
-  it('ticks from immediates scheduled before waitForQueue requests were not executed', function(done) {
+  it('ticks from immediates scheduled before waitForQueue requests were not executed', function() {
 	var calls = [];
 	
-	zurvan.interceptTimers().then(function() {
+	return zurvan.interceptTimers().then(function() {
 	  setImmediate(function() {
 	    calls.push(1);
 		process.nextTick(function() {
@@ -120,6 +120,6 @@ describe('zurvan had a problem', function() {
 	}).then(function() {
 	  assert.deepEqual(calls, [1,2,3,4,5,6,7,8,9,10,11]);
 	  return zurvan.releaseTimers();
-	}).then(done, done);
+	});
   });
 });

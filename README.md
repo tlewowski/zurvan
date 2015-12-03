@@ -16,7 +16,7 @@ _Zurvan_ includes fake implementations for `setTimeout`, `clearTimeout`, `setInt
 such as `setImmediate`, `clearImmediate` and `process.nextTick`, but they are not faked - library utilizes asynchronous
 execution heavily (under assumption that since time is asynchronous by default, it's better to leave it this way).
 
-_Zurvan_ is currently *not* tested in the browser, so if you want to use it there, you can either hack it yourself (see: [Zurvan requirements](#requirements)) or 
+_Zurvan_ is currently *not* tested in the browser, so if you want to use it there, you can either hack it yourself (see: [Zurvan requirements](#requirements)) or a
 contact me.
 
 Multiple testcases cannot be ran in parallel when using _Zurvan_, as there is only a single time stream for forwarding.
@@ -45,10 +45,36 @@ Returns a Promise that is resolved when timers are faked and event queue is empt
 It takes an optional configuration object as parameter, which takes precedence over global configuration. 
 Details of configuration options are described in <a href="doc/configuration.md">configuration documentation</a>.
 
+Resolution value is `undefined` and rejection `Error` with proper message.
+
 #### `zurvan.releaseTimers()`
 
 Library teardown. Causes timers to be restored, i.e. all original functions are set back. 
 Returns a Promise that is resolved when timers are faked and event queue is empty and rejected if interception was not possible (e.g. timers were already intercepted)
+
+Resolution value is and `object`, defined as: 
+``` 
+{
+  timeouts: remainingTimeouts,
+  intervals: remainingIntervals,
+  date: zurvanEndDate,
+  processTime: zurvanEndProcessTime,
+  currentTime: zurvanEndTime
+}
+```
+these fields are defined as:
+
+ - `remainingTimeouts` is an array of `Timer` objects, representing timeouts that did not expire yet
+ - `remainingIntervals` is an array of `Timer` objects, representing intervals that did not expire yet
+ - `zurvanEndDate` is _zurvan_ date in same format that is returned when timers are intercepted (not exactly same as usual `Date` - see [limitations]{#limitations})
+ - `zurvanEndProcessTime` is _zurvan_ process time in `hrtime` format (`[seconds, nanoseconds]`) at the release site
+ - `zurvanEndTime` is `TimeUnit` that can be compared with `dueTime` of `Timer`. It represents amount of time that was forwarded.
+ 
+ A `Timer` object consists of at least two fields: `callback` which is a 0-argument function executing what would be done if it expired and
+ `dueTime` which is a `TimeUnit`, informing when would the timer be expired. It may also contain arbitrary other fields.
+ Order of elements in `remainingTimeouts` and `remainingIntervals` is undefined.
+ 
+ If is rejected, rejection value is `Error` with proper message.
 
 #### `zurvan.withDefaultConfiguration(config)`
 
@@ -63,6 +89,7 @@ Configuration options are described in <a href="doc/configuration.md">configurat
 
 Returns a `Promise` that is resolved when time is forwarded by given time and all timers with this dueTime are expired,
 or rejected it time cannot be forwarded (e.g. timers were not intercepted yet).
+Resolution value is `undefined` and rejection `Error` with proper message.
 
 Argument may be either a number (it is then interpreted as millisecond) or a `TimeUnit` object.
 
@@ -92,10 +119,12 @@ function f() {
 ```
 
 Returns a `Promise` that is resolved when all timeouts are already called or rejected it time cannot be forwarded (e.g. timers were not intercepted yet).
+Resolution value is `undefined` and rejection `Error` with proper message.
 
 #### `zurvan.forwardTimeToNextTimer()`
 
 Forwards the time to the nearest timer and exipires all timers with same due time.
+Resolution value is `undefined` and rejection `Error` with proper message.
 
 Returns a `Promise` that is resolved when all callbacks are executed and event queue is empty or rejected it time cannot be forwarded (e.g. timers were not intercepted yet)..
 
@@ -103,6 +132,7 @@ Returns a `Promise` that is resolved when all callbacks are executed and event q
 
 Returns a `Promise` that is resolved when all immediates are already called or rejected it time cannot be forwarded (e.g. timers were not intercepted yet).
 Also timers with zero time will be expired.
+Resolution value is `undefined` and rejection `Error` with proper message.
 
 ### TimeUnit
 
@@ -128,12 +158,19 @@ Provide factory functions for `TimeUnit` object, that represents time duration:
  - `unit.isLongerThan(unit2)` - checks if `unit` represents longer duration than `unit2`
  - `unit.isEqualTo(unit2)` - checks if both `unit` and `unit2` represent same duration, within a reasonable epsilon (current resolution is 10^-15 second)
  
-All of them work only on `TimeUnit` objects, but work smoothly on cross-unit basis.
- 
+All of them work only on `TimeUnit` objects, but work smoothly on cross-unit basis. They do not take into account phenomenons such as leap seconds.
+This is also the reason why units like `month` and `year` are not provided - because they would be ambigous and complicate the utility. To handle the calendar properly
+much bigger library would need to be used.
  
 ### Other
 There are no other API functions. All functions and modules in `detail` directory are library internal and are not guaranteed to expose a stable set of methods. Please do not use them directly.
 If you do - do it at your own risk. But if you do, and you find any of these functions useful (which I doubt - that's why they are in `detail`), contact me to make it part of stable API.
+
+## <a name="limitations"></a> Limitations
+
+After intercepting timers, `Date` object is overridden (if `noDateInterception` configuration option is set to `false`). As a result, some external calls that rely on types may fail.
+This is because for `var d = new Date()` call `Object.prototype.toString(d)` without `zurvan` will return `[object Date]`, and after timer interception, `[object Object]`.
+Please file an issue if this poses a problem for you.
 
 ## Examples
 

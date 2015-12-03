@@ -5,11 +5,11 @@ var bluebird = require("bluebird");
 var assert = require("assert");
 
 var bluebirdCompatibilityTestcase = function(configuration, expectedOutput) {
-  return function(done) {
+  return function() {
     var originalSetImmediate = global.setImmediate;
     var called = 0;
 
-    zurvan.interceptTimers(configuration).then(function() {
+    return zurvan.interceptTimers(configuration).then(function() {
 	  assert.notStrictEqual(originalSetImmediate, setImmediate);
   	  assert.strictEqual(originalSetImmediate.call, setImmediate.call);
 	  assert.strictEqual(originalSetImmediate.bind, setImmediate.bind);
@@ -38,7 +38,7 @@ var bluebirdCompatibilityTestcase = function(configuration, expectedOutput) {
   	  return zurvan.releaseTimers();
     }).then(function() {
 	  assert.strictEqual(originalSetImmediate, setImmediate);
-    }).then(done, done);
+    });
   };
 };
 

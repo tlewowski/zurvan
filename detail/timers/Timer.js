@@ -2,17 +2,17 @@
 var TimeUnit = require("../../TimeUnit");
 
 function Timer(callback, timerRepository, currentTime, callDelay) {
-  this._callback = callback;
   this._callDelay = TimeUnit.milliseconds(callDelay);
   this._currentTime = currentTime;
   this._timerRepository = timerRepository;
   
+  this.callback = callback;
   this.dueTime = currentTime.extended(this._callDelay);
 }
 
 Timer.prototype.expire = function() {
   this.precall();
-  this._callback.call();
+  this.callback.call();
 };
 
 Timer.prototype.clear = function() {

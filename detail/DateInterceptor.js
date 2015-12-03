@@ -71,7 +71,9 @@ DateInterceptor.prototype.intercept = function() {
 };
 
 DateInterceptor.prototype.release = function() {
+  var now = new Date();
   this.dateOverrider.restore();
+  return now;
 };
 
 module.exports = DateInterceptor;

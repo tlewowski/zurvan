@@ -1,5 +1,6 @@
 0.2.3:
  - *BREAKING CHANGE* expireAllTimeouts() and forwardTimeToNextTimer clear the queue even if there are no timeouts (previously it was resolved immediately)
+ - *BREAKING CHANGE* releaseTimers() is now resolved with leftovers from execution
  - fixed a bug - zurvan does not crash anymore when called as argument of util.format
  - zurvan is running in strict mode now
  

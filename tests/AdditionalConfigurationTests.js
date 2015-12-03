@@ -6,8 +6,8 @@ var assert = require("assert");
 
 describe('zurvan', function() {
   describe('under special configuration', function() { 
-	it('runs at arbitrary time since process startup', function(done) {
-	  zurvan.interceptTimers({timeSinceStartup: 4}).then(function() {
+	it('runs at arbitrary time since process startup', function() {
+	  return zurvan.interceptTimers({timeSinceStartup: 4}).then(function() {
 	    assert.equal(4, process.uptime());
 		assert.deepEqual([4, 0], process.hrtime());
 		return zurvan.releaseTimers();
@@ -29,11 +29,11 @@ describe('zurvan', function() {
 	    assert.equal(10, process.uptime());
 		assert.deepEqual([10, 0], process.hrtime());
 		return zurvan.releaseTimers();
-	  }).then(done, done);
+	  });
 	});
 	
-	it('runs at any required system time', function(done) {
-	  zurvan.interceptTimers({systemTime: Date.UTC(2015, 0, 5)}).then(function() {
+	it('runs at any required system time', function() {
+	  return zurvan.interceptTimers({systemTime: Date.UTC(2015, 0, 5)}).then(function() {
 	    var nowDate = new Date();
 		assert.equal(nowDate.toISOString(), "2015-01-05T00:00:00.000Z");
 		assert.equal(0, process.uptime());
@@ -53,11 +53,11 @@ describe('zurvan', function() {
         assert(nowDate.toISOString(), "1999-10-08T15:00:00.000Z");
 		assert.equal(45, process.uptime());
 		return zurvan.releaseTimers();
-	  }).then(done, done);
+	  });
 	});
 	
-	it('throws on invalid clearTimeout/clearInterval request', function(done) {
-	  zurvan.interceptTimers({throwOnInvalidClearTimer: true}).then(function() {
+	it('throws on invalid clearTimeout/clearInterval request', function() {
+	  return zurvan.interceptTimers({throwOnInvalidClearTimer: true}).then(function() {
 		assert.throws(function() {
 		  clearTimeout(undefined);
 		}, /undefined/);
@@ -88,11 +88,11 @@ describe('zurvan', function() {
 		}, /not easily serializable/);
 		
 		return zurvan.releaseTimers();
-	  }).then(done, done);
+	  });
 	});	
 	
-	it('throws on invalid clearTimeout from setInterval and vice versa', function(done) {
-	  zurvan.interceptTimers({throwOnInvalidClearTimer: true}).then(function() {
+	it('throws on invalid clearTimeout from setInterval and vice versa', function() {
+	  return zurvan.interceptTimers({throwOnInvalidClearTimer: true}).then(function() {
 		var timeoutId = setTimeout(function() {}, 100);
 		assert.throws(function() {
 		  clearInterval(timeoutId);
@@ -106,7 +106,7 @@ describe('zurvan', function() {
 		clearInterval(intervalId);
 
 		return zurvan.releaseTimers();
-	  }).then(done, done);
+	  });
 	});
   });
 });

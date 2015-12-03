@@ -46,9 +46,12 @@ TimerRepository.prototype.clearTimer = function(uid) {
   }
 };
 
-TimerRepository.prototype.clearAll = function() {
+TimerRepository.prototype.releaseAll = function() {
+  var earlierTimers = this.timers;
   this.timers = [];
   this.uidManager.clear();
+  
+  return earlierTimers;
 };
 
 TimerRepository.prototype.nextTimer = function() {

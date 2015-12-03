@@ -13,8 +13,10 @@ ProcessTimerInterceptor.prototype.intercept = function() {
 };
 
 ProcessTimerInterceptor.prototype.release = function() {
+  var currentProcessTime = process.hrtime();
   this.uptimeOverrider.restore();
   this.hrtimeOverrider.restore();
+  return currentProcessTime;
 };
 
 ProcessTimerInterceptor.prototype.uptime = function() {

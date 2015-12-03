@@ -103,17 +103,33 @@ Zurvan.prototype.releaseTimers = function() {
     return that.timeForwarder.stopForwarding();
   }).then(function() {
     return that.waitForEmptyQueue();
-  }).then(function() {
-  	if(!that.config.ignoreProcessTimers) {
-      that.processTimerInterceptor.release();
+  }).then(function() {  
+    var leftovers = {};
+  
+    if(!that.config.ignoreProcessTimers) {
+      leftovers.processTime = that.processTimerInterceptor.release();
 	}
 	
-	that.dateInterceptor.release();
+	leftovers.date = that.dateInterceptor.release();
     that.immediateInterceptor.release();
-	that.timerInterceptor.release();
 
+    var toTimerAPI = function(timer) {
+	  return {
+	    dueTime: timer.dueTime,
+		callback: function() {
+		  return timer.callback.call();
+		}
+	  };
+	};
+	var timers = that.timerInterceptor.release();
+	leftovers.timeouts = timers.timeouts.map(toTimerAPI);
+	leftovers.intervals = timers.intervals.map(toTimerAPI);
+	leftovers.currentTime = that.timeServer.currentTime.copy();
+	
     areTimersIntercepted = false;
     enterRejectingState(that);
+	
+	return leftovers;
   });
 };
 

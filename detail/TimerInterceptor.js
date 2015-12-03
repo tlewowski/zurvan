@@ -27,7 +27,7 @@ TimerInterceptor.prototype.intercept = function(config, uidGenerator) {
 TimerInterceptor.prototype.release = function() {
   this.setTimers.restore();
   this.clearTimers.restore();
-  this.timerRepository.clearAll();
+  return this.timerRepository.releaseAll();
 };
 
 TimerInterceptor.prototype.nextTimer = function() {

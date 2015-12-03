@@ -4,12 +4,12 @@ var zurvan = require("../zurvan");
 
 describe('zurvan', function() {
   describe('after intercepting timers', function() {
-    beforeEach(function(done) {
-	  zurvan.interceptTimers().then(done, done);
+    beforeEach(function() {
+	  return zurvan.interceptTimers();
 	});
 	
-	afterEach(function(done) {
-	  zurvan.releaseTimers().then(done, done);
+	afterEach(function() {
+	  return zurvan.releaseTimers();
 	});
 	
 	it('can handle complex scenarios on the queue in a single moment', function(done) {

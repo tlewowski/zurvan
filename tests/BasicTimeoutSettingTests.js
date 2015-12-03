@@ -4,11 +4,11 @@ var zurvan = require("../zurvan");
 
 describe('zurvan', function() {
   describe('after intercepting timers (basic functionality)', function() {
-    beforeEach(function(done) {
-	  zurvan.interceptTimers().then(done, done);
+    beforeEach(function() {
+	  return zurvan.interceptTimers();
 	});
-	afterEach(function(done) {
-	  zurvan.releaseTimers().then(done, done);
+	afterEach(function() {
+	  return zurvan.releaseTimers();
 	});
 	
 	it('expires timers at advancing time', function(done) {

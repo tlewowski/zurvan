@@ -7,11 +7,11 @@ var assert = require("assert");
 
 describe('zurvan', function() {
   describe('when faking Date', function() {
-    beforeEach(function(done) {
-      zurvan.interceptTimers().then(done, done);
+    beforeEach(function() {
+      return zurvan.interceptTimers();
     });
-    afterEach(function(done) {
-	  zurvan.releaseTimers().then(done, done);
+    afterEach(function() {
+	  return zurvan.releaseTimers();
     });
 	
     it('intercepts Date and by default resets timestamp to 0', function(done) {

@@ -52,8 +52,8 @@ describe('zurvan context', function() {
     globalValues = {};
   });
 
-  it('is global by default', function(done) {
-	zurvan.interceptTimers().then(function() {
+  it('is global by default', function() {
+	return zurvan.interceptTimers().then(function() {
 	  assert.notStrictEqual(globalValues.timers.setTimeout, setTimeout);
 	  assert.notStrictEqual(globalValues.timers.setInterval, setInterval);
 	  assert.notStrictEqual(globalValues.timers.setImmediate, setImmediate);
@@ -66,6 +66,6 @@ describe('zurvan context', function() {
 	  return zurvan.releaseTimers();
 	}).then(function() {
 	  globalContextUntouched(globalValues);
-	}).then(done, done);
+	});
   });
 });
