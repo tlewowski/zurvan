@@ -71,7 +71,8 @@ these fields are defined as:
  - `zurvanEndTime` is `TimeUnit` that can be compared with `dueTime` of `Timer`. It represents amount of time that was forwarded.
  
  A `Timer` object consists of at least two fields: `callback` which is a 0-argument function executing what would be done if it expired and
- `dueTime` which is a `TimeUnit`, informing when would the timer be expired. It may also contain arbitrary other fields.
+ `dueTime` which is a `TimeUnit`, informing when would the timer be expired. In case of intervals it must also contain `callDelay` field, which is a `TimeUnit` 
+ representing delay between consecutive calls. It may also contain arbitrary other fields, but they shall not be relied upon.
  Order of elements in `remainingTimeouts` and `remainingIntervals` is undefined.
  
  If is rejected, rejection value is `Error` with proper message.

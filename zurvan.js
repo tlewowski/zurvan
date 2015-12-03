@@ -116,7 +116,8 @@ Zurvan.prototype.releaseTimers = function() {
     var toTimerAPI = function(timer) {
 	  return {
 	    dueTime: timer.dueTime,
-		callback: function() {
+		callDelay: timer.callDelay,
+        callback: function() {
 		  return timer.callback.call();
 		}
 	  };

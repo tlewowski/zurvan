@@ -21,14 +21,12 @@ describe('zurvan', function() {
 		assert.deepEqual([0,0], timers.processTime);
 		assert.equal(timers.currentTime.toSeconds(), 0);
 		
-		if(timers.timeouts[0].dueTime.isShorterThan(timers.timeouts[1].dueTime)) {
-		  timers.timeouts[0].callback();
-		  timers.timeouts[1].callback();
-		}
-		else {
-		  timers.timeouts[1].callback();
-		  timers.timeouts[0].callback();
-		}
+        assert.equal(1000, timers.timeouts[0].dueTime.toMilliseconds())
+		timers.timeouts[0].callback();
+		timers.timeouts[1].callback();
+
+		assert.equal(5, timers.intervals[0].dueTime.toMilliseconds());
+		assert.equal(5, timers.intervals[0].callDelay.toMilliseconds());
 	  }).then(done, done);
 	});
   });
