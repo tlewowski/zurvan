@@ -7,6 +7,7 @@ var TimeForwarder = require("./detail/TimeForwarder");
 var TimeServer = require("./detail/TimeServer");
 var APICreator = require("./detail/APICreator");
 var Configuration = require("./detail/Configuration");
+var Dependencies = require("./detail/Dependencies");
 
 function enterRejectingState(actor) {
   actor.advanceTime = Promise.reject.bind(undefined, Error("Cannot advance time if timers are not intercepted!"));
@@ -171,6 +172,11 @@ function createZurvanAPI(newDefaultConfig) {
   };
   
   return api;
+}
+
+var missingDependencies = Dependencies.missing();
+if(missingDependencies) {
+  throw new Error(missingDependencies);
 }
 
 module.exports = createZurvanAPI();
