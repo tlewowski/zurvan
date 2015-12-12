@@ -12,8 +12,10 @@ describe('second zurvan', function() {
 	  return zurvan2.interceptTimers();
 	}).then(function() {
 	  throw new Error("Zurvan should not be able to intercept timers that are already intercepted");
-	}, function() {
-	  return zurvan.releaseTimers();
+	}, function(err) {
+	  assert(err.message.match(/Cannot intercept timers that are already intercepted/));
+	}).then(function() {
+  	  return zurvan.releaseTimers();
 	});
   });
   
@@ -43,8 +45,10 @@ describe('second zurvan', function() {
 	  throw new Error("Zurvan should not be able to advance time before intercepting it");
 	}, function(err) {
 	  assert.equal(process.uptime(), 0);
+	  assert(err.message.match(/Cannot advance time if timers are not intercepted by this instance/));
 	  assert.throws(zurvan2.blockSystem.bind(zurvan2, TimeUnit.minutes(1)));
+	}).then(function() {
 	  return zurvan.releaseTimers();
-	});
+    });
   });
 });

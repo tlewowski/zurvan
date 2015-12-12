@@ -15,11 +15,19 @@ var TimeServer = require("./detail/TimeServer");
 var APICreator = require("./detail/APICreator");
 var Configuration = require("./detail/Configuration");
 
+function rejectPromiseWithError(errorMessage) {
+  return function() {
+    return Promise.reject(new Error(errorMessage));
+  }
+}
+
 function enterRejectingState(actor) {
-  actor.advanceTime = Promise.reject.bind(undefined, Error("Cannot advance time if timers are not intercepted!"));
-  actor.blockSystem = Promise.reject.bind(undefined, Error("Cannot block system if timers are not intercepted!"));
-  actor.expireAllTimeouts = Promise.reject.bind(undefined, Error("Cannot expire timeouts if timers are not intercepted!"));
-  actor.forwardTimeToNextTimer = Promise.reject.bind(undefined, Error("Cannot forward time if timers are not intercepted!"));
+  actor.advanceTime = rejectPromiseWithError("Cannot advance time if timers are not intercepted by this instance!");
+  actor.blockSystem = function() {
+    throw new Error("Cannot block system if timers are not intercepted by this instance!")
+  };
+  actor.expireAllTimeouts = rejectPromiseWithError("Cannot expire timeouts if timers are not intercepted by this instance!");
+  actor.forwardTimeToNextTimer = rejectPromiseWithError("Cannot forward time if timers are not intercepted by this instance!");
 }
 
 function enterForwardingState(actor) {
@@ -59,7 +67,7 @@ Zurvan.prototype.interceptTimers = function(config) {
   var that = this;
   return new Promise(function(resolve, reject) {
     if(areTimersIntercepted) {
-	  return reject(Error("Cannot intercept timers that are already intercepted!"));
+	  return reject(Error("Cannot intercept timers that are already intercepted by another instance!"));
 	}
 	return resolve();
   }).then(function() {
@@ -106,7 +114,7 @@ Zurvan.prototype.releaseTimers = function() {
   var that = this;
   return new Promise(function(resolve, reject) {
     if(!areTimersIntercepted) {
-      return reject(Error("Cannot release timers that were not intercepted"));
+      return reject(Error("Cannot release timers that were not intercepted by this instance"));
 	}
 	
     return resolve();
