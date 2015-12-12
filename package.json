@@ -1,6 +1,6 @@
 {
   "name": "zurvan",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "keywords": ["testing","timeouts","time","timers","fake time","faking timers","event loop management","fake timers","setImmediate","setInterval","setTimeout","process.uptime","Date","process.hrtime"],
   "description": "A library for faking timers in Node.js",
   "author": "Tomasz Lewowski",
