@@ -18,13 +18,13 @@ var Configuration = require("./detail/Configuration");
 function rejectPromiseWithError(errorMessage) {
   return function() {
     return Promise.reject(new Error(errorMessage));
-  }
+  };
 }
 
 function enterRejectingState(actor) {
   actor.advanceTime = rejectPromiseWithError("Cannot advance time if timers are not intercepted by this instance!");
   actor.blockSystem = function() {
-    throw new Error("Cannot block system if timers are not intercepted by this instance!")
+    throw new Error("Cannot block system if timers are not intercepted by this instance!");
   };
   actor.expireAllTimeouts = rejectPromiseWithError("Cannot expire timeouts if timers are not intercepted by this instance!");
   actor.forwardTimeToNextTimer = rejectPromiseWithError("Cannot forward time if timers are not intercepted by this instance!");

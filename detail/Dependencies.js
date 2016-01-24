@@ -21,7 +21,7 @@ function globalFunctionDependency(functionName) {
 	  obj["global." + functionName] = dependencyExistsAsFunction(global[functionName]);
 	  return obj;	  
 	}
-  }
+  };
 }
 
 var deps = {
