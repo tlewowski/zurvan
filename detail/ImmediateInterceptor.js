@@ -2,6 +2,7 @@
 var FieldOverrider = require("./FieldOverrider");
 var UIDManager = require("./UIDManager");
 var SequenceGenerator = require("./SequenceGenerator");
+var TypeChecks = require("./TypeChecks");
 var assert = require("assert");
 
 function ImmediateInterceptor() {
@@ -17,11 +18,11 @@ ImmediateInterceptor.prototype.intercept = function(config) {
   this.enqueue = this.setImmediates.oldValue;
   this.dequeue = this.clearImmediates.oldValue;
 
-  if(typeof this.config.bluebird === 'function') {
+  if(TypeChecks.isFunction(this.config.bluebird)) {
     this.previousBluebirdScheduler = this.config.bluebird.setScheduler(setImmediate.bind(global));
   }
   else if(this.config.bluebird !== undefined) {
-    throw new Error("bluebird configuration parameter to zurvan must be an object");
+    throw new Error("if given, bluebird configuration parameter to zurvan must be a function representing bluebird library");
   }
 };
 

@@ -4,7 +4,7 @@ var TimeUnit = require("../TimeUnit");
 var assert = require("assert");
 
 function TimeForwarder(timeServer, timerInterceptor, immediateInterceptor) {
-  this.timeForwardingOngoing = false;
+  this.forwardingStartedSavedStack = undefined;
   this.timerInterceptor = timerInterceptor;  
   this.timeServer = timeServer;
   this.immediateInterceptor = immediateInterceptor; 
@@ -14,7 +14,7 @@ TimeForwarder.prototype.stopForwarding = function() {
   var that = this;
   return new Promise(function(resolve, reject) {
     if(that.isExpiringEvents()) {
-	  return reject(Error("Cannot release timers during event expiration"));
+	  return reject(new Error("Cannot release timers during event expiration"));
     }
 	
 	return resolve();
@@ -22,15 +22,15 @@ TimeForwarder.prototype.stopForwarding = function() {
 };
 
 TimeForwarder.prototype.stopExpiringEvents = function() {
-  this.timeForwardingOngoing = false;
+  this.forwardingStartedSavedStack = undefined;
 };
 
 TimeForwarder.prototype.startExpiringEvents = function() {
-  this.timeForwardingOngoing = true;  
+  this.forwardingStartedSavedStack = new Error().stack;  
 };
 
 TimeForwarder.prototype.isExpiringEvents = function() {
-  return this.timeForwardingOngoing;
+  return this.forwardingStartedSavedStack !== undefined;
 };
 
 TimeForwarder.prototype.advanceTime = function(timeToForward) {
@@ -39,12 +39,13 @@ TimeForwarder.prototype.advanceTime = function(timeToForward) {
 
   return new Promise(function(resolve, reject) {
     if(advanceStep.isShorterThan(TimeUnit.milliseconds(0))) {
-      return reject(Error("Even Zurvan cannot move back in time!"));
+      return reject(new Error("Zurvan cannot move back in time. Requested step: << " + advanceStep.toMilliseconds() + "ms >>"));
     }
 
     if(that.isExpiringEvents()) {
-      return reject(Error("Cannot forward time shortened previous forwarding ends. Currently at: " + 
-        that.timeServer.currentTime.toMilliseconds() + " ms, target: " + that.timeServer.targetTime.toMilliseconds() + " ms"));
+      return reject(new Error("Cannot forward time before previous forwarding ends. Currently at: << " + 
+        that.timeServer.currentTime.toMilliseconds() + " >> ms, target: << " + that.timeServer.targetTime.toMilliseconds() + 
+		" ms >>. Forwarding requested from: " + that.forwardingStartedSavedStack));
     }
 
     that.timeServer.targetTime = that.timeServer.currentTime.extended(advanceStep);
@@ -121,7 +122,7 @@ TimeForwarder.prototype.blockSystem = function(timeToBlock) {
   var blockStep = (TypeChecks.isNumber(timeToBlock)) ? TimeUnit.milliseconds(timeToBlock) : timeToBlock;
  
   if(blockStep.isShorterThan(TimeUnit.milliseconds(0))) {
-    throw new Error("Even Zurvan cannot move back in time!");
+    throw new Error("Zurvan cannot move back in time. Requested step: << " + blockStep.toMilliseconds() + "ms >>");
   }
 	
   if(!this.isExpiringEvents()) {
@@ -129,9 +130,11 @@ TimeForwarder.prototype.blockSystem = function(timeToBlock) {
     this.timeServer.targetTime.add(blockStep);
   }
   else if(this.timeServer.targetTime.isShorterThan(this.timeServer.currentTime.extended(blockStep))) {
-    throw new Error("Cannot block system during advancing for longer than requested advance time");
+    throw new Error("Cannot block system during advancing for longer than requested advance time. Currently at: << " + 
+        this.timeServer.currentTime.toMilliseconds() + " >> ms, target: << " + this.timeServer.targetTime.toMilliseconds() + 
+		" ms >>, requested step: << " + blockStep.toMilliseconds() + " ms >>. Forwarding requested from: " + that.forwardingStartedSavedStack);
   }
-	
+
   this.timeServer.currentTime.add(blockStep);
   this.fireAllOutdatedTimers();
 };

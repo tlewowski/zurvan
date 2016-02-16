@@ -47,14 +47,14 @@ TimerInterceptor.prototype.createCallback = function(callback, args) {
     return new Callback(function() {return eval(callback);}, []);
   }
   
-  throw new Error("Node.js does not accept strings in timers. If you wish, you can configure Zurvan to use them, but beware.");  
+  throw new Error("Node.js does not accept strings to be evaluated in timers. If you wish, you can configure Zurvan to use them, but beware.");  
 };
 
 var MINIMUM_CALL_DELAY = 1;
 TimerInterceptor.prototype.createCallDelay = function(requestedCallDelay) {
   if(!TypeChecks.isNumber(requestedCallDelay)) {
     if(this.config.denyImplicitTimer) {
-      throw new Error("Call delay in timer call must be a numeric value");
+      throw new Error("Call delay in timer call must be a numeric value, given: << " + requestedCallDelay + " >>");
 	}
 	
 	return MINIMUM_CALL_DELAY;
@@ -62,7 +62,7 @@ TimerInterceptor.prototype.createCallDelay = function(requestedCallDelay) {
   
   if(requestedCallDelay < MINIMUM_CALL_DELAY) {
     if(this.config.denyTimersShorterThan1Ms) {
-	  throw new Error("Call delay in timer must be >= " + MINIMUM_CALL_DELAY);
+	  throw new Error("Call delay in timer must be >= " + MINIMUM_CALL_DELAY + ". Given: << " + requestedCallDelay + " >>");
 	}
 	
 	return MINIMUM_CALL_DELAY;

@@ -9,7 +9,7 @@
     "url" : "https://github.com/Lewerow/zurvan.git"
   },
   "devDependencies": {
-    "mocha": "2.3.x",
+    "mocha": "2.4.5",
 	"istanbul": "^0.4.0",
     "grunt": "~0.4.4",
     "grunt-cli": "~0.1.13",
@@ -18,7 +18,7 @@
     "grunt-mocha-test": "^0.12.7",
 	"grunt-mocha-istanbul": "~3.0.1",
 	"grunt-madge": "~0.0.6",
-	"codeclimate-test-reporter": "0.3.0",
+	"codeclimate-test-reporter": "0.3.1",
 	"bluebird": "^3.0.0"
   },
   "bugs": "https://github.com/Lewerow/zurvan/issues",

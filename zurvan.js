@@ -22,12 +22,12 @@ function rejectPromiseWithError(errorMessage) {
 }
 
 function enterRejectingState(actor) {
-  actor.advanceTime = rejectPromiseWithError("Cannot advance time if timers are not intercepted by this instance!");
+  actor.advanceTime = rejectPromiseWithError("Cannot advance time if timers are not intercepted by this instance of zurvan");
   actor.blockSystem = function() {
-    throw new Error("Cannot block system if timers are not intercepted by this instance!");
+    throw new Error("Cannot block system if timers are not intercepted by this instance of zurvan");
   };
-  actor.expireAllTimeouts = rejectPromiseWithError("Cannot expire timeouts if timers are not intercepted by this instance!");
-  actor.forwardTimeToNextTimer = rejectPromiseWithError("Cannot forward time if timers are not intercepted by this instance!");
+  actor.expireAllTimeouts = rejectPromiseWithError("Cannot expire timeouts if timers are not intercepted by this instance of zurvan");
+  actor.forwardTimeToNextTimer = rejectPromiseWithError("Cannot forward time if timers are not intercepted by this instance of zurvan");
 }
 
 function enterForwardingState(actor) {
@@ -67,7 +67,7 @@ Zurvan.prototype.interceptTimers = function(config) {
   var that = this;
   return new Promise(function(resolve, reject) {
     if(areTimersIntercepted) {
-	  return reject(Error("Cannot intercept timers that are already intercepted by another instance!"));
+	  return reject(new Error("Cannot intercept timers that are already intercepted by another instance of zurvan"));
 	}
 	return resolve();
   }).then(function() {
@@ -114,7 +114,7 @@ Zurvan.prototype.releaseTimers = function() {
   var that = this;
   return new Promise(function(resolve, reject) {
     if(!areTimersIntercepted) {
-      return reject(Error("Cannot release timers that were not intercepted by this instance"));
+      return reject(new Error("Cannot release timers that were not intercepted by this instance of zurvan"));
 	}
 	
     return resolve();
