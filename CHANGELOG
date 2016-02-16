@@ -1,3 +1,7 @@
+0.2.5:
+ - minor refactoring changes
+ - enhanced error messages
+
 0.2.4:
  - added environment compatibility check - if required functions are not available in environment, zurvan will throw proper error at `require`
  - error messages shall be visible now (in Error object/reject) in case of using zurvan that was not initialized properly

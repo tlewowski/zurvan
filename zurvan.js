@@ -53,9 +53,9 @@ function Zurvan(config) {
   this.timeServer = new TimeServer();
    
   this.immediateInterceptor = new ImmediateInterceptor();
-  this.timerInterceptor = new AllTimersInterceptor(this.timeServer);
+  this.allTimersInterceptor = new AllTimersInterceptor(this.timeServer);
   
-  this.timeForwarder = new TimeForwarder(this.timeServer, this.timerInterceptor, this.immediateInterceptor);
+  this.timeForwarder = new TimeForwarder(this.timeServer, this.allTimersInterceptor, this.immediateInterceptor);
   
   this.processTimerInterceptor = new ProcessTimerInterceptor(this.timeServer);
   this.dateInterceptor = new DateInterceptor(this.timeServer);
@@ -86,7 +86,7 @@ Zurvan.prototype.interceptTimers = function(config) {
         that.processTimerInterceptor.intercept();
 	  }
 	  
-	  that.timerInterceptor.intercept(that.config);
+	  that.allTimersInterceptor.intercept(that.config);
 	  
 	  enterForwardingState(that);
 	  resolve();
@@ -101,7 +101,7 @@ Zurvan.prototype.interceptTimers = function(config) {
     	that.dateInterceptor.release();
 	  }
       that.immediateInterceptor.release();
-	  that.timerInterceptor.release();
+	  that.allTimersInterceptor.release();
 
       areTimersIntercepted = false;
       enterRejectingState(that);
@@ -142,7 +142,7 @@ Zurvan.prototype.releaseTimers = function() {
 		}
 	  };
 	};
-	var timers = that.timerInterceptor.release();
+	var timers = that.allTimersInterceptor.release();
 	leftovers.timeouts = timers.timeouts.map(toTimerAPI);
 	leftovers.intervals = timers.intervals.map(toTimerAPI);
 	leftovers.currentTime = that.timeServer.currentTime.copy();
