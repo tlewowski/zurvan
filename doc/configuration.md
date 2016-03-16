@@ -21,3 +21,6 @@
  - `throwOnInvalidClearTimer` - a `boolean`. When `true` calls to `clearTimeout` and `clearInterval` will throw when called with an argument that was not earlier returned by respective `setTimeout` or `setInterval` 
  (i.e. `clearTimeout` throws when argument was not returned by `setTimeout` and `clearInterval` throws when argument was not returned by `setInterval`). 
  By default `false`, it is recommended to set to `true` to provide better test assertions.
+ - `promiseScheduler` - a `function` representing a Promises/A+ compatible library (e.g., `bluebird`). It will be used internally to schedule Promises. 
+ By default it is the built-in Node.js Promise. In environments where there is no Promise, `bluebird` is used as default library (if available). If neither
+ of these options are available, `.interceptTimers()` will throw an error.

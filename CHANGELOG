@@ -1,3 +1,7 @@
+0.3.0:
+ - added support for node 0.10 with compatibility mode -> new option to set internal Promise scheduler - this means that zurvan will no longer throw on require if there is no Promise in environment (it will throw at intercept instead)
+ - added configuration option to set internal Promise scheduler (useful also for other versions of node). Please use with care and only with thoroughly tested Promise libraries.
+ 
 0.2.5:
  - minor refactoring changes
  - enhanced error messages

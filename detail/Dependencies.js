@@ -14,52 +14,67 @@ function dependencyExistsAsFunction(f) {
   return dependencyOK;
 }
 
-function globalFunctionDependency(functionName) {
+function contextualFunctionDependency(functionName) {
   return {
-    status: function() {
-	  var obj = {};
-	  obj["global." + functionName] = dependencyExistsAsFunction(global[functionName]);
-	  return obj;	  
-	}
+    status: function(context) {
+      if(context === undefined) {
+        return 'does not exist (not even its object context)';
+      }
+      
+	    var obj = {};
+	    obj[functionName] = dependencyExistsAsFunction(context[functionName]);
+	    return obj;	  
+	  }
   };
 }
 
 var deps = {
-  Promise: {
-    status: function() {
-	
-	  var dependencyStatuses = globalFunctionDependency("Promise").status();
-      if(dependencyStatuses["global.Promise"] === dependencyOK) {
-	    dependencyStatuses["global.Promise.resolve"] = dependencyExistsAsFunction(global.Promise.resolve);
-	    dependencyStatuses["global.Promise.reject"] = dependencyExistsAsFunction(global.Promise.reject);
-	    dependencyStatuses["global.Promise.prototype.then"] = dependencyExistsAsFunction(global.Promise.prototype.then);
-	    dependencyStatuses["global.Promise.prototype.catch"] = dependencyExistsAsFunction(global.Promise.prototype.catch);
-	  }
-	  
-	  return dependencyStatuses;
+  atIntercept: {
+    Promise: {
+      status: function(context) {
+	      var dependencyStatuses = contextualFunctionDependency("promiseScheduler").status(context);
+        if(dependencyStatuses["promiseScheduler"] === dependencyOK) {
+          var promiseScheduler = context.promiseScheduler;
+	        dependencyStatuses["promiseScheduler.resolve"] = dependencyExistsAsFunction(promiseScheduler.resolve);
+  	      dependencyStatuses["promiseScheduler.reject"] = dependencyExistsAsFunction(promiseScheduler.reject);
+	        dependencyStatuses["promiseScheduler.prototype.then"] = dependencyExistsAsFunction(promiseScheduler.prototype.then);
+  	      dependencyStatuses["promiseScheduler.prototype.catch"] = dependencyExistsAsFunction(promiseScheduler.prototype.catch);
+	      }
+	      return dependencyStatuses;
+      }
     }
   },
-  setImmediate: globalFunctionDependency("setImmediate"),
-  clearImmediate: globalFunctionDependency("clearImmediate")
+  atStartup: {
+    setImmediate: contextualFunctionDependency("setImmediate"),
+    clearImmediate: contextualFunctionDependency("clearImmediate")    
+  }
 };
 
+function missingDependencies(deps, context) {
+  return Object.keys(deps).map(function(key) {
+    return {name: key, statuses: deps[key].status(context)};
+  }).map(function(dependency) {
+    return {
+      name: dependency.name, 
+    statuses: Object.keys(dependency.statuses).filter(function(statusName) {
+        return dependency.statuses[statusName] !== dependencyOK;
+    }).map(function(statusName) {
+      return statusName + " " + dependency.statuses[statusName];
+    })
+    };
+  }).filter(function(dependency) {
+    return dependency.statuses.length > 0;
+  }).map(function(dependency) {
+    return "Missing dependency: " + dependency.name + ". Reason(s): " + dependency.statuses.join(reasonSeparator);
+  }).join(lineBreak);
+}
+
 module.exports = {
-  missing: function() {
-    return Object.keys(deps).map(function(key) {
-	  return {name: key, statuses: deps[key].status()};
-	}).map(function(dependency) {
-	  return {
-	    name: dependency.name, 
-		statuses: Object.keys(dependency.statuses).filter(function(statusName) {
-	      return dependency.statuses[statusName] !== dependencyOK;
-		}).map(function(statusName) {
-		  return statusName + " " + dependency.statuses[statusName];
-		})
-	  };
-	}).filter(function(dependency) {
-	  return dependency.statuses.length > 0;
-	}).map(function(dependency) {
-	  return "Missing dependency: " + dependency.name + ". Reason(s): " + dependency.statuses.join(reasonSeparator);
-	}).join(lineBreak);
+  missingAtStartup: function() {
+    return missingDependencies(deps.atStartup, global);
+  },
+  
+  missingAtIntercept: function(config) {
+    return missingDependencies(deps.atIntercept, config);
   }
 };

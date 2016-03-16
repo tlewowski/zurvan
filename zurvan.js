@@ -1,9 +1,9 @@
 "use strict";
 var Dependencies = require("./detail/Dependencies");
 
-var missingDependencies = Dependencies.missing();
-if(missingDependencies) {
-  throw new Error(missingDependencies);
+var missingStartupDependencies = Dependencies.missingAtStartup();
+if(missingStartupDependencies) {
+  throw new Error(missingStartupDependencies);
 }
 
 var ImmediateInterceptor = require("./detail/ImmediateInterceptor");
@@ -22,6 +22,7 @@ function rejectPromiseWithError(errorMessage) {
 }
 
 function enterRejectingState(actor) {
+  actor.timeForwarder.disable();
   actor.advanceTime = rejectPromiseWithError("Cannot advance time if timers are not intercepted by this instance of zurvan");
   actor.blockSystem = function() {
     throw new Error("Cannot block system if timers are not intercepted by this instance of zurvan");
@@ -43,6 +44,7 @@ function enterForwardingState(actor) {
   actor.forwardTimeToNextTimer = function() {
     return this.timeForwarder.forwardTimeToNextTimer();
   };
+  actor.timeForwarder.enable(actor.config);
 }
 
 // me sad, but timeouts are global stuff :(
@@ -64,6 +66,15 @@ function Zurvan(config) {
 }
 
 Zurvan.prototype.interceptTimers = function(config) {
+  
+  var newConfig = Configuration.merge(config, this.globalConfig);
+  
+  // this error has to be synchronous, since we do not know yet whether the system supports Promises
+  var missingRuntimeDependencies = Dependencies.missingAtIntercept(newConfig);
+  if(missingRuntimeDependencies) {
+    throw new Error(missingStartupDependencies);
+  }
+
   var that = this;
   return new Promise(function(resolve, reject) {
     if(areTimersIntercepted) {
@@ -72,7 +83,7 @@ Zurvan.prototype.interceptTimers = function(config) {
 	return resolve();
   }).then(function() {
     return new Promise(function(resolve) {
-      that.config = Configuration.merge(config, that.globalConfig);
+      that.config = newConfig;
       areTimersIntercepted = true;
 	
       that.timeServer.setupTime(that.config.timeSinceStartup, that.config.systemTime);
@@ -162,23 +173,11 @@ Zurvan.prototype.waitForEmptyQueue = function() {
   return this.advanceTime(0);
 };
 
-var defaultZurvanConfiguration = {
-  timeSinceStartup: 0,
-  systemTime: 0,
-  acceptEvalTimers: false,
-  denyImplicitTimer: false,
-  denyTimersShorterThan1Ms: false,
-  ignoreProcessTimers: false,
-  ignoreDate: false,
-  fakeOriginalSetImmediateMethods: false,
-  throwOnInvalidClearTimer: false
-};
-
 var apiFunctions = ["releaseTimers", "interceptTimers", "setSystemTime", "advanceTime", 
   "blockSystem", "expireAllTimeouts", "forwardTimeToNextTimer", "waitForEmptyQueue"];
   
 function createZurvanAPI(newDefaultConfig) {
-  var configuration = Configuration.merge(newDefaultConfig, defaultZurvanConfiguration);
+  var configuration = Configuration.merge(newDefaultConfig, Configuration.defaultConfiguration());
   var api = APICreator.createAPI(new Zurvan(configuration), apiFunctions);
   
   api.withDefaultConfiguration = function(config) {

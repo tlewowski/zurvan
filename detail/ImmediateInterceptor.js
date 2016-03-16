@@ -19,7 +19,7 @@ ImmediateInterceptor.prototype.intercept = function(config) {
   this.dequeue = this.clearImmediates.oldValue;
 
   if(TypeChecks.isFunction(this.config.bluebird)) {
-    this.previousBluebirdScheduler = this.config.bluebird.setScheduler(setImmediate.bind(global));
+    this.previousBluebirdScheduler = this.config.bluebird.setScheduler(this.endOfQueueScheduler());
   }
   else if(this.config.bluebird !== undefined) {
     throw new Error("if given, bluebird configuration parameter to zurvan must be a function representing bluebird library");
@@ -78,5 +78,9 @@ ImmediateInterceptor.prototype.removeImmediate = function(uid) {
 ImmediateInterceptor.prototype.areAwaiting = function() {
   return this.awaitingImmediates.size > 0;
 };
+
+ImmediateInterceptor.prototype.endOfQueueScheduler = function() {
+  return setImmediate;
+}
 
 module.exports = ImmediateInterceptor;

@@ -21,7 +21,7 @@ contact me.
 
 Multiple testcases cannot be ran in parallel when using _Zurvan_, as there is only a single time stream for forwarding.
 
-_Zurvan_ will *NOT* work properly (at least in release 0.2.5) if test code uses real I/O (filesystem, sockets etc.).
+_Zurvan_ will *NOT* work properly (at least in release 0.3.0) if test code uses real I/O (filesystem, sockets etc.).
 To be exact, `waitForEmptyQueue` will not be able to work, since there will be no scheduled tasks on the queue, despite the fact that I/O is not done.
 It is possible to use _Zurvan_ in such cases, but additional `Promise`s are required. It is generally preferred to use preloaded data and mock I/O via 
 usual async actions (`setImmediate/process.nextTick`).
@@ -37,6 +37,7 @@ This is the main module of the library. Typical forwarding of time is done step 
 3. Otherwise a single nearest timer is expired, and the 1. is applied again, with smaller reqested advance time
 
 `zurvan.blockSystem` is an exception, described below.
+If critical requirements are not met, `zurvan` will throw during first evaluation (at the point of `require`).
 
 #### `zurvan.interceptTimers([config])`
 
@@ -45,7 +46,10 @@ Returns a Promise that is resolved when timers are faked and event queue is empt
 It takes an optional configuration object as parameter, which takes precedence over global configuration. 
 Details of configuration options are described in <a href="doc/configuration.md">configuration documentation</a>.
 
-Resolution value is `undefined` and rejection `Error` with proper message.
+Resolution value is `undefined` and rejection value is `Error` with proper message.
+
+If the configuration is incompatible or required fields are not filled in, `.interceptTimers()` will throw an error with proper message. 
+Invalid configuration has priority over timers already being intercepted, i.e., if timers are already intercepted _and_ configuration is invalid, error about invalid configuration will be thrown.
 
 #### `zurvan.releaseTimers()`
 
@@ -172,7 +176,24 @@ If you do - do it at your own risk. But if you do, and you find any of these fun
 
 After intercepting timers, `Date` object is overridden (if `ignoreDate` configuration option is set to `false`). As a result, some external calls that rely on types may fail.
 This is because for `var d = new Date()` call `Object.prototype.toString(d)` without `zurvan` will return `[object Date]`, and after timer interception, `[object Object]`.
-Please file an issue if this poses a problem for you.
+Please <a href="https://github.com/Lewerow/zurvan/issues">file an issue</a> if this poses a problem for you.
+
+To use _Zurvan_ with Node.js 0.10 (before global.Promise was introduced) `promiseScheduler` configuration option has to be set. It's value has to be a valid Promise library,
+fulfilling <a href="https://promisesaplus.com/">Promises/A+</a> requirements. An additional constraint is that `.then` cannot be scheduled via global `setTimeout` function, as it is 
+overridden by `zurvan`, and this would lead to circular dependencies. It is theoretically possible to cache original `setTimeout` in the library and use it as a scheduler, but please
+do not do this. There are enough good Promise libraries delivering what you need (<a href="https://www.npmjs.com/package/bluebird">bluebird</a> for example).
+
+If your code does not directly access faked functions (`setTimeout`, `setImmediate` etc.), but caches their original values instead, you need to first require `zurvan`, and later your
+module that caches the calls (if it's already included due to earlier `require`s, you can reload it by 
+<a href="http://stackoverflow.com/questions/9210542/node-js-require-cache-possible-to-invalidate">clearing cache</a>).
+This is exactly why `bluebird` configuration option is needed if you use it (`bluebird` caches `setImmediate`).
+
+If your code uses multiple versions of `bluebird` (for example your application uses one version, and one of external packages uses a different one), `zurvan` in version 0.3.0 will not work
+properly. This is because `bluebird` scheduler needs to be overridden, and current configuration allows only for a single `bluebird`. If this poses a problem, please 
+<a href="https://github.com/Lewerow/zurvan/issues">file an issue on GitHub</a>.
+
+If you use time-based events that are scheduled by a mechanism different than `setTimeout` and `setInterval` (for example, an externally bound C++ module), events scheduled with it will _not_
+be subject to be managed by `zurvan`, i.e. `.waitForEmptyQueue()` will not take them into account, thus race conditions will appear.
 
 ## Examples
 
@@ -197,7 +218,7 @@ Additionally, `Promise.resolve` and `Promise.reject` are both specified to be ex
 scheduling macroqueue tasks, then there will be cases where _Zurvan_ won't behave correctly. Currently there are no such known cases for Node.js - and if they will be found, they are a bug and shall be fixed.
 
 If you're trying to run on Node.js older than 0.10 - you will have trouble, as in these Nodes `setImmediate` was not implemented and `process.nextTick` was used to handle the macroqueue. However, 
-`process.nextTick` is not a function faked by `zurvan`. Again - contact me if you need support.
+`process.nextTick` is not a function faked by `zurvan`. Again - contact me if you need support (possibly via <a href="https://github.com/Lewerow/zurvan/issues">GitHub issues</a>).
 
 ## Other
 
@@ -205,4 +226,4 @@ _Zurvan_ is available as package on NPM
 
 Name is taken after babilonian deity of infinite time, _Zurvan_. For more details see: <https://en.wikipedia.org/wiki/Zurvanism>
 
-If you encouter a bug when using _Zurvan_, please report it as an issue on GitHub. Of course, if you are willing to issue a pull request, they are welcome.
+If you encouter a bug when using _Zurvan_, please <a href="https://github.com/Lewerow/zurvan/issues">report it as an issue on GitHub</a>. Of course, if you are willing to issue a pull request, it is welcome.
