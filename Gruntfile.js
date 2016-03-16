@@ -38,12 +38,12 @@ module.exports = function(grunt) {
 	madge: {
 	  all: allFiles
 	},
-    mocha_istanbul: {
-        coverage: {
-            src: testFiles
-        }
+  mocha_istanbul: {
+    coverage: {
+      src: testFiles
+      }
     }
   });
 
-  grunt.registerTask('default', 'mochaTest');  
+  grunt.registerTask('default', 'mochaTest');
 };
