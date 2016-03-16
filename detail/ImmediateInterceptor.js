@@ -80,7 +80,7 @@ ImmediateInterceptor.prototype.areAwaiting = function() {
 };
 
 ImmediateInterceptor.prototype.endOfQueueScheduler = function() {
-  return setImmediate;
+  return setImmediate.bind(global);
 }
 
 module.exports = ImmediateInterceptor;

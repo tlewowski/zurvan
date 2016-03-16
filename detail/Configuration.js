@@ -15,6 +15,20 @@ function mergeConfigurations(localConfiguration, globalConfiguration) {
 }
 
 function defaultConfiguration() {
+  var versionRegex = /v([0-9]+)\.([0-9]+)\.([0-9]+)/;
+  var version = process.version.match(versionRegex);
+  
+  var Promise = global.Promise;
+  if(version[1] === '0' && version[2] < '11') {
+    try {
+      Promise = require('bluebird');
+      Promise.setScheduler(function() {
+        return setImmediate.call([].splice.call(arguments, 0));
+      })
+    }
+    catch(err) {}
+  }
+  
   return {
     timeSinceStartup: 0,
     systemTime: 0,
@@ -25,7 +39,7 @@ function defaultConfiguration() {
     ignoreDate: false,
     fakeOriginalSetImmediateMethods: false,
     throwOnInvalidClearTimer: false,
-    promiseScheduler: global.Promise    
+    promiseScheduler: Promise    
   }
 };
 
