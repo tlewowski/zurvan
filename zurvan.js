@@ -52,6 +52,7 @@ var areTimersIntercepted = false;
 
 function Zurvan(config) { 
   this.globalConfig = config;
+  this.config = this.globalConfig;
   this.timeServer = new TimeServer();
    
   this.immediateInterceptor = new ImmediateInterceptor();
