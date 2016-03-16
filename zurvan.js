@@ -15,20 +15,20 @@ var TimeServer = require("./detail/TimeServer");
 var APICreator = require("./detail/APICreator");
 var Configuration = require("./detail/Configuration");
 
-function rejectPromiseWithError(errorMessage) {
+function rejectPromiseWithError(errorMessage, promiseScheduler) {
   return function() {
-    return Promise.reject(new Error(errorMessage));
+    return promiseScheduler.reject(new Error(errorMessage));
   };
 }
 
 function enterRejectingState(actor) {
   actor.timeForwarder.disable();
-  actor.advanceTime = rejectPromiseWithError("Cannot advance time if timers are not intercepted by this instance of zurvan");
+  actor.advanceTime = rejectPromiseWithError("Cannot advance time if timers are not intercepted by this instance of zurvan", actor.config.promiseScheduler);
   actor.blockSystem = function() {
     throw new Error("Cannot block system if timers are not intercepted by this instance of zurvan");
   };
-  actor.expireAllTimeouts = rejectPromiseWithError("Cannot expire timeouts if timers are not intercepted by this instance of zurvan");
-  actor.forwardTimeToNextTimer = rejectPromiseWithError("Cannot forward time if timers are not intercepted by this instance of zurvan");
+  actor.expireAllTimeouts = rejectPromiseWithError("Cannot expire timeouts if timers are not intercepted by this instance of zurvan", actor.config.promiseScheduler);
+  actor.forwardTimeToNextTimer = rejectPromiseWithError("Cannot forward time if timers are not intercepted by this instance of zurvan", actor.config.promiseScheduler);
 }
 
 function enterForwardingState(actor) {
@@ -76,13 +76,13 @@ Zurvan.prototype.interceptTimers = function(config) {
   }
 
   var that = this;
-  return new Promise(function(resolve, reject) {
+  return new newConfig.promiseScheduler(function(resolve, reject) {
     if(areTimersIntercepted) {
 	  return reject(new Error("Cannot intercept timers that are already intercepted by another instance of zurvan"));
 	}
 	return resolve();
   }).then(function() {
-    return new Promise(function(resolve) {
+    return new newConfig.promiseScheduler(function(resolve) {
       that.config = newConfig;
       areTimersIntercepted = true;
 	
@@ -116,14 +116,14 @@ Zurvan.prototype.interceptTimers = function(config) {
 
       areTimersIntercepted = false;
       enterRejectingState(that);
-	  return Promise.reject();
+	  return newConfig.promiseScheduler.reject();
     });
   });
 };
 
 Zurvan.prototype.releaseTimers = function() {
   var that = this;
-  return new Promise(function(resolve, reject) {
+  return new that.config.promiseScheduler(function(resolve, reject) {
     if(!areTimersIntercepted) {
       return reject(new Error("Cannot release timers that were not intercepted by this instance of zurvan"));
 	}
@@ -138,30 +138,30 @@ Zurvan.prototype.releaseTimers = function() {
   
     if(!that.config.ignoreProcessTimers) {
       leftovers.processTime = that.processTimerInterceptor.release();
-	}
+	  }
     if(!that.config.ignoreDate) {
       leftovers.date = that.dateInterceptor.release();
-	}
+	  }
     that.immediateInterceptor.release();
 
     var toTimerAPI = function(timer) {
-	  return {
-	    dueTime: timer.dueTime,
-		callDelay: timer.callDelay,
+	    return {
+	      dueTime: timer.dueTime,
+	  	  callDelay: timer.callDelay,
         callback: function() {
-		  return timer.callback.call();
-		}
-	  };
-	};
-	var timers = that.allTimersInterceptor.release();
-	leftovers.timeouts = timers.timeouts.map(toTimerAPI);
-	leftovers.intervals = timers.intervals.map(toTimerAPI);
-	leftovers.currentTime = that.timeServer.currentTime.copy();
-	
+		      return timer.callback.call();
+		    }
+	    };
+    };
+    var timers = that.allTimersInterceptor.release();
+    leftovers.timeouts = timers.timeouts.map(toTimerAPI);
+    leftovers.intervals = timers.intervals.map(toTimerAPI);
+    leftovers.currentTime = that.timeServer.currentTime.copy();
+    
     areTimersIntercepted = false;
     enterRejectingState(that);
-	
-	return leftovers;
+    
+    return leftovers;
   });
 };
 
