@@ -66,7 +66,7 @@ describe('zurvan', function() {
       return zurvan.interceptTimers({ignoreProcessTimers: true}).then(function() {
         var hrtime = process.hrtime();
         assert(hrtime[0] !== 0 || hrtime[1] !== 0);
-        assert(process.uptime() >= hrtime[0]);
+        assert(process.uptime() >= 0);
         return zurvan.releaseTimers();
       });
     });
