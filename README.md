@@ -185,6 +185,11 @@ fulfilling <a href="https://promisesaplus.com/">Promises/A+</a> requirements. An
 overridden by `zurvan`, and this would lead to circular dependencies. It is theoretically possible to cache original `setTimeout` in the library and use it as a scheduler, but please
 do not do this. There are enough good Promise libraries delivering what you need (<a href="https://www.npmjs.com/package/bluebird">bluebird</a> for example).
 
+If there is no `global.Promise` variable in the environment, `zurvan` will attempt to `require('bluebird')`. If this fails, user must give his own scheduler via `promiseScheduler` configuration option.
+Warning: if there is no `global.Promise` and `bluebird` can be loaded, `bluebird`'s scheduler will be permanently overridden with `setImmediate`. It will be possible to override it again, but `zurvan` will _not_ 
+keep track of the previous scheduler in such case. Note that this is mostly important in Node.js 0.10 and virtual environment (without context).
+Again, if this poses a problem, please <a href="https://github.com/Lewerow/zurvan/issues">file an issue</a>.
+
 If your code does not directly access faked functions (`setTimeout`, `setImmediate` etc.), but caches their original values instead, you need to first require `zurvan`, and later your
 module that caches the calls (if it's already included due to earlier `require`s, you can reload it by 
 <a href="http://stackoverflow.com/questions/9210542/node-js-require-cache-possible-to-invalidate">clearing cache</a>).
