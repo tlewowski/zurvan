@@ -2,8 +2,10 @@
 var TimeUnit = require("../TimeUnit");
 var zurvan = require("../zurvan");
 var assert = require("assert");
+var bluebird = require("bluebird");
 
 var FieldOverrider = require("../detail/FieldOverrider");
+var NodeVersion = require("../detail/utils/NodeVersion");
 
 var bluebirdCompatibilityTestcase = function(configuration, expectedOutput, bluebird) {
   return function() {
@@ -46,14 +48,12 @@ var bluebirdCompatibilityTestcase = function(configuration, expectedOutput, blue
 };
 
 describe('zurvan', function() {
-  describe('by default', function() {
-    
-    // to achieve incompatibility we need two separate instances
-    var overriddenBluebirdCache = new FieldOverrider(require.cache, require.resolve("bluebird"), undefined);
-    var bluebird = require("bluebird");
-    it('does not work with bluebird scheduler', bluebirdCompatibilityTestcase({}, 0, bluebird));
-    overriddenBluebirdCache.restore();
-  });
+  
+  if(NodeVersion.features.hasPromise) {
+    describe('by default', function() {
+      it('does not work with bluebird scheduler', bluebirdCompatibilityTestcase({}, 0, bluebird));
+    });    
+  }
   
   // bluebird uses a different scheduler for promises than node engine does - namely, setImmediate (macroqueue), 
   // while V8 schedules promises on microqueue. Additionally, bluebird captures global.setImmediate in a local variable,
@@ -61,7 +61,6 @@ describe('zurvan', function() {
   // so making setImmediate.call look like faked setImmediate does the trick. For version 3.0 and earlier
   describe('under special configuration (for compatibility with external libraries)', function() {
     
-    var bluebird = require("bluebird");
     it('specially for bluebird changes its scheduler', bluebirdCompatibilityTestcase({bluebird:bluebird}, 1, bluebird));
   	it('throws on wrong type of bluebird configuration parameter', function(done) {
       zurvan.interceptTimers({bluebird:{}}).then(function() {
