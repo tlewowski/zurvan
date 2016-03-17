@@ -12,5 +12,5 @@ module.exports.isString = function(s) {
 };
 
 module.exports.isObject = function(o) {
-  return typeof o === 'object';
+  return typeof o === 'object' && o !== null;
 };

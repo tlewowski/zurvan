@@ -17,14 +17,11 @@ function dependencyExistsAsFunction(f) {
 function contextualFunctionDependency(functionName) {
   return {
     status: function(context) {
-      if(context === undefined) {
-        return 'does not exist (not even its object context)';
-      }
-      
-	    var obj = {};
-	    obj[functionName] = dependencyExistsAsFunction(context[functionName]);
-	    return obj;	  
-	  }
+      var obj = {};
+      obj[functionName] = TypeChecks.isObject(context) ? dependencyExistsAsFunction(context[functionName]) : 
+        'does not exist (not even its object context)';
+      return obj;    
+    }
   };
 }
 
@@ -32,15 +29,15 @@ var deps = {
   atIntercept: {
     Promise: {
       status: function(context) {
-	      var dependencyStatuses = contextualFunctionDependency("promiseScheduler").status(context);
+        var dependencyStatuses = contextualFunctionDependency("promiseScheduler").status(context);
         if(dependencyStatuses.promiseScheduler === dependencyOK) {
           var promiseScheduler = context.promiseScheduler;
-	        dependencyStatuses["promiseScheduler.resolve"] = dependencyExistsAsFunction(promiseScheduler.resolve);
-  	      dependencyStatuses["promiseScheduler.reject"] = dependencyExistsAsFunction(promiseScheduler.reject);
-	        dependencyStatuses["promiseScheduler.prototype.then"] = dependencyExistsAsFunction(promiseScheduler.prototype.then);
-  	      dependencyStatuses["promiseScheduler.prototype.catch"] = dependencyExistsAsFunction(promiseScheduler.prototype.catch);
-	      }
-	      return dependencyStatuses;
+          dependencyStatuses["promiseScheduler.resolve"] = dependencyExistsAsFunction(promiseScheduler.resolve);
+          dependencyStatuses["promiseScheduler.reject"] = dependencyExistsAsFunction(promiseScheduler.reject);
+          dependencyStatuses["promiseScheduler.prototype.then"] = dependencyExistsAsFunction(promiseScheduler.prototype.then);
+          dependencyStatuses["promiseScheduler.prototype.catch"] = dependencyExistsAsFunction(promiseScheduler.prototype.catch);
+        }
+        return dependencyStatuses;
       }
     }
   },
@@ -56,11 +53,11 @@ function missingDependencies(deps, context) {
   }).map(function(dependency) {
     return {
       name: dependency.name, 
-    statuses: Object.keys(dependency.statuses).filter(function(statusName) {
+      statuses: Object.keys(dependency.statuses).filter(function(statusName) {
         return dependency.statuses[statusName] !== dependencyOK;
-    }).map(function(statusName) {
-      return statusName + " " + dependency.statuses[statusName];
-    })
+      }).map(function(statusName) {
+        return statusName + " " + dependency.statuses[statusName];
+      })
     };
   }).filter(function(dependency) {
     return dependency.statuses.length > 0;

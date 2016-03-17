@@ -1,7 +1,11 @@
 "use strict";
 
 var nodeVersionRegex = /v([0-9]+)\.([0-9]+)\.([0-9]+)/;
-var versionMatch = process ? nodeVersionRegex.exec(process.version) : [];
+
+var versionMatch = [];
+if(process) {
+  versionMatch = nodeVersionRegex.exec(process.version);
+}
 
 var version = {
   major: parseInt(versionMatch[1]),
