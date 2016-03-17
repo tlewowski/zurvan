@@ -3,14 +3,14 @@
 var nodeVersionRegex = /v([0-9]+)\.([0-9]+)\.([0-9]+)/;
 
 var versionMatch = [];
-if(process) {
-  versionMatch = nodeVersionRegex.exec(process.version);
+if(global.process) {
+  versionMatch = nodeVersionRegex.exec(global.process.version);
 }
 
 var version = {
-  major: parseInt(versionMatch[1]),
-  minor: parseInt(versionMatch[2]),
-  patch: parseInt(versionMatch[3])  
+  major: versionMatch[1] && parseInt(versionMatch[1]),
+  minor: versionMatch[2] && parseInt(versionMatch[2]),
+  patch: versionMatch[3] && parseInt(versionMatch[3])  
 };
 
 var features = {};

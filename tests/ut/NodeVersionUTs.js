@@ -1,36 +1,20 @@
 "use strict";
 
 var assert = require('assert');
-var FieldOverrider = require("../../detail/utils/FieldOverrider");
-var nodeVersionPath = "../../detail/utils/NodeVersion";
+var vm = require("vm");
+var fs = require("fs");
 
 describe("NodeVersion loaded without global process variable", function() {
-  var overriddenProcess; 
-  var overriddenCache;
-  var NodeVersion;
-  
-  beforeEach(function() {
-    overriddenProcess = new FieldOverrider(global, 'process', undefined);
-    overriddenCache = new FieldOverrider(require.cache, require.resolve(nodeVersionPath), undefined);
-    NodeVersion = require(nodeVersionPath);
-  });
-  
-  afterEach(function() {
-    NodeVersion = undefined;
-    overriddenCache.restore();
-    overriddenProcess.restore();
-  });
+  it('returns false for all features and undefined for all versions', function(done) {
+    var NoContextNodeVersion = vm.runInNewContext(fs.readFileSync(require.resolve("../../detail/utils/NodeVersion")),
+      {global:{}, module:{}});
     
-  it('returns undefined for all versions', function(done) {
-    assert(NodeVersion.major === undefined);
-    assert(NodeVersion.minor === undefined);
-    assert(NodeVersion.patch === undefined);
-    done();
-  });
-  
-  it('returns false for all features', function(done) {
-    assert(NodeVersion.features.hasPromise === false);
-    assert(NodeVersion.features.hasMicroqueuedNextTick === false);
+    assert(NoContextNodeVersion.features.hasPromise === false);
+    assert(NoContextNodeVersion.features.hasMicroqueuedNextTick === false);
+    assert(NoContextNodeVersion.majorVersion === NoContextNodeVersion.major);
+    assert(NoContextNodeVersion.minorVersion === NoContextNodeVersion.minor);
+    assert(NoContextNodeVersion.patchVersion === NoContextNodeVersion.patch);
+    
     done();
   });
 });
