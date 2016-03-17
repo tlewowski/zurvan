@@ -45,7 +45,7 @@ TimeForwarder.prototype.isExpiringEvents = function() {
 };
 
 TimeForwarder.prototype.advanceTime = function(timeToForward) {
-  var advanceStep = (TypeChecks.isNumber(timeToForward)) ? TimeUnit.milliseconds(timeToForward) : timeToForward;  
+  var advanceStep = TimeUnit(timeToForward);  
   var that = this;
 
   return new that.schedule.Promise(function(resolve, reject) {
@@ -130,7 +130,7 @@ TimeForwarder.prototype.fireAllOutdatedTimers = function() {
 };
 
 TimeForwarder.prototype.blockSystem = function(timeToBlock) {
-  var blockStep = (TypeChecks.isNumber(timeToBlock)) ? TimeUnit.milliseconds(timeToBlock) : timeToBlock;
+  var blockStep = TimeUnit(timeToBlock);
  
   if(blockStep.isShorterThan(TimeUnit.milliseconds(0))) {
     throw new Error("Zurvan cannot move back in time. Requested step: << " + blockStep.toMilliseconds() + "ms >>");

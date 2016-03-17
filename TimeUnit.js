@@ -2,27 +2,8 @@
 var assert = require("assert");
 var TypeChecks = require("./detail/utils/TypeChecks");
 
-function standardTime(coefficient) {
-  var StandardTimer = function(value) {
-    return new TimeUnit(value * coefficient);
-  };
-  
-  StandardTimer.coefficient = coefficient;
-  return StandardTimer;
-}
-
-var standardTimers = {};
-standardTimers.nanoseconds = standardTime(1);
-standardTimers.microseconds = standardTime(1e3 * standardTimers.nanoseconds.coefficient);
-standardTimers.milliseconds = standardTime(1e3 * standardTimers.microseconds.coefficient);
-standardTimers.seconds = standardTime(1e3 * standardTimers.milliseconds.coefficient);
-standardTimers.minutes = standardTime(60 * standardTimers.seconds.coefficient);
-standardTimers.hours = standardTime(60 * standardTimers.minutes.coefficient);
-standardTimers.days = standardTime(24 * standardTimers.hours.coefficient);
-standardTimers.weeks = standardTime(7 * standardTimers.days.coefficient);
-
 function TimeUnit(value) {
-  assert(TypeChecks.isNumber(value));
+  assert(TypeChecks.isNumber(value) && "argument for creating TimeUnit must be a number. Given: " + typeof value);
   this.value = value;
 }
 
@@ -87,5 +68,32 @@ TimeUnit.prototype.toMinutes = function() {return this.toStandardTime(standardTi
 TimeUnit.prototype.toHours = function() {return this.toStandardTime(standardTimers.hours);};
 TimeUnit.prototype.toDays = function() {return this.toStandardTime(standardTimers.days);};
 TimeUnit.prototype.toWeeks = function() {return this.toStandardTime(standardTimers.weeks);};
+
+function standardTime(coefficient) {
+  var StandardTimer = function(value) {
+    return new TimeUnit(value * coefficient);
+  };
+  
+  StandardTimer.coefficient = coefficient;
+  return StandardTimer;
+}
+
+var standardTimers = function(value) {
+  if(value instanceof TimeUnit) {
+    return value.copy();
+  }
+   
+  return standardTimers.milliseconds(value);
+};
+
+standardTimers.nanoseconds = standardTime(1);
+standardTimers.microseconds = standardTime(1e3 * standardTimers.nanoseconds.coefficient);
+standardTimers.milliseconds = standardTime(1e3 * standardTimers.microseconds.coefficient);
+standardTimers.seconds = standardTime(1e3 * standardTimers.milliseconds.coefficient);
+standardTimers.minutes = standardTime(60 * standardTimers.seconds.coefficient);
+standardTimers.hours = standardTime(60 * standardTimers.minutes.coefficient);
+standardTimers.days = standardTime(24 * standardTimers.hours.coefficient);
+standardTimers.weeks = standardTime(7 * standardTimers.days.coefficient);
+
 
 module.exports = standardTimers;

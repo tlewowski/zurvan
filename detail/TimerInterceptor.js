@@ -44,7 +44,10 @@ TimerInterceptor.prototype.createCallback = function(callback, args) {
   }
   
   if(this.config.acceptEvalTimers) {
-    return new Callback(function() {return eval(callback);}, []);
+    return new Callback(function() {
+          /*jshint -W066 */
+          return eval(callback);
+        }, []);
   }
   
   throw new Error("Node.js does not accept strings to be evaluated in timers. If you wish, you can configure Zurvan to use them, but beware.");  

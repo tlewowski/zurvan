@@ -168,6 +168,8 @@ All of them work only on `TimeUnit` objects, but work smoothly on cross-unit bas
 This is also the reason why units like `month` and `year` are not provided - because they would be ambigous and complicate the utility. To handle the calendar properly
 much bigger library would need to be used.
  
+TimeUnit should be used as object with value semantics.
+ 
 ### Other
 There are no other API functions. All functions and modules in `detail` directory are library internal and are not guaranteed to expose a stable set of methods. Please do not use them directly.
 If you do - do it at your own risk. But if you do, and you find any of these functions useful (which I doubt - that's why they are in `detail`), contact me to make it part of stable API.

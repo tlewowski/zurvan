@@ -1,4 +1,5 @@
 0.3.0:
+ - *BREAKING CHANGE* default value for TimeUnit are now milliseconds, i.e., TimeUnit called without unit will be converted from milliseconds now. TimeUnit module exports a function now instead of an object. All previous fields are still there.
  - added support for node 0.10 with compatibility mode -> new option to set internal Promise scheduler - this means that zurvan will no longer throw on require if there is no Promise in environment (it will throw at intercept instead), but will use bluebird if available
  - added configuration option to set internal Promise scheduler (useful also for other versions of node). Please use with care and only with thoroughly tested Promise libraries.
  - enhanced error messages
