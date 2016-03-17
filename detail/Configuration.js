@@ -24,7 +24,7 @@ function defaultConfiguration() {
       Promise = require('bluebird');
       Promise.setScheduler(function() {
         return setImmediate.apply(global, [].splice.call(arguments, 0));
-      })
+      });
     }
     catch(err) {}
   }
@@ -40,8 +40,8 @@ function defaultConfiguration() {
     fakeOriginalSetImmediateMethods: false,
     throwOnInvalidClearTimer: false,
     promiseScheduler: Promise    
-  }
-};
+  };
+}
 
 module.exports.merge = mergeConfigurations;
 module.exports.defaultConfiguration = defaultConfiguration;

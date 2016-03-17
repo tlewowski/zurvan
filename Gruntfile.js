@@ -34,13 +34,13 @@ module.exports = function(grunt) {
     },
     jshint : {
       files : allFiles
-	},
-	madge: {
-	  all: allFiles
-	},
-  mocha_istanbul: {
-    coverage: {
-      src: testFiles
+	  },
+	  madge: {
+	    all: allFiles
+	  },
+    mocha_istanbul: {
+      coverage: {
+        src: testFiles
       }
     }
   });

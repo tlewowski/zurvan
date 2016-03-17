@@ -1,5 +1,5 @@
 language: node_js
-script: npm run-script madge && npm run-script mocha && npm run-script coverage
+script: npm run-script ci
 after_script: codeclimate-test-reporter < coverage/lcov.info
 node_js:
  - 'node'

@@ -48,9 +48,11 @@
   "engines": {"node": ">=0.10.0"},
   "license": "MIT",
   "scripts": {
+    "test": "grunt",
     "mocha": "grunt mochaTest",
     "coverage": "grunt mocha_istanbul",
-    "madge": "grunt madge"
+    "madge": "grunt madge",
+    "ci": "grunt madge && grunt mochaTest && grunt mocha_istanbul"
   },
   
   "main": "zurvan.js"

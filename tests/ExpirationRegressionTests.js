@@ -5,9 +5,9 @@ var assert = require("assert");
 var NodeVersion = require("../detail/utils/NodeVersion");
 var bluebird = require("bluebird");
 
-var Promise = global.Promise;
+var PromiseScheduler = global.Promise;
 if(!Promise) {
-  Promise = bluebird;
+  PromiseScheduler = bluebird;
 }
 
 describe('zurvan had a problem', function() {
@@ -37,19 +37,19 @@ describe('zurvan had a problem', function() {
                         calls.push(10);
                         setImmediate(function() {
                           calls.push(11);
-                          Promise.resolve()
+                          PromiseScheduler.resolve()
                             .then(function() {
                               calls.push(12);
                             }).then(function() {
                               calls.push(13);
-                              return Promise.resolve();
+                              return PromiseScheduler.resolve();
                             }).then(function() {
                               process.nextTick(function() {
                                 calls.push(19);
                                 assert.equal(process.uptime(), 5);
                               });
                               calls.push(14);
-                              return Promise.resolve();
+                              return PromiseScheduler.resolve();
                             }).then(function() {
                               calls.push(15);
                             }).then(function() {
@@ -59,7 +59,7 @@ describe('zurvan had a problem', function() {
                               process.nextTick(function() {
                                 calls.push(20);
                               });
-                              return Promise.reject();
+                              return PromiseScheduler.reject();
                             }).catch(function() {
                               calls.push(18);
                               assert.equal(process.uptime(), 5);
@@ -88,9 +88,9 @@ describe('zurvan had a problem', function() {
   // setImmediate, process.nextTick - in bunches. so if immediates started, they'll execute till the end
   
   var callOrder = NodeVersion.features.hasMicroqueuedNextTick ? [1,2,3,4,5,6,7,8,9,10,11] : [1,3,4,2,5,6,7,8,9,11,10];
-  ticksFromImmediatesTestcase("bluebird", bluebird, callOrder)
+  ticksFromImmediatesTestcase("bluebird", bluebird, callOrder);
   if(NodeVersion.features.hasPromise) {
-    ticksFromImmediatesTestcase("native Promise", global.Promise, callOrder)    
+    ticksFromImmediatesTestcase("native Promise", global.Promise, callOrder);
   }
   
   function ticksFromImmediatesTestcase(name, scheduler, expectedCallOrder) {

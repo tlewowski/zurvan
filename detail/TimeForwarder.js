@@ -30,11 +30,11 @@ TimeForwarder.prototype.enable = function(config) {
     Promise: config.promiseScheduler,
     EndOfQueue: this.immediateInterceptor.endOfQueueScheduler()
   };
-}
+};
 
 TimeForwarder.prototype.disable = function() {
   this.schedule = undefined;
-}
+};
 
 TimeForwarder.prototype.startExpiringEvents = function() {
   this.forwardingStartedSavedStack = new Error().stack;  
@@ -143,7 +143,7 @@ TimeForwarder.prototype.blockSystem = function(timeToBlock) {
   else if(this.timeServer.targetTime.isShorterThan(this.timeServer.currentTime.extended(blockStep))) {
     throw new Error("Cannot block system during advancing for longer than requested advance time. Currently at: << " + 
         this.timeServer.currentTime.toMilliseconds() + " >> ms, target: << " + this.timeServer.targetTime.toMilliseconds() + 
-    " ms >>, requested step: << " + blockStep.toMilliseconds() + " ms >>. Forwarding requested from: " + that.forwardingStartedSavedStack);
+    " ms >>, requested step: << " + blockStep.toMilliseconds() + " ms >>. Forwarding requested from: " + this.forwardingStartedSavedStack);
   }
 
   this.timeServer.currentTime.add(blockStep);

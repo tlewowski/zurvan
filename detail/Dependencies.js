@@ -33,7 +33,7 @@ var deps = {
     Promise: {
       status: function(context) {
 	      var dependencyStatuses = contextualFunctionDependency("promiseScheduler").status(context);
-        if(dependencyStatuses["promiseScheduler"] === dependencyOK) {
+        if(dependencyStatuses.promiseScheduler === dependencyOK) {
           var promiseScheduler = context.promiseScheduler;
 	        dependencyStatuses["promiseScheduler.resolve"] = dependencyExistsAsFunction(promiseScheduler.resolve);
   	      dependencyStatuses["promiseScheduler.reject"] = dependencyExistsAsFunction(promiseScheduler.reject);

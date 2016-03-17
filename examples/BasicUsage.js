@@ -23,11 +23,11 @@ describe('zurvan basic example', function() {
 	  }, 100);
 	  
 	  return placeholder;
-	}
+	};
 		
 	// timers need to be intercepted before first timeout call, otherwise original functions will be called
 	// keep in mind that code above is just a definition using global.setTimeout, so it is not actually called yet
-	var holder = undefined;
+	var holder;
 	return zurvan.interceptTimers().then(function() {
 	  holder = producer();
 	  

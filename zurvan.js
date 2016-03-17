@@ -49,7 +49,7 @@ function enterForwardingState(actor) {
 
 // me sad, but timeouts are global stuff :(
 // it may be modified in future, but I doubt it
-var zurvanInstance = undefined;
+var zurvanActiveInstance;
 
 function Zurvan(config) { 
   this.globalConfig = config;
@@ -80,16 +80,16 @@ Zurvan.prototype.interceptTimers = function(config) {
   var interceptionStack = new Error().stack;
   var that = this;
   return new newConfig.promiseScheduler(function(resolve, reject) {
-    if(zurvanInstance) {
-	    return reject(new Error("Cannot intercept timers that are already intercepted by another instance of zurvan. Intercepted: " 
-        + zurvanInstance.interceptionStack));
+    if(zurvanActiveInstance) {
+	    return reject(new Error("Cannot intercept timers that are already intercepted by another instance of zurvan. Intercepted: " + 
+        zurvanActiveInstance.interceptionStack));
 	  }
   	return resolve();
   }).then(function() {
     return new newConfig.promiseScheduler(function(resolve) {
       that.config = newConfig;
       that.interceptionStack = interceptionStack;
-      zurvanInstance = that;
+      zurvanActiveInstance = that;
 	
       that.timeServer.setupTime(that.config.timeSinceStartup, that.config.systemTime);
       if(!that.config.ignoreDate) {
@@ -119,7 +119,7 @@ Zurvan.prototype.interceptTimers = function(config) {
       that.immediateInterceptor.release();
 	  that.allTimersInterceptor.release();
 
-      zurvanInstance = undefined;
+      zurvanActiveInstance = undefined;
       enterRejectingState(that);
 	  return newConfig.promiseScheduler.reject();
     });
@@ -129,13 +129,13 @@ Zurvan.prototype.interceptTimers = function(config) {
 Zurvan.prototype.releaseTimers = function() {
   var that = this;
   return new that.config.promiseScheduler(function(resolve, reject) {
-    if(zurvanInstance !== that) {
-      if(!zurvanInstance) {
+    if(zurvanActiveInstance !== that) {
+      if(!zurvanActiveInstance) {
         return reject(new Error("Cannot release timers that were not intercepted by zurvan at all"));        
       }
       
-      return reject(new Error("Cannot release timers that were intercepted by different instance of zurvan. Intercepted: " 
-        + zurvanInstance.interceptionStack));
+      return reject(new Error("Cannot release timers that were intercepted by different instance of zurvan. Intercepted: " + 
+        zurvanActiveInstance.interceptionStack));
 	}
 	
     return resolve();
@@ -169,7 +169,7 @@ Zurvan.prototype.releaseTimers = function() {
     leftovers.currentTime = that.timeServer.currentTime.copy();
     
     that.interceptionStack = undefined;
-    zurvanInstance = undefined;
+    zurvanActiveInstance = undefined;
     enterRejectingState(that);
     
     return leftovers;
