@@ -23,7 +23,7 @@ function defaultConfiguration() {
     try {
       Promise = require('bluebird');
       Promise.setScheduler(function() {
-        return setImmediate.apply(global, [].splice.call(arguments, 0));
+        return global.setImmediate.apply(global, [].splice.call(arguments, 0));
       });
     }
     catch(err) {}
