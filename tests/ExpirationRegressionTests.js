@@ -6,7 +6,7 @@ var NodeVersion = require("../detail/utils/NodeVersion");
 var bluebird = require("bluebird");
 
 var PromiseScheduler = global.Promise;
-if(!Promise) {
+if(!global.Promise) {
   PromiseScheduler = bluebird;
 }
 

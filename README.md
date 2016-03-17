@@ -197,7 +197,10 @@ be subject to be managed by `zurvan`, i.e. `.waitForEmptyQueue()` will not take 
 
 ## Examples
 
-For now, please refer to `tests` directory for executable examples.
+For simple examples you can refer to <a href="examples">examples</a> directory. 
+For more complex ones, please refer to <a href="tests">tests</a> directory.
+
+All examples are executed at each CI loop, i.e., they have to pass in order for build to succeed. This is a guarantee that they are up-to-date with the actual code.
 
 ## <a name="requirements"></a> Requirements
 
