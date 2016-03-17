@@ -129,13 +129,16 @@ TimeForwarder.prototype.fireAllOutdatedTimers = function() {
   }
 };
 
-TimeForwarder.prototype.blockSystem = function(timeToBlock) {
-  var blockStep = new TimeUnit(timeToBlock);
- 
+function assertValidBlockStep(blockStep) {
   if(blockStep.isShorterThan(TimeUnit.milliseconds(0))) {
     throw new Error("Zurvan cannot move back in time. Requested step: << " + blockStep.toMilliseconds() + "ms >>");
-  }
-  
+  }  
+}
+
+TimeForwarder.prototype.blockSystem = function(timeToBlock) {
+  var blockStep = new TimeUnit(timeToBlock);
+  assertValidBlockStep(blockStep);
+    
   if(!this.isExpiringEvents()) {
     assert(this.timeServer.targetTime.isEqualTo(this.timeServer.currentTime));
     this.timeServer.targetTime.add(blockStep);

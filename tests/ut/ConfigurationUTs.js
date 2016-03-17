@@ -28,7 +28,7 @@ describe("Configuration missing Promise at request time", function() {
         overriddenPromise.restore();    
         
         bluebird.setScheduler(originalScheduler);
-        assert(called)
+        assert(called);
       }).then(done, done);
   });
   
