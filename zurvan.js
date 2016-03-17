@@ -69,7 +69,7 @@ function Zurvan(config) {
 Zurvan.prototype.interceptTimers = function(config) {
   
   var newConfig = Configuration.merge(config, this.globalConfig);
-  
+
   // this error has to be synchronous, since we do not know yet whether the system supports Promises
   var missingRuntimeDependencies = Dependencies.missingAtIntercept(newConfig);
   if(missingRuntimeDependencies) {
@@ -79,9 +79,9 @@ Zurvan.prototype.interceptTimers = function(config) {
   var that = this;
   return new newConfig.promiseScheduler(function(resolve, reject) {
     if(areTimersIntercepted) {
-	  return reject(new Error("Cannot intercept timers that are already intercepted by another instance of zurvan"));
-	}
-	return resolve();
+	    return reject(new Error("Cannot intercept timers that are already intercepted by another instance of zurvan"));
+	  }
+  	return resolve();
   }).then(function() {
     return new newConfig.promiseScheduler(function(resolve) {
       that.config = newConfig;
