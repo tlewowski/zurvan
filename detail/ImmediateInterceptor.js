@@ -1,8 +1,8 @@
 "use strict";
-var FieldOverrider = require("./FieldOverrider");
-var UIDManager = require("./UIDManager");
-var SequenceGenerator = require("./SequenceGenerator");
-var TypeChecks = require("./TypeChecks");
+var FieldOverrider = require("./utils/FieldOverrider");
+var UIDManager = require("./utils/UIDManager");
+var SequenceGenerator = require("./utils/SequenceGenerator");
+var TypeChecks = require("./utils/TypeChecks");
 var assert = require("assert");
 
 function ImmediateInterceptor() {

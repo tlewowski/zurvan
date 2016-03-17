@@ -4,7 +4,7 @@ var zurvan = require("../zurvan");
 var assert = require("assert");
 var bluebird = require("bluebird");
 
-var FieldOverrider = require("../detail/FieldOverrider");
+var FieldOverrider = require("../detail/utils/FieldOverrider");
 var NodeVersion = require("../detail/utils/NodeVersion");
 
 var bluebirdCompatibilityTestcase = function(configuration, expectedOutput, bluebird) {

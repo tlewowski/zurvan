@@ -1,5 +1,5 @@
 "use strict";
-var TypeChecks = require("./TypeChecks");
+var TypeChecks = require("./utils/TypeChecks");
 var TimeUnit = require("../TimeUnit");
 
 function TimeServer() {}

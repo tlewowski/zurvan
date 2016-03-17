@@ -1,5 +1,5 @@
 "use strict";
-var FieldOverrider = require("../detail/FieldOverrider");
+var FieldOverrider = require("../detail/utils/FieldOverrider");
 var zurvan = require("../zurvan");
 var assert = require("assert");
 

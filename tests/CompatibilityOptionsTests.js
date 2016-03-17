@@ -1,7 +1,7 @@
 "use strict";
 var TimeUnit = require("../TimeUnit");
 var zurvan = require("../zurvan");
-var FieldOverrider = require("../detail/FieldOverrider");
+var FieldOverrider = require("../detail/utils/FieldOverrider");
 
 var assert = require("assert");
 

@@ -1,4 +1,4 @@
-var TypeChecks = require("./TypeChecks");
+var TypeChecks = require("./utils/TypeChecks");
 
 var dependencyOK = 'OK';
 var lineBreak = '\n';

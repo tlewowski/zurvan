@@ -12,7 +12,7 @@ var ProcessTimerInterceptor = require("./detail/ProcessTimerInterceptor");
 var DateInterceptor = require("./detail/DateInterceptor");
 var TimeForwarder = require("./detail/TimeForwarder");
 var TimeServer = require("./detail/TimeServer");
-var APICreator = require("./detail/APICreator");
+var APICreator = require("./detail/utils/APICreator");
 var Configuration = require("./detail/Configuration");
 
 function rejectPromiseWithError(errorMessage, promiseScheduler) {

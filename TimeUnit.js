@@ -1,6 +1,6 @@
 "use strict";
 var assert = require("assert");
-var TypeChecks = require("./detail/TypeChecks");
+var TypeChecks = require("./detail/utils/TypeChecks");
 
 function standardTime(coefficient) {
   var StandardTimer = function(value) {

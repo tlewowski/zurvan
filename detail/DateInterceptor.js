@@ -1,6 +1,6 @@
 "use strict";
-var FieldOverrider = require("./FieldOverrider");
-var TypeChecks = require("./TypeChecks");
+var FieldOverrider = require("./utils/FieldOverrider");
+var TypeChecks = require("./utils/TypeChecks");
 
 var forwardedCalls = ["valueOf", "toUTCString", "toTimeString", "toString", "toSource",
   "toLocaleTimeString", "toLocaleFormat", "toLocaleDateString", "toGMTString", "toJSON",

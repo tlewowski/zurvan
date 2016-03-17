@@ -1,7 +1,7 @@
 "use strict";
-var FieldOverrider = require("./FieldOverrider");
+var FieldOverrider = require("./utils/FieldOverrider");
 var TimerRepository = require("./TimerRepository");
-var TypeChecks = require("./TypeChecks");
+var TypeChecks = require("./utils/TypeChecks");
  
 function Callback(f, args) {
   this.f = f;

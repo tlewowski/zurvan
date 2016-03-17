@@ -1,6 +1,6 @@
 "use strict";
 var TimeUnit = require("../TimeUnit");
-var TypeChecks = require("../detail/TypeChecks");
+var TypeChecks = require("../detail/utils/TypeChecks");
 var zurvan = require("../zurvan");
 
 var assert = require("assert");

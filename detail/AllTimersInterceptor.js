@@ -1,6 +1,6 @@
 "use strict";
 var TimerInterceptor = require("./TimerInterceptor");
-var SequenceGenerator = require("./SequenceGenerator");
+var SequenceGenerator = require("./utils/SequenceGenerator");
 var TimerTypes = require("./timers/TimerTypes");
 
 function AllTimersInterceptor(timeServer) {

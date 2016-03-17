@@ -1,6 +1,6 @@
 "use strict";
 var assert = require("assert");
-var FieldOverrider = require("./FieldOverrider");
+var FieldOverrider = require("./utils/FieldOverrider");
 var TimeUnit = require("../TimeUnit");
 
 function ProcessTimerInterceptor(timeServer) {

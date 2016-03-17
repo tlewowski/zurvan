@@ -1,5 +1,5 @@
 "use strict";
-var UIDManager = require("./UIDManager");
+var UIDManager = require("./utils/UIDManager");
 
 function TimerRepository(config, sequenceGenerator) {
   this.config = config;
