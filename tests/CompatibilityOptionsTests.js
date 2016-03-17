@@ -64,18 +64,17 @@ describe('zurvan', function() {
     
     it('does not intercept process timers (browsers do not have it)', function() {
       return zurvan.interceptTimers({ignoreProcessTimers: true}).then(function() {
-        assert(process.uptime() !== 0);
-      
-      var hrtime = process.hrtime();
-      assert(hrtime[0] !== 0 || hrtime[1] !== 0);		
-      return zurvan.releaseTimers();
+        var hrtime = process.hrtime();
+        assert(hrtime[0] !== 0 || hrtime[1] !== 0);
+        assert(process.uptime() >= hrtime[0]);
+        return zurvan.releaseTimers();
       });
     });
     
     it('does not intercept Date (behavior differs from original Date)', function() {
       return zurvan.interceptTimers({ignoreDate: true}).then(function() {
         assert(new Date().toISOString() !== "1970-01-01T00:00:00.000Z");
-      return zurvan.releaseTimers();
+        return zurvan.releaseTimers();
       });
     });
 	
