@@ -45,7 +45,7 @@ TimerInterceptor.prototype.createCallback = function(callback, args) {
   
   if(this.config.acceptEvalTimers) {
     return new Callback(function() {
-          /*jshint -W066 */
+          /*jshint -W061 */
           return eval(callback);
         }, []);
   }

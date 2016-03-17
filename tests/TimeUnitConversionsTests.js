@@ -19,7 +19,7 @@ describe('TimeUnit', function() {
   });
   
   it('default value is milliseconds', function(done) {
-    assert(TimeUnit(10).isEqualTo(TimeUnit.milliseconds(10)));
+    assert(new TimeUnit(10).isEqualTo(TimeUnit.milliseconds(10)));
     done();
   });
   

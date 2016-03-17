@@ -50,7 +50,7 @@ describe('zurvan basic example', function() {
       assert(holder.value === 1);
       
       // time was advanced for a whole second
-      assert(process.uptime() === 1)
+      assert(process.uptime() === 1);
       
       // perform cleanup
       return zurvan.releaseTimers();
