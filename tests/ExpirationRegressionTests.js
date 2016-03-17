@@ -87,7 +87,7 @@ describe('zurvan had a problem', function() {
   // event loop goes like this: timers & intervals, process.nextTick, I/O, process.nextTick, 
   // setImmediate, process.nextTick - in bunches. so if immediates started, they'll execute till the end
   
-  var callOrder = NodeVersion.features.hasPromise ? [1,2,3,4,5,6,7,8,9,10,11] : [1,3,4,2,5,6,7,8,9,11,10];
+  var callOrder = NodeVersion.features.hasMicroqueuedNextTick ? [1,2,3,4,5,6,7,8,9,10,11] : [1,3,4,2,5,6,7,8,9,11,10];
   ticksFromImmediatesTestcase("bluebird", bluebird, callOrder)
   if(NodeVersion.features.hasPromise) {
     ticksFromImmediatesTestcase("native Promise", global.Promise, callOrder)    

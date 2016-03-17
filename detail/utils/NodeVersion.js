@@ -9,8 +9,10 @@ var version = {
   patch: parseInt(versionMatch[3])  
 };
 
-version.features = {
-  hasPromise: version.major > 0 || version.minor > 10
-};
+var features = {};
+features.hasPromise = version.major > 0 || version.minor > 10;
+features.hasMicroqueuedNextTick = features.hasPromise;
+
+version.features = features;
 
 module.exports = version;

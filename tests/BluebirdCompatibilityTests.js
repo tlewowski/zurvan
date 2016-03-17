@@ -49,7 +49,7 @@ var bluebirdCompatibilityTestcase = function(configuration, expectedOutput, blue
 
 describe('zurvan', function() {
   
-  if(NodeVersion.features.hasPromise) {
+  if(NodeVersion.features.hasMicroqueuedNextTick) {
     describe('by default', function() {
       it('does not work with bluebird scheduler', bluebirdCompatibilityTestcase({}, 0, bluebird));
     });    
