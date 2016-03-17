@@ -1,4 +1,7 @@
 "use strict";
+
+var NodeVersion = require("./utils/NodeVersion");
+
 function mergeConfigurations(localConfiguration, globalConfiguration) {
   var finalConfiguration = {};
   
@@ -15,11 +18,8 @@ function mergeConfigurations(localConfiguration, globalConfiguration) {
 }
 
 function defaultConfiguration() {
-  var versionRegex = /v([0-9]+)\.([0-9]+)\.([0-9]+)/;
-  var version = process.version.match(versionRegex);
-  
   var Promise = global.Promise;
-  if(version[1] === '0' && version[2] < '11') {
+  if(!Promise) {
     try {
       Promise = require('bluebird');
       Promise.setScheduler(function() {
