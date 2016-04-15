@@ -13,9 +13,7 @@ TimeServer.prototype.setupTime = function(timeSinceStartup, systemTime) {
   }
   else {
     this.currentTime = TimeUnit.seconds(0);
-	if(timeSinceStartup) {
-	  this.currentTime.add(timeSinceStartup);
-	}
+    this.currentTime.add(timeSinceStartup);
   }
   
   this.targetTime = this.currentTime.copy();

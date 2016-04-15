@@ -18,7 +18,6 @@ AllTimersInterceptor.prototype.release = function() {
   var timers = {};
   timers.timeouts = this._timeoutInterceptor.release();
   timers.intervals = this._intervalInterceptor.release();
-  this._sequenceGenerator.clear();
   
   return timers;
 };
