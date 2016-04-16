@@ -35,6 +35,7 @@ ImmediateInterceptor.prototype.release = function() {
 
   this.setImmediates.restore();
   this.clearImmediates.restore();
+  this.uidManager.clear();
   
   if(this.previousBluebirdScheduler) {
     this.config.bluebird.setScheduler(this.previousBluebirdScheduler);
@@ -72,6 +73,15 @@ ImmediateInterceptor.prototype.remove = function(uid) {
 };
 
 ImmediateInterceptor.prototype.removeImmediate = function(uid) {
+  var uidValidation = this.uidManager.isAcceptableUid(uid);
+  if(!uidValidation.passed) {
+	if(this.config.throwOnInvalidClearTimer) {
+	  throw new Error("Invalid UID during clearing immediate. Reason: " + uidValidation.failureReason);
+	}
+	
+	return;
+  }
+
   return this.dequeue(this.remove(uid));
 };
 

@@ -1,3 +1,7 @@
+0.3.1: 
+ - *BREAKING CHANGE* fixed a bug where UIDs called by setImmediate leaked between test cases
+ - *BREAKING CHANGE* throwOnInvalidClearTimer configuration option applies to setImmediate/clearImmediate as well now
+
 0.3.0:
  - *BREAKING CHANGE* default value for TimeUnit are now milliseconds, i.e., TimeUnit called without unit will be converted from milliseconds now. TimeUnit module exports a function now instead of an object. All previous fields are still there.
  - added support for node 0.10 with compatibility mode -> new option to set internal Promise scheduler - this means that zurvan will no longer throw on require if there is no Promise in environment (it will throw at intercept instead), but will use bluebird if available
