@@ -12,3 +12,5 @@ Most libraries should work out of the box. Known problems will be listed below:
  
  Implementers of V8 engine picked up second option (microqueue), while _bluebird_ uses the first one (macroqueue). 
  Additionally, _bluebird_ buffers `setImmediate` on startup, and that means that it won't be using faked version. 
+ - unzip2 - _unzip2_ uses busy waiting for actual I/O, so in some cases it may look like `zurvan` freezes the testcases. Actual I/O is 
+ not supported by `zurvan`, so integration with `unzip2` may be troublesome (especially that it actually hangs for small invalid files - https://github.com/glebdmitriew/node-unzip-2/issues/9)

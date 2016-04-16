@@ -5,6 +5,7 @@ function TimerRepository(config, sequenceGenerator) {
   this.config = config;
   this._sequenceGenerator = sequenceGenerator;
   this.uidManager = new UIDManager();
+  this.uidManager.setUp(this.config.throwOnInvalidClearTimer, "timer");
   this.timers = [];
 }
 
@@ -27,14 +28,8 @@ TimerRepository.prototype.insertTimer = function(timer) {
 };
 
 TimerRepository.prototype.clearTimer = function(uid) {
-
-  var uidValidation = this.uidManager.isAcceptableUid(uid);
-  if(!uidValidation.passed) {
-	if(this.config.throwOnInvalidClearTimer) {
-	  throw new Error("Invalid UID during clearing timer. Reason: " + uidValidation.failureReason);
-	}
-	
-	return;
+  if(!this.uidManager.isAcceptableUid(uid)) {
+    return;
   }
 
   var i;

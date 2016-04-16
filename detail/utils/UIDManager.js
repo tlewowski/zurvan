@@ -35,7 +35,12 @@ function success() {
   };
 }
 
-UIDManager.prototype.isAcceptableUid = function(uid) {
+UIDManager.prototype.setUp = function(throwOnValidationFailure, uidUser) {
+  this._throwOnValidationFailure = throwOnValidationFailure;
+  this._uidUser = uidUser;
+}
+
+UIDManager.prototype.isAcceptableUidImpl = function(uid) {
   if (!TypeChecks.isObject(uid)) {
     return failure(serialize(uid) + " is not an object");
   }
@@ -45,6 +50,18 @@ UIDManager.prototype.isAcceptableUid = function(uid) {
   }
   
   return success();
+};
+
+UIDManager.prototype.isAcceptableUid = function(uid) {
+  var uidValidation = this.isAcceptableUidImpl(uid);
+  if(!uidValidation.passed) {
+	if(this._throwOnValidationFailure) {
+	  throw new Error("Invalid UID during clearing " + this._uidUser + ". Reason: " + uidValidation.failureReason);
+	}
+	
+	return false;
+  }
+  return true;
 };
 
 UIDManager.prototype.getUid = function() {
@@ -57,6 +74,7 @@ UIDManager.prototype.getUid = function() {
 	
   return uid;
 };
+
 
 UIDManager.prototype.clear = function() {
   this._issuedUids = {};

@@ -7,7 +7,7 @@ var assert = require("assert");
 
 function ImmediateInterceptor() {
   this.awaitingImmediates = {size: 0};
-  this.uidManager = new UIDManager(new SequenceGenerator());
+  this.uidManager = new UIDManager();
 }
 
 ImmediateInterceptor.prototype.intercept = function(config) {
@@ -17,6 +17,8 @@ ImmediateInterceptor.prototype.intercept = function(config) {
   this.clearImmediates = new FieldOverrider(global, "clearImmediate", this.removeImmediate.bind(this));
   this.enqueue = this.setImmediates.oldValue;
   this.dequeue = this.clearImmediates.oldValue;
+  
+  this.uidManager.setUp(this.config.throwOnInvalidClearTimer, "immediate");
 
   if(TypeChecks.isFunction(this.config.bluebird)) {
     this.previousBluebirdScheduler = this.config.bluebird.setScheduler(this.endOfQueueScheduler());
@@ -73,12 +75,7 @@ ImmediateInterceptor.prototype.remove = function(uid) {
 };
 
 ImmediateInterceptor.prototype.removeImmediate = function(uid) {
-  var uidValidation = this.uidManager.isAcceptableUid(uid);
-  if(!uidValidation.passed) {
-	if(this.config.throwOnInvalidClearTimer) {
-	  throw new Error("Invalid UID during clearing immediate. Reason: " + uidValidation.failureReason);
-	}
-	
+  if(!this.uidManager.isAcceptableUid(uid)) {
 	return;
   }
 
