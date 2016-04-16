@@ -18,8 +18,9 @@
  - `ignoreDate` - a `boolean`. When `true`, original `Date` is replaced by one adjusted to time as forwarded by `zurvan`. If `false`, original one is still used. By default `true`, it is recommended to keep it so, unless
  you need exactly the behavior of `Date` (see <a href="../README.md#limitations">limitations</a> of current behavior)
  - `bluebird` - an `object`, representing _bluebird_ library (returned from `require('bluebird')`)
- - `throwOnInvalidClearTimer` - a `boolean`. When `true` calls to `clearTimeout` and `clearInterval` will throw when called with an argument that was not earlier returned by respective `setTimeout` or `setInterval` 
- (i.e. `clearTimeout` throws when argument was not returned by `setTimeout` and `clearInterval` throws when argument was not returned by `setInterval`). 
+ - `throwOnInvalidClearTimer` - a `boolean`. When `true` calls to `clearImmediate`, `clearTimeout` and `clearInterval` will throw when called with an argument 
+  that was not earlier returned by respective `set` function (i.e. `clearTimeout` throws when argument was not returned by `setTimeout`,
+  `clearInterval` throws when argument was not returned by `setInterval` and `clearImmediate` throws when argument was not returned by `setImmediate`). 
  By default `false`, it is recommended to set to `true` to provide better test assertions.
  - `promiseScheduler` - a `function` representing a Promises/A+ compatible library (e.g., `bluebird`). It will be used internally to schedule Promises. 
  By default it is the built-in Node.js Promise. In environments where there is no Promise, `bluebird` is used as default library (if available). If neither
