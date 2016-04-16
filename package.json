@@ -34,7 +34,7 @@
     "grunt-contrib-jshint": "1.0.0",
     "grunt-istanbul": "~0.7.0",
     "grunt-mocha-istanbul": "~4.0.1",
-    "grunt-madge": "Lewerow/grunt-madge",
+    "madge": "~0.5.3",
     "codeclimate-test-reporter": "0.3.1",
     "bluebird": "^3.0.0"
   },
@@ -50,8 +50,8 @@
     "mocha": "mocha --recursive tests examples",
     "test": "grunt",
     "coverage": "grunt mocha_istanbul",
-    "madge": "grunt madge",
-    "ci": "grunt madge && npm run-script mocha && grunt mocha_istanbul"
+    "madge": "madge -c . -x node_modules",
+    "ci": "npm run-script madge && npm run-script mocha && grunt mocha_istanbul"
   },
   
   "main": "zurvan.js"

@@ -4,7 +4,6 @@ module.exports = function(grunt) {
   // Add the grunt-mocha-test tasks.
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-mocha-istanbul');
-  grunt.loadNpmTasks('grunt-madge');
 
   function toFile(dir) {
     return dir + "/*.js";
@@ -24,9 +23,6 @@ module.exports = function(grunt) {
     },
     jshint : {
       files : allFiles
-	  },
-	  madge: {
-	    all: allFiles
 	  },
     mocha_istanbul: {
       coverage: {
