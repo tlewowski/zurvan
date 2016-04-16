@@ -33,7 +33,6 @@
     "grunt-cli": "~1.2.0",
     "grunt-contrib-jshint": "1.0.0",
     "grunt-istanbul": "~0.7.0",
-    "grunt-mocha-test": "^0.12.7",
     "grunt-mocha-istanbul": "~4.0.1",
     "grunt-madge": "Lewerow/grunt-madge",
     "codeclimate-test-reporter": "0.3.1",
@@ -48,11 +47,11 @@
   "engines": {"node": ">=0.10.0"},
   "license": "MIT",
   "scripts": {
+    "mocha": "mocha --recursive tests examples",
     "test": "grunt",
-    "mocha": "grunt mochaTest",
     "coverage": "grunt mocha_istanbul",
     "madge": "grunt madge",
-    "ci": "grunt madge && grunt mochaTest && grunt mocha_istanbul"
+    "ci": "grunt madge && npm run-script mocha && grunt mocha_istanbul"
   },
   
   "main": "zurvan.js"
