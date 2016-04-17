@@ -1,6 +1,7 @@
 0.3.1: 
  - *BREAKING CHANGE* fixed a bug where UIDs called by setImmediate leaked between test cases
  - *BREAKING CHANGE* throwOnInvalidClearTimer configuration option applies to setImmediate/clearImmediate as well now
+ - removed dependencies on grunt-madge and grunt-mocha-test
 
 0.3.0:
  - *BREAKING CHANGE* default value for TimeUnit are now milliseconds, i.e., TimeUnit called without unit will be converted from milliseconds now. TimeUnit module exports a function now instead of an object. All previous fields are still there.
