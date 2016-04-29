@@ -10,23 +10,26 @@ function TimeForwarder(timeServer, timerInterceptor, immediateInterceptor) {
   this.immediateInterceptor = immediateInterceptor; 
 }
 
+TimeForwarder.prototype.prepareTimeReport = function() {
+  var currentTime = this.timeServer.currentTime.toMilliseconds();
+  var targetTime = this.timeServer.targetTime.toMilliseconds();
+    
+  var timeReport = "Cannot release timers during event expiration" + 
+    "current time: <<" + currentTime + ">> ms, target time: <<" + targetTime + ">> ms. ";
+    
+  if(targetTime === currentTime) {
+    timeReport = timeReport + " Target time reached, but queue not cleared yet. ";
+  }
+ 
+  return timeReport; 
+}
+
 TimeForwarder.prototype.stopForwarding = function() {
   var that = this;
   return new that.schedule.Promise(function(resolve, reject) {
-    if(that.isExpiringEvents()) {
-    var currentTime = that.timeServer.currentTime.toMilliseconds();
-    var targetTime = that.timeServer.targetTime.toMilliseconds();
-    
-    var errorMessage = "Cannot release timers during event expiration" + 
-      "current time: <<" + currentTime + ">> ms, target time: <<" +
-        targetTime + ">> ms. ";
-    
-    if(targetTime === currentTime) {
-      errorMessage = errorMessage + " Target time reached, but queue not cleared yet. ";
-    }
-    
-    errorMessage = errorMessage + " Expiring events requested at: " + that.forwardingStartedSavedStack;
-      return reject(new Error(errorMessage));
+    if(that.isExpiringEvents()) {      
+      return reject(new Error(that.prepareTimeReport() + 
+	    "Expiring events requested at: " + that.forwardingStartedSavedStack));
     }
   
   return resolve();
@@ -66,9 +69,8 @@ TimeForwarder.prototype.advanceTime = function(timeToForward) {
     }
 
     if(that.isExpiringEvents()) {
-      return reject(new Error("Cannot forward time before previous forwarding ends. Currently at: << " + 
-        that.timeServer.currentTime.toMilliseconds() + " >> ms, target: << " + that.timeServer.targetTime.toMilliseconds() + 
-        " ms >>. Forwarding requested from: " + that.forwardingStartedSavedStack));
+      return reject(new Error(that.prepareTimeReport() + 
+	    "Forwarding requested from: " + that.forwardingStartedSavedStack));
     }
 
     that.timeServer.targetTime = that.timeServer.currentTime.extended(advanceStep);

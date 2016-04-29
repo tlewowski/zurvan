@@ -1,6 +1,7 @@
 0.3.2:
  - Added a new badge to readme (vulnerabilities)
  - Removed grunt-jshint dependency (left only JSHint)
+ - Upgraded error messages - in case current time is equal to target, added info that queue is not yet cleared
 
 0.3.1: 
  - *BREAKING CHANGE* fixed a bug where UIDs called by setImmediate leaked between test cases
