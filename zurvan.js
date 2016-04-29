@@ -36,7 +36,7 @@ function enterForwardingState(actor) {
     return this.timeForwarder.advanceTime(timeToForward);
   };
   actor.blockSystem = function(timeToBlock) {
-    return this.timeForwarder.blockSystem(timeToBlock);	
+    return this.timeForwarder.blockSystem(timeToBlock);  
   };
   actor.expireAllTimeouts = function() {
     return this.timeForwarder.expireAllTimeouts();
@@ -80,48 +80,46 @@ Zurvan.prototype.interceptTimers = function(config) {
   var interceptionStack = new Error().stack;
   var that = this;
   return new newConfig.promiseScheduler(function(resolve, reject) {
-    if(zurvanActiveInstance) {
-	    return reject(new Error("Cannot intercept timers that are already intercepted by another instance of zurvan. Intercepted: " + 
-        zurvanActiveInstance.interceptionStack));
-	  }
-  	return resolve();
-  }).then(function() {
-    return new newConfig.promiseScheduler(function(resolve) {
-      that.config = newConfig;
-      that.interceptionStack = interceptionStack;
-      zurvanActiveInstance = that;
-	
-      that.timeServer.setupTime(that.config.timeSinceStartup, that.config.systemTime);
-      if(!that.config.ignoreDate) {
-        that.dateInterceptor.intercept();
+      if(zurvanActiveInstance) {
+        return reject(new Error("Cannot intercept timers that are already intercepted by another instance of zurvan. Intercepted: " + 
+          zurvanActiveInstance.interceptionStack));
       }
-	  
-	  that.immediateInterceptor.intercept(that.config);	
+      return resolve();
+    }).then(function() {
+      return new newConfig.promiseScheduler(function(resolve) {
+        that.config = newConfig;
+        that.interceptionStack = interceptionStack;
+        zurvanActiveInstance = that;
   
-  	  if(!that.config.ignoreProcessTimers) {
-        that.processTimerInterceptor.intercept();
-	  }
-	  
-	  that.allTimersInterceptor.intercept(that.config);
-	  
-	  enterForwardingState(that);
-	  resolve();
-	}).then(function() {
-	  var x = that.waitForEmptyQueue();
-	  return x;
-	}).catch(function() {
+        that.timeServer.setupTime(that.config.timeSinceStartup, that.config.systemTime);
+        if(!that.config.ignoreDate) {
+          that.dateInterceptor.intercept();
+        }
+    
+        that.immediateInterceptor.intercept(that.config);  
+  
+        if(!that.config.ignoreProcessTimers) {
+          that.processTimerInterceptor.intercept();
+        }
+
+      that.allTimersInterceptor.intercept(that.config);
+      enterForwardingState(that);
+      resolve();
+    }).then(function() {
+      return that.waitForEmptyQueue();
+    }).catch(function() {
       if(!that.config.ignoreProcessTimers) {
         that.processTimerInterceptor.release();
-	  }
-	  if(!that.config.ignoreDate) {
-    	that.dateInterceptor.release();
-	  }
+      }
+      if(!that.config.ignoreDate) {
+        that.dateInterceptor.release();
+      }
       that.immediateInterceptor.release();
-	  that.allTimersInterceptor.release();
+      that.allTimersInterceptor.release();
 
       zurvanActiveInstance = undefined;
       enterRejectingState(that);
-	  return newConfig.promiseScheduler.reject();
+      return newConfig.promiseScheduler.reject();
     });
   });
 };
@@ -136,8 +134,7 @@ Zurvan.prototype.releaseTimers = function() {
       
       return reject(new Error("Cannot release timers that were intercepted by different instance of zurvan. Intercepted: " + 
         zurvanActiveInstance.interceptionStack));
-	}
-	
+    }
     return resolve();
   }).then(function() {
     return that.timeForwarder.stopForwarding();
@@ -148,20 +145,20 @@ Zurvan.prototype.releaseTimers = function() {
   
     if(!that.config.ignoreProcessTimers) {
       leftovers.processTime = that.processTimerInterceptor.release();
-	  }
+    }
     if(!that.config.ignoreDate) {
       leftovers.date = that.dateInterceptor.release();
-	  }
+    }
     that.immediateInterceptor.release();
 
     var toTimerAPI = function(timer) {
-	    return {
-	      dueTime: timer.dueTime,
-	  	  callDelay: timer.callDelay,
+      return {
+        dueTime: timer.dueTime,
+        callDelay: timer.callDelay,
         callback: function() {
-		      return timer.callback.call();
-		    }
-	    };
+          return timer.callback.call();
+        }
+      };
     };
     var timers = that.allTimersInterceptor.release();
     leftovers.timeouts = timers.timeouts.map(toTimerAPI);
