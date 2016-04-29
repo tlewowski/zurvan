@@ -14,7 +14,12 @@ TimeForwarder.prototype.stopForwarding = function() {
   var that = this;
   return new that.schedule.Promise(function(resolve, reject) {
     if(that.isExpiringEvents()) {
-    return reject(new Error("Cannot release timers during event expiration"));
+	  var currentTime = that.timeServer.currentTime.toMilliseconds();
+	  var targetTime = that.timeServer.targetTime.toMilliseconds();
+	  
+	  
+	  
+      return reject(new Error("Cannot release timers during event expiration"));
     }
   
   return resolve();

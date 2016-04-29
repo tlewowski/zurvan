@@ -38,7 +38,7 @@ function success() {
 UIDManager.prototype.setUp = function(throwOnValidationFailure, uidUser) {
   this._throwOnValidationFailure = throwOnValidationFailure;
   this._uidUser = uidUser;
-}
+};
 
 UIDManager.prototype.isAcceptableUidImpl = function(uid) {
   if (!TypeChecks.isObject(uid)) {

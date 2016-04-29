@@ -7,6 +7,7 @@
 [![devDependencies](https://david-dm.org/Lewerow/zurvan/dev-status.svg)](https://david-dm.org/Lewerow/zurvan#info=devDependencies)
 [![GitHub version](https://badge.fury.io/gh/Lewerow%2Fzurvan.svg)](http://badge.fury.io/gh/Lewerow%2Fzurvan)
 [![npm version](https://badge.fury.io/js/zurvan.svg)](http://badge.fury.io/js/zurvan)
+[![Known Vulnerabilities](https://snyk.io/test/npm/zurvan/badge.svg)](https://snyk.io/test/npm/zurvan)
 
 _Zurvan_ is an asynchronous library for faking whole real-time dependency of node.js, mainly for test purposes.
 
@@ -21,7 +22,7 @@ contact me.
 
 Multiple testcases cannot be ran in parallel when using _Zurvan_, as there is only a single time stream for forwarding.
 
-_Zurvan_ will *NOT* work properly (at least in release 0.3.0) if test code uses real I/O (filesystem, sockets etc.).
+_Zurvan_ will *NOT* work properly (at least in release 0.3.2) if test code uses real I/O (filesystem, sockets etc.).
 To be exact, `waitForEmptyQueue` will not be able to work, since there will be no scheduled tasks on the queue, despite the fact that I/O is not done.
 It is possible to use _Zurvan_ in such cases, but additional `Promise`s are required. It is generally preferred to use preloaded data and mock I/O via 
 usual async actions (`setImmediate/process.nextTick`).

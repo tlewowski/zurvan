@@ -53,7 +53,7 @@ describe('zurvan', function() {
 	  }).then(function() {
 	    clearImmediate(immediate);
 	  }).then(function() {
-	    return zurvan.releaseTimers()
+	    return zurvan.releaseTimers();
 	  });
 	});
   });

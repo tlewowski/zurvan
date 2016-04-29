@@ -2,12 +2,11 @@
 module.exports = function(grunt) {
 
   // Add the grunt-mocha-test tasks.
-  grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-mocha-istanbul');
 
   function toFile(dir) {
     return dir + "/*.js";
-  };
+  }
   
   var testDirectories = ['tests', 'tests/*', 'examples'];
   var testFiles = testDirectories.map(toFile);
@@ -21,9 +20,6 @@ module.exports = function(grunt) {
       files : allFiles,
       tasks : 'default'
     },
-    jshint : {
-      files : allFiles
-	  },
     mocha_istanbul: {
       coverage: {
         src: testFiles

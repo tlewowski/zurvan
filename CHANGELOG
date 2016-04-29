@@ -1,3 +1,7 @@
+0.3.2:
+ - Added a new badge to readme (vulnerabilities)
+ - Removed grunt-jshint dependency (left only JSHint)
+
 0.3.1: 
  - *BREAKING CHANGE* fixed a bug where UIDs called by setImmediate leaked between test cases
  - *BREAKING CHANGE* throwOnInvalidClearTimer configuration option applies to setImmediate/clearImmediate as well now
