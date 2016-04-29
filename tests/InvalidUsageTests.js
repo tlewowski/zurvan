@@ -43,4 +43,33 @@ describe('during wrong usage', function() {
       return zurvan.releaseTimers();
     });
   });
+  
+  it('fails at double interception', function() {
+    return zurvan.interceptTimers()
+      .then(function() {
+        return zurvan.interceptTimers();
+      })    
+      .then(function() {
+        return zurvan.releaseTimers()
+          .then(function() {
+            return Promise.reject(new Error("Second interception should be rejected"));
+          });
+      }, function(err) {
+        return zurvan.waitForEmptyQueue();
+      }).then(function() {
+        return zurvan.releaseTimers();
+    });
+  });
+  
+  it('fails gracefully and cleans up resources when called with invalid arguments', function() {
+    return zurvan.interceptTimers({ignoreProcessTimers: true, ignoreDate: true, bluebird: false})
+	  .catch(function() {
+	    return zurvan.interceptTimers();
+	  }).then(function() {
+	    return zurvan.advanceTime(TimeUnit.seconds(1));
+	  }).then(function() {
+	    assert.equal(process.uptime(), 1);
+		return zurvan.releaseTimers();
+	  });
+  });
 });

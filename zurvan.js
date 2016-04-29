@@ -107,7 +107,7 @@ Zurvan.prototype.interceptTimers = function(config) {
       resolve();
     }).then(function() {
       return that.waitForEmptyQueue();
-    }).catch(function() {
+    }).catch(function(err) {
       if(!that.config.ignoreProcessTimers) {
         that.processTimerInterceptor.release();
       }

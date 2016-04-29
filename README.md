@@ -173,7 +173,7 @@ TimeUnit should be used as object with value semantics.
  
 ### Other
 There are no other API functions. All functions and modules in `detail` directory are library internal and are not guaranteed to expose a stable set of methods. Please do not use them directly.
-If you do - do it at your own risk. But if you do, and you find any of these functions useful (which I doubt - that's why they are in `detail`), contact me to make it part of stable API.
+If you do - do it at your own risk. But if you do, and you find any of these functions useful (which I doubt - that's why they are in `detail`), contact me to make it part of stable API or extract to a separate library.
 
 ## <a name="limitations"></a> Limitations
 
@@ -196,7 +196,7 @@ module that caches the calls (if it's already included due to earlier `require`s
 <a href="http://stackoverflow.com/questions/9210542/node-js-require-cache-possible-to-invalidate">clearing cache</a>).
 This is exactly why `bluebird` configuration option is needed if you use it (`bluebird` caches `setImmediate`).
 
-If your code uses multiple versions of `bluebird` (for example your application uses one version, and one of external packages uses a different one), `zurvan` in version 0.3.0 will not work
+If your code uses multiple versions of `bluebird` (for example your application uses one version, and one of external packages uses a different one), `zurvan` in version 0.3.2 will not work
 properly. This is because `bluebird` scheduler needs to be overridden, and current configuration allows only for a single `bluebird`. If this poses a problem, please 
 <a href="https://github.com/Lewerow/zurvan/issues">file an issue on GitHub</a>.
 
