@@ -76,12 +76,14 @@ TimeForwarder.prototype.advanceTime = function(timeToForward) {
     that.timeServer.targetTime = that.timeServer.currentTime.extended(advanceStep);
     that.startExpiringEvents();
     
-    // why twice, you ask? because node's event loop is fucked up, and may execute macroqueue tasks before microqueue ones
-    // details: http://dailyjs.com/2013/03/11/node-stable/
-    // https://github.com/nodejs/node-v0.x-archive/issues/14820
-    that.schedule.EndOfQueue(function() {
-      that.schedule.EndOfQueue(function() {
-          fireTimersOneByOne();
+    // that's a workaround until proper solution is ready - in certain cases this theoretically might not work,
+	// i.e. pathological chains of setImmediate/process.nextTick
+	// but I wasn't able to find out such scenario, so I'm leaving it here for now
+	that.schedule.EndOfQueue(function() {
+	  that.schedule.EndOfQueue(function() {
+        that.schedule.EndOfQueue(function() {
+            fireTimersOneByOne();
+        });
       });
     });
   
