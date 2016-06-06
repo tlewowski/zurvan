@@ -48,13 +48,6 @@ var bluebirdCompatibilityTestcase = function(configuration, expectedOutput, blue
 };
 
 describe('zurvan', function() {
-  
-  if(NodeVersion.features.hasMicroqueuedNextTick) {
-    describe('by default', function() {
-      it('does not work with bluebird scheduler', bluebirdCompatibilityTestcase({}, 0, bluebird));
-    });    
-  }
-  
   // bluebird uses a different scheduler for promises than node engine does - namely, setImmediate (macroqueue), 
   // while V8 schedules promises on microqueue. Additionally, bluebird captures global.setImmediate in a local variable,
   // thus making it insufficient to change setTimeout itself. Luckily, it uses setImmediate.call (at least up to version 3.0)
