@@ -14,7 +14,7 @@ TimeForwarder.prototype.prepareTimeReport = function() {
   var currentTime = this.timeServer.currentTime.toMilliseconds();
   var targetTime = this.timeServer.targetTime.toMilliseconds();
     
-  var timeReport = "Cannot release timers during event expiration" + 
+  var timeReport = "Cannot release timers during event expiration " + 
     "current time: <<" + currentTime + ">> ms, target time: <<" + targetTime + ">> ms. ";
     
   if(targetTime === currentTime) {

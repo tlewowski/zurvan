@@ -41,27 +41,27 @@ describe('zurvan', function() {
 	  }).then(done, done);
 	});
 	
-	it('if no timeouts available, expiration still clears the queue', function(done) {
+	it('if no timeouts available, expiration still clears the queue', function() {
 	 var x = {}; 
 	 scheduleDelayedChange(x);
 	 return zurvan.expireAllTimeouts().then(function(){
 	    assert(x.x);
-      }).then(done, done);
+      });
 	});
 	
-	it('if no timers available, expiration of single one does not advance time', function(done) {
+	it('if no timers available, expiration of single one does not advance time', function() {
 	  assert.equal(0, process.uptime());
-	  zurvan.forwardTimeToNextTimer().then(function() {
+	  return zurvan.forwardTimeToNextTimer().then(function() {
 	    assert.equal(0, process.uptime());
-	  }).then(done, done);
+	  });
 	});
 
-	it('if no timeouts available, expiration still clears the queue', function(done) {
+	it('if no timeouts available, expiration still clears the queue', function() {
 	 var x = {}; 
 	 scheduleDelayedChange(x);
-	  zurvan.forwardTimeToNextTimer().then(function() {
+	 return zurvan.forwardTimeToNextTimer().then(function() {
 	    assert(x.x);
-      }).then(done, done);
+      });
 	});
 
 	it('is able to expire all set timeouts', function(done) {

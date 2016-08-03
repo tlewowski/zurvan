@@ -1,8 +1,10 @@
 0.3.2:
+ - *BREAKING CHANGE* added workaround for most typical cases of integration with request-promise. This increases number of cycles around event loop done before queue is assumed empty
  - Added a new badge to readme (vulnerabilities)
  - Removed grunt-jshint dependency (left only JSHint)
  - Upgraded error messages - in case current time is equal to target, added info that queue is not yet cleared
-
+ - updated used mocha to 3.0.0
+ 
 0.3.1: 
  - *BREAKING CHANGE* fixed a bug where UIDs called by setImmediate leaked between test cases
  - *BREAKING CHANGE* throwOnInvalidClearTimer configuration option applies to setImmediate/clearImmediate as well now

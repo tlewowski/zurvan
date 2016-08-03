@@ -194,7 +194,7 @@ Again, if this poses a problem, please <a href="https://github.com/Lewerow/zurva
 If your code does not directly access faked functions (`setTimeout`, `setImmediate` etc.), but caches their original values instead, you need to first require `zurvan`, and later your
 module that caches the calls (if it's already included due to earlier `require`s, you can reload it by 
 <a href="http://stackoverflow.com/questions/9210542/node-js-require-cache-possible-to-invalidate">clearing cache</a>).
-This is exactly why `bluebird` configuration option is needed if you use it (`bluebird` caches `setImmediate`).
+This is exactly why `bluebird` configuration option is needed if you use it (`bluebird` caches `setImmediate`). This might cause trouble when integrating with external libraries, like `request-promise`
 
 If your code uses multiple versions of `bluebird` (for example your application uses one version, and one of external packages uses a different one), `zurvan` in version 0.3.2 will not work
 properly. This is because `bluebird` scheduler needs to be overridden, and current configuration allows only for a single `bluebird`. If this poses a problem, please 

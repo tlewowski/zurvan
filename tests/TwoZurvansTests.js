@@ -53,7 +53,7 @@ describe('second zurvan', function() {
   });
   
   it('shall not release timers that were not intercepted', function(done) {
-    return zurvan.releaseTimers()
+    zurvan.releaseTimers()
       .then(function() {
         done(new Error("Should not release timers that were not intercepted"));
       }, function() {
@@ -63,7 +63,7 @@ describe('second zurvan', function() {
   
   it('shall not release timers that were intercepted by second instance', function(done) {
     var zurvan2 = zurvan.withDefaultConfiguration({timeSinceStartup: 60});
-    return zurvan.interceptTimers()
+    zurvan.interceptTimers()
       .then(function() {
         return zurvan2.releaseTimers();
       }).then(function() {
