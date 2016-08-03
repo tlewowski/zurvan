@@ -231,6 +231,11 @@ scheduling macroqueue tasks, then there will be cases where _Zurvan_ won't behav
 If you're trying to run on Node.js older than 0.10 - you will have trouble, as in these Nodes `setImmediate` was not implemented and `process.nextTick` was used to handle the macroqueue. However, 
 `process.nextTick` is not a function faked by `zurvan`. Again - contact me if you need support (possibly via <a href="https://github.com/Lewerow/zurvan/issues">GitHub issues</a>).
 
+## Notes
+
+As of version 0.3.2, _Zurvan_ is tested on all main node versions starting from 0.10.
+From version 0.4.0 on, support for versions below Node.js 4 will be dropped. I'll do my best to not break it, but Travis builds will be disabled for them.
+
 ## Other
 
 _Zurvan_ is available as package on NPM
