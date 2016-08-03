@@ -22,7 +22,7 @@ TimeForwarder.prototype.prepareTimeReport = function() {
   }
  
   return timeReport; 
-}
+};
 
 TimeForwarder.prototype.stopForwarding = function() {
   var that = this;

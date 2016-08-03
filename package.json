@@ -34,7 +34,7 @@
     "grunt-cli": "~1.2.0",
     "grunt-istanbul": "~0.7.0",
     "grunt-mocha-istanbul": "~5.0.1",
-    "madge": "~0.6.0",
+    "madge": "~0.5.3",
     "codeclimate-test-reporter": "0.3.3",
     "bluebird": "^3.0.0"
   },
