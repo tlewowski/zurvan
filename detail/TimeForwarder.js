@@ -79,13 +79,20 @@ TimeForwarder.prototype.advanceTime = function(timeToForward) {
     // that's a workaround until proper solution is ready - in certain cases this theoretically might not work,
 	// i.e. pathological chains of setImmediate/process.nextTick
 	// but I wasn't able to find out such scenario, so I'm leaving it here for now
-	that.schedule.EndOfQueue(function() {
-	  that.schedule.EndOfQueue(function() {
-        that.schedule.EndOfQueue(function() {
-            fireTimersOneByOne();
-        });
-      });
-    });
+
+	var numberOfRequestedCyclesAroundSetImmediateQueue = 4;
+	var numberOfExecutedCycles = 0;
+	
+	function cycleAroundSetImmediateQueue() {
+		if(numberOfExecutedCycles++ < numberOfRequestedCyclesAroundSetImmediateQueue) {
+			that.schedule.EndOfQueue(cycleAroundSetImmediateQueue);
+		}
+		else {
+			fireTimersOneByOne();
+		}
+	}
+  
+    that.schedule.EndOfQueue(cycleAroundSetImmediateQueue);
   
     function fireTimersOneByOne() {
       if(that.immediateInterceptor.areAwaiting()) {
