@@ -55,7 +55,7 @@ Invalid configuration has priority over timers already being intercepted, i.e., 
 #### `zurvan.releaseTimers()`
 
 Library teardown. Causes timers to be restored, i.e. all original functions are set back. 
-Returns a Promise that is resolved when timers are faked and event queue is empty and rejected if interception was not possible (e.g. timers were already intercepted)
+Returns a Promise that is resolved when timers are released and event queue is empty and rejected if interception was not possible (e.g. timers were already intercepted)
 
 Resolution value is and `object`, defined as: 
 ``` 
