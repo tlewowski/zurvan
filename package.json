@@ -1,6 +1,6 @@
 {
   "name": "zurvan",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "keywords": ["testing",
     "timeouts",
     "time",
@@ -27,7 +27,7 @@
   },
   
   "devDependencies": {
-    "mocha": "3.0.0",
+    "mocha": "^3.0.0",
     "istanbul": "^0.4.0",
 	"jshint": "~2.9.2",
     "grunt": "~1.0.1",
@@ -35,7 +35,7 @@
     "grunt-istanbul": "~0.7.0",
     "grunt-mocha-istanbul": "~5.0.1",
     "madge": "~0.5.3",
-    "codeclimate-test-reporter": "0.3.3",
+    "codeclimate-test-reporter": "0.4.0",
     "bluebird": "^3.0.0"
   },
   
