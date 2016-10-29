@@ -3,6 +3,14 @@ var TypeChecks = require("./utils/TypeChecks");
 var TimeUnit = require("../TimeUnit");
 var assert = require("assert");
 
+    
+function delayByCycling(schedule, cycleCount, f) {
+  var cyclesExecuted = 0;
+  (function cycle(f) {
+	(++cyclesExecuted < cycleCount) ? schedule(cycle, f) : f();
+  })(f);
+}
+
 function TimeForwarder(timeServer, timerInterceptor, immediateInterceptor) {
   this.forwardingStartedSavedStack = undefined;
   this.timerInterceptor = timerInterceptor;  
@@ -43,8 +51,13 @@ TimeForwarder.prototype.stopExpiringEvents = function() {
 TimeForwarder.prototype.enable = function(config) {
   this.schedule = {
     Promise: config.promiseScheduler,
-    EndOfQueue: this.immediateInterceptor.endOfQueueScheduler()
+    EndOfQueue: this.immediateInterceptor.endOfQueueScheduler(),
+	Internal: this.immediateInterceptor.internalScheduler()
   };
+  this.config = {
+    requestedCyclesAroundSetImmediateQueue: config.requestedCyclesAroundSetImmediateQueue,
+	maxAllowedSetImmediateBatchSize: config.maxAllowedSetImmediateBatchSize
+  }
 };
 
 TimeForwarder.prototype.disable = function() {
@@ -75,27 +88,28 @@ TimeForwarder.prototype.advanceTime = function(timeToForward) {
 
     that.timeServer.targetTime = that.timeServer.currentTime.extended(advanceStep);
     that.startExpiringEvents();
-    
-    // that's a workaround until proper solution is ready - in certain cases this theoretically might not work,
-	// i.e. pathological chains of setImmediate/process.nextTick
-	// but I wasn't able to find out such scenario, so I'm leaving it here for now
-
-	var numberOfRequestedCyclesAroundSetImmediateQueue = 4;
-	var numberOfExecutedCycles = 0;
 	
-	function cycleAroundSetImmediateQueue() {
-		if(numberOfExecutedCycles++ < numberOfRequestedCyclesAroundSetImmediateQueue) {
-			that.schedule.EndOfQueue(cycleAroundSetImmediateQueue);
-		}
-		else {
-			fireTimersOneByOne();
-		}
-	}
-  
-    that.schedule.EndOfQueue(cycleAroundSetImmediateQueue);
-  
+    // that's a workaround - in certain cases I believe this might not work (pathological chains of setImmediate/process.nextTick)
+	// but I wasn't able to find out any such scenario, so I'm leaving it here for now - if you find one, file an issue on GitHub
+	// or just increase the counter from configuration parameters
+	delayByCycling(that.schedule.EndOfQueue, that.config.requestedCyclesAroundSetImmediateQueue, fireTimersOneByOne);
+	
+	var currentSetImmediateBatchSize = 0
     function fireTimersOneByOne() {
       if(that.immediateInterceptor.areAwaiting()) {
+	    if(++currentSetImmediateBatchSize >= that.config.maxAllowedSetImmediateBatchSize) {
+		  that.immediateInterceptor.startDroppingImmediates();
+		  
+		  // full cycle is needed to drop the immediates causing infinite loop
+		  // original immediates used, because fake ones are already being dropped
+		  delayByCycling(that.schedule.Internal, that.config.requestedCyclesAroundSetImmediateQueue, function() {
+		      reject(new Error("Possible infinite setImmediate loop detected. " + currentSetImmediateBatchSize + 
+		        " setImmediates in single batch occurred. Dropping all further immediates, global objects are in undefined state." + 
+			    " Forwarding time requested from: " + that.forwardingStartedSavedStack));
+		  });
+		  return;
+		}
+		
         that.schedule.EndOfQueue(function() {
           fireTimersOneByOne();
         });

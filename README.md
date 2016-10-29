@@ -7,7 +7,6 @@
 [![devDependencies](https://david-dm.org/Lewerow/zurvan/dev-status.svg)](https://david-dm.org/Lewerow/zurvan#info=devDependencies)
 [![GitHub version](https://badge.fury.io/gh/Lewerow%2Fzurvan.svg)](http://badge.fury.io/gh/Lewerow%2Fzurvan)
 [![npm version](https://badge.fury.io/js/zurvan.svg)](http://badge.fury.io/js/zurvan)
-[![Known Vulnerabilities](https://snyk.io/test/npm/zurvan/badge.svg)](https://snyk.io/test/npm/zurvan)
 
 _Zurvan_ is an asynchronous library for faking whole real-time dependency of node.js, mainly for test purposes.
 
@@ -22,7 +21,7 @@ contact me.
 
 Multiple testcases cannot be ran in parallel when using _Zurvan_, as there is only a single time stream for forwarding.
 
-_Zurvan_ will *NOT* work properly (at least in release 0.3.2) if test code uses real I/O (filesystem, sockets etc.).
+_Zurvan_ will *NOT* work properly (at least in release 0.3.3) if test code uses real I/O (filesystem, sockets etc.).
 To be exact, `waitForEmptyQueue` will not be able to work, since there will be no scheduled tasks on the queue, despite the fact that I/O is not done.
 It is possible to use _Zurvan_ in such cases, but additional `Promise`s are required. It is generally preferred to use preloaded data and mock I/O via 
 usual async actions (`setImmediate/process.nextTick`).
@@ -55,13 +54,14 @@ Invalid configuration has priority over timers already being intercepted, i.e., 
 #### `zurvan.releaseTimers()`
 
 Library teardown. Causes timers to be restored, i.e. all original functions are set back. 
-Returns a Promise that is resolved when timers are released and event queue is empty and rejected if interception was not possible (e.g. timers were already intercepted)
+Returns a Promise that is resolved when timers are released and event queue is empty and rejected if release was not possible (e.g. timers weren't even intercepted) or failed (e.g. long enough setImmediate loop)
 
 Resolution value is and `object`, defined as: 
 ``` 
 {
   timeouts: remainingTimeouts,
   intervals: remainingIntervals,
+  immediates: remainingImmediates,
   date: zurvanEndDate,
   processTime: zurvanEndProcessTime,
   currentTime: zurvanEndTime
@@ -74,6 +74,8 @@ these fields are defined as:
  - `zurvanEndDate` is _zurvan_ date in same format that is returned when timers are intercepted (not exactly same as usual `Date` - see [limitations]{#limitations})
  - `zurvanEndProcessTime` is _zurvan_ process time in `hrtime` format (`[seconds, nanoseconds]`) at the release site
  - `zurvanEndTime` is `TimeUnit` that can be compared with `dueTime` of `Timer`. It represents amount of time that was forwarded.
+ - `remainingImmediates` is an object of immediates that were not yet executed. In `zurvan.releaseTimers()` is should always be an object defined as: { size: 0 }. If you encounter other value,
+  please report it. For other possible values, see `zurvan.forcedReleaseTimers()`.
  
  A `Timer` object consists of at least two fields: `callback` which is a 0-argument function executing what would be done if it expired and
  `dueTime` which is a `TimeUnit`, informing when would the timer be expired. In case of intervals it must also contain `callDelay` field, which is a `TimeUnit` 
@@ -83,6 +85,15 @@ these fields are defined as:
  
  If is rejected, rejection value is `Error` with proper message.
 
+#### `zurvan.forcedReleaseTimers()`
+
+Forced teardown, should be used with extreme care. Works roughly the same way as `zurvan.releaseTimers()`, but does not validate that queue is cleared AND resets internals totally.
+Should be used only in fatal situations, such as after `zurvan.waitForEmptyQueue()` failed due to infinite loop.
+Leaves global variables in unknown state (may cause dropping of some events). 
+Return values are the the same as in `zurvan.releaseTimers()`, except `remainingImmediates` - here it will be an object containing key `size` with value equal to number of dropped immediates and
+`size` of other keys, each corresponding to one dropped immediate. Value of these keys are stacks pointing to location where setting the immediate was requested.
+
+ 
 #### `zurvan.withDefaultConfiguration(config)`
 
 Returns a new library object (new `zurvan` instance) with modified default configuration. 
@@ -233,7 +244,7 @@ If you're trying to run on Node.js older than 0.10 - you will have trouble, as i
 
 ## Notes
 
-As of version 0.3.2, _Zurvan_ is tested on all main node versions starting from 0.10.
+As of version 0.3.3, _Zurvan_ is tested on all main node versions starting from 0.10.
 From version 0.4.0 on, support for versions below Node.js 4 will be dropped. I'll do my best to not break it, but Travis builds will be disabled for them.
 
 ## Other

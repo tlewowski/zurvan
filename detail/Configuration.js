@@ -14,6 +14,7 @@ function mergeConfigurations(localConfiguration, globalConfiguration) {
       finalConfiguration[key] = localConfiguration[key];
     });
   }
+
   return finalConfiguration;
 }
 
@@ -39,7 +40,9 @@ function defaultConfiguration() {
     ignoreDate: false,
     fakeOriginalSetImmediateMethods: false,
     throwOnInvalidClearTimer: false,
-    promiseScheduler: Promise    
+    promiseScheduler: Promise,
+	requestedCyclesAroundSetImmediateQueue: 4,
+	maxAllowedSetImmediateBatchSize: 500
   };
 }
 

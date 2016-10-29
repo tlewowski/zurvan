@@ -1,3 +1,12 @@
+0.3.3:
+ - *BREAKING CHANGE* implemented #42 - sufficiently long chain of setImmediates will cause a rejection (configurable via maxSetImmediateBatchSize) - global state will be unknown after this exception
+ - added a configuration parameter - requestedCyclesAroundSetImmediateQueue - in case you encoutered a weird scenario which is not handled by zurvan by default, you can increment it as a workaround (should work). Please, report such scenarios
+ - added forcedReleaseTimers (#37) - note that it should not be used except for special cases (like after detection of infinite loop) and may leave global components in unknown state
+ - new field in resolution value of releaseTimers - immediates, contains an object of not-executed immediates (should be always empty in normal releaseTimers, will contain dropped ones with invocation stack in forcedReleaseTimers)
+ - updated development packages
+ - removed vulnerabilities badge, zurvan should be used for tests mostly, so it's irrelevant
+ - minor README fixes
+
 0.3.2:
  - *BREAKING CHANGE* added workaround for most typical cases of integration with request-promise. This increases number of cycles around event loop done before queue is assumed empty
  - Added a new badge to readme (vulnerabilities)

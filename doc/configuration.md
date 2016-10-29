@@ -25,3 +25,10 @@
  - `promiseScheduler` - a `function` representing a Promises/A+ compatible library (e.g., `bluebird`). It will be used internally to schedule Promises. 
  By default it is the built-in Node.js Promise. In environments where there is no Promise, `bluebird` is used as default library (if available). If neither
  of these options are available, `.interceptTimers()` will throw an error.
+ - `maxSetImmediateBatchSize` - a `number`. This is maximum number of `setImmediate` calls that `zurvan` will accept during a single waiting period. Use with care, only if you expect your code to run loooong setImmediate loops.
+  After this number of setImmediate loops (not single setImmediates, but full event loop loops) is executed, advancing time is rejected, since zurvan assumes that an infinite loop was detected. After an infinite loop detection, 
+  further setImmediates are being dropped, and timers may be released only by `forcedReleaseTimers` and global state is unknown, but you can recreate it from scratch for next test cases.  
+ - `requestedCyclesAroundSetImmediateQueue` - a `number`. This is the number of `setImmediate` calls inside an event loop cycle, i.e., it is assumed that nothing can happen on its own after all these immediates end
+ (assuming setImmediates, setTimeouts and setIntervals are all intercepted and managed by zurvan - immediates may be on queue, but will not expire without zurvan's intervention). 
+ This parameter can be used as a quick-and-dirty hack if you encounter a scenario which is not managed well by zurvan (i.e., some  events happen after queue is assumed to be empty). If you encounter such scenario, please report it 
+ as a bug on GitHub

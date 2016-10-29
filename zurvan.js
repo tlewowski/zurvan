@@ -31,6 +31,14 @@ function enterRejectingState(actor) {
   actor.forwardTimeToNextTimer = rejectPromiseWithError("Cannot forward time if timers are not intercepted by this instance of zurvan", actor.config.promiseScheduler);
 }
 
+function sequentialScenario(context, scenarioSteps) {
+  return scenarioSteps.reduce(function(prevStep, currStep) {
+    return prevStep.then(function(args){
+	  return currStep(context, args);
+	});
+  }, Promise.resolve());
+}
+
 function enterForwardingState(actor) {
   actor.advanceTime = function(timeToForward) {
     return this.timeForwarder.advanceTime(timeToForward);
@@ -54,6 +62,11 @@ var zurvanActiveInstance;
 function Zurvan(config) { 
   this.globalConfig = config;
   this.config = this.globalConfig;
+  this.resetSubcomponents();
+  enterRejectingState(this);
+}
+
+Zurvan.prototype.resetSubcomponents = function() {
   this.timeServer = new TimeServer();
    
   this.immediateInterceptor = new ImmediateInterceptor();
@@ -63,12 +76,9 @@ function Zurvan(config) {
   
   this.processTimerInterceptor = new ProcessTimerInterceptor(this.timeServer);
   this.dateInterceptor = new DateInterceptor(this.timeServer);
-  
-  enterRejectingState(this);
 }
 
 Zurvan.prototype.interceptTimers = function(config) {
-  
   var newConfig = Configuration.merge(config, this.globalConfig);
 
   // this error has to be synchronous, since we do not know yet whether the system supports Promises
@@ -119,38 +129,36 @@ Zurvan.prototype.interceptTimers = function(config) {
 
       zurvanActiveInstance = undefined;
       enterRejectingState(that);
-      return newConfig.promiseScheduler.reject();
+      return newConfig.promiseScheduler.reject(err);
     });
   });
 };
 
-Zurvan.prototype.releaseTimers = function() {
-  var that = this;
-  return new that.config.promiseScheduler(function(resolve, reject) {
-    if(zurvanActiveInstance !== that) {
-      if(!zurvanActiveInstance) {
-        return reject(new Error("Cannot release timers that were not intercepted by zurvan at all"));        
-      }
-      
-      return reject(new Error("Cannot release timers that were intercepted by different instance of zurvan. Intercepted: " + 
-        zurvanActiveInstance.interceptionStack));
-    }
-    return resolve();
-  }).then(function() {
-    return that.timeForwarder.stopForwarding();
-  }).then(function() {
-    return that.waitForEmptyQueue();
-  }).then(function() {  
+function validateReleasingTimers(zurvan) {
+    return new zurvan.config.promiseScheduler(function(resolve, reject) {
+		if(zurvanActiveInstance !== zurvan) {
+		  if(!zurvanActiveInstance) {
+			return reject(new Error("Cannot release timers that were not intercepted by zurvan at all"));        
+		  }
+		  
+		  return reject(new Error("Cannot release timers that were intercepted by different instance of zurvan. Intercepted: " + 
+			zurvanActiveInstance.interceptionStack));
+		}
+		return resolve();
+	});
+}
+
+function gatherLeftovers(zurvan) {
     var leftovers = {};
   
-    if(!that.config.ignoreProcessTimers) {
-      leftovers.processTime = that.processTimerInterceptor.release();
+    leftovers.immediates = zurvan.immediateInterceptor.release();
+    if(!zurvan.config.ignoreProcessTimers) {
+      leftovers.processTime = zurvan.processTimerInterceptor.release();
     }
-    if(!that.config.ignoreDate) {
-      leftovers.date = that.dateInterceptor.release();
+    if(!zurvan.config.ignoreDate) {
+      leftovers.date = zurvan.dateInterceptor.release();
     }
-    that.immediateInterceptor.release();
-
+	
     var toTimerAPI = function(timer) {
       return {
         dueTime: timer.dueTime,
@@ -160,18 +168,40 @@ Zurvan.prototype.releaseTimers = function() {
         }
       };
     };
-    var timers = that.allTimersInterceptor.release();
+    var timers = zurvan.allTimersInterceptor.release();
     leftovers.timeouts = timers.timeouts.map(toTimerAPI);
     leftovers.intervals = timers.intervals.map(toTimerAPI);
-    leftovers.currentTime = that.timeServer.currentTime.copy();
+    leftovers.currentTime = zurvan.timeServer.currentTime.copy();
     
-    that.interceptionStack = undefined;
+    zurvan.interceptionStack = undefined;
     zurvanActiveInstance = undefined;
-    enterRejectingState(that);
+    enterRejectingState(zurvan);
     
     return leftovers;
-  });
-};
+}
+
+var releaseSteps = [
+  validateReleasingTimers, 
+  function(zurvan){return zurvan.timeForwarder.stopForwarding();},
+  function(zurvan){return zurvan.waitForEmptyQueue();},
+  gatherLeftovers
+];
+
+var forcedReleaseSteps = [
+  validateReleasingTimers, 
+  gatherLeftovers,
+  function(zurvan, leftovers) {
+    zurvan.resetSubcomponents(); 
+	return leftovers;
+  }
+];
+
+Zurvan.prototype.releaseTimers = function() {
+  return sequentialScenario(this, releaseSteps);
+}
+Zurvan.prototype.forcedReleaseTimers = function() {
+  return sequentialScenario(this, forcedReleaseSteps);
+}
 
 Zurvan.prototype.setSystemTime = function(newSystemTime) {
   return this.timeServer.setSystemTime(newSystemTime);
@@ -182,7 +212,7 @@ Zurvan.prototype.waitForEmptyQueue = function() {
 };
 
 var apiFunctions = ["releaseTimers", "interceptTimers", "setSystemTime", "advanceTime", 
-  "blockSystem", "expireAllTimeouts", "forwardTimeToNextTimer", "waitForEmptyQueue"];
+  "blockSystem", "expireAllTimeouts", "forwardTimeToNextTimer", "waitForEmptyQueue", "forcedReleaseTimers"];
   
 function createZurvanAPI(newDefaultConfig) {
   var configuration = Configuration.merge(newDefaultConfig, Configuration.defaultConfiguration());

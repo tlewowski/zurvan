@@ -28,11 +28,10 @@ ImmediateInterceptor.prototype.intercept = function(config) {
   }
 };
 
-ImmediateInterceptor.prototype.release = function() {
+ImmediateInterceptor.prototype.release = function(forced) {
   var that = this;
-  Object.keys(this.awaitingImmediates).forEach(function(uid) {
-    that.dequeue(that.awaitingImmediates[uid]);
-  });
+  
+  var leftImmediates = this.awaitingImmediates;
   this.awaitingImmediates = {size: 0};
 
   this.setImmediates.restore();
@@ -46,15 +45,27 @@ ImmediateInterceptor.prototype.release = function() {
   
   this.enqueue = undefined;
   this.dequeue = undefined;
+  
+  return leftImmediates;
 };
+
+ImmediateInterceptor.prototype.startDroppingImmediates = function() {
+  this.dropImmediates = true;
+}
 
 ImmediateInterceptor.prototype.addImmediate = function(callback) {
   var uid = this.uidManager.getUid();
+  if(this.dropImmediates) {
+    this.awaitingImmediates[uid.uid] = new Error().stack;
+    ++this.awaitingImmediates.size;
+    return uid;
+  }
+  
   
   var that = this;
   var args = [].splice.call(arguments, 1);
   this.awaitingImmediates[uid.uid] = this.enqueue(function() {
-    that.remove(uid);	
+    that.remove(uid);
     callback.apply(undefined, args);
   });
   ++this.awaitingImmediates.size;
@@ -89,5 +100,9 @@ ImmediateInterceptor.prototype.areAwaiting = function() {
 ImmediateInterceptor.prototype.endOfQueueScheduler = function() {
   return setImmediate.bind(global);
 };
+
+ImmediateInterceptor.prototype.internalScheduler = function() {
+  return this.enqueue;
+}
 
 module.exports = ImmediateInterceptor;
