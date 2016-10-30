@@ -21,7 +21,7 @@ contact me.
 
 Multiple testcases cannot be ran in parallel when using _Zurvan_, as there is only a single time stream for forwarding.
 
-_Zurvan_ will *NOT* work properly (at least in release 0.3.3) if test code uses real I/O (filesystem, sockets etc.).
+_Zurvan_ will *NOT* work properly (at least in release 0.4.0) if test code uses real I/O (filesystem, sockets etc.).
 To be exact, `waitForEmptyQueue` will not be able to work, since there will be no scheduled tasks on the queue, despite the fact that I/O is not done.
 It is possible to use _Zurvan_ in such cases, but additional `Promise`s are required. It is generally preferred to use preloaded data and mock I/O via 
 usual async actions (`setImmediate/process.nextTick`).
@@ -244,8 +244,9 @@ If you're trying to run on Node.js older than 0.10 - you will have trouble, as i
 
 ## Notes
 
-As of version 0.3.3, _Zurvan_ is tested on all main node versions starting from 0.10.
-From version 0.4.0 on, support for versions below Node.js 4 will be dropped. I'll do my best to not break it, but Travis builds will be disabled for them.
+As of version 0.4.0, _Zurvan_ is tested on all main node versions starting from 0.12.
+As for version 0.10, either use _Zurvan_ 0.3.2 or try the new one - I'm doing my best not to make breaking changes, but some new features (such as infinite immediate loop detection) may not work in 0.10. They may also not work depending on
+Promise library used - they are only tested with _Zurvan_ in vanilla Promise mode, and definitely do not work if _Zurvan_ uses _bluebird_ as its scheduler (application may use _bluebird_, that's not a problem).
 
 ## Other
 

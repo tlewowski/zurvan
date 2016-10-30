@@ -31,12 +31,12 @@ function enterRejectingState(actor) {
   actor.forwardTimeToNextTimer = rejectPromiseWithError("Cannot forward time if timers are not intercepted by this instance of zurvan", actor.config.promiseScheduler);
 }
 
-function sequentialScenario(context, scenarioSteps) {
+function sequentialScenario(zurvan, scenarioSteps) {
   return scenarioSteps.reduce(function(prevStep, currStep) {
     return prevStep.then(function(args){
-	  return currStep(context, args);
+	  return currStep(zurvan, args);
 	});
-  }, Promise.resolve());
+  }, zurvan.config.promiseScheduler.resolve());
 }
 
 function enterForwardingState(actor) {
