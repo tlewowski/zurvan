@@ -44,7 +44,7 @@
   },
   
   "bugs": "https://github.com/Lewerow/zurvan/issues",
-  "engines": {"node": ">=0.12.0"},
+  "engines": {"node": ">=4.0.0"},
   "license": "MIT",
   "scripts": {
     "mocha": "mocha --recursive tests examples",

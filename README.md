@@ -244,9 +244,10 @@ If you're trying to run on Node.js older than 0.10 - you will have trouble, as i
 
 ## Notes
 
-As of version 0.4.0, _Zurvan_ is tested on all main node versions starting from 0.12.
-As for version 0.10, either use _Zurvan_ 0.3.2 or try the new one - I'm doing my best not to make breaking changes, but some new features (such as infinite immediate loop detection) may not work in 0.10. They may also not work depending on
-Promise library used - they are only tested with _Zurvan_ in vanilla Promise mode, and definitely do not work if _Zurvan_ uses _bluebird_ as its scheduler (application may use _bluebird_, that's not a problem).
+As of version 0.4.0, _Zurvan_ is tested on all main node versions starting from 4.0.
+As for versions below 4.0, either use _Zurvan_ 0.3.2 or try the new one - I'm doing my best not to make breaking changes, but some new features (such as infinite immediate loop detection) may not work in 0.10. They may also not work depending on
+Promise library used - they are only tested with _Zurvan_ in vanilla Promise mode, and definitely do not work if _Zurvan_ uses _bluebird_ as its scheduler (application may use _bluebird_, that's not a problem). It will generally not work with
+any internal scheduler that relies on setImmediate to schedule promises. It's best not to mess with internal scheduler - it was added to satisfy need of node 0.10 and possibly some web browsers, but should not be used in newer node versions.
 
 ## Other
 

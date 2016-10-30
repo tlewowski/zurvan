@@ -3,10 +3,9 @@ script: npm run-script ci
 after_script: codeclimate-test-reporter < coverage/lcov.info
 node_js:
  - 'node'
- - 'iojs'
+ - '6'
  - '5'
  - '4'
- - '0.12'
 sudo: false
 addons:
     code_climate:

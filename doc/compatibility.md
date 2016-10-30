@@ -1,6 +1,7 @@
 ## Engines
 
- _Zurvan_ is tested using Node.js: 0.10, 0.11, 0.12, 4.x, 5.x and newest releases. Currently there is no continous testing in the browser, thus it doesn't work, most probably.
+ _Zurvan_ is tested using Node.js: 4.x, 5.x, 6.x and newest releases. Currently there is no continous testing in the browser, thus it doesn't work, most probably.
+ As for older _node_ engines, all features should work in 0.12 (although CI is not executed due to lack of tool support), but some may not work in 0.10 (like infinite immediate loop detection)
 
 ## Libraries
 
