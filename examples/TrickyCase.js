@@ -44,7 +44,7 @@ describe('zurvan tricky example', function() {
 										process.nextTick(function() {
 											holder.push(i++); //11
 											setImmediate(function() {
-												holder.push(i++) //12
+												holder.push(i++); //12
 												process.nextTick(function() {
 													holder.push(i++); //13
 													setImmediate(function() {
@@ -67,7 +67,7 @@ describe('zurvan tricky example', function() {
 																					  then(function() {
 																						holder.push(i++); //22
 																					  }).then(function() {
-																						holder.push(i++) //23
+																						holder.push(i++); //23
 																					  });
 																				});
 																			});

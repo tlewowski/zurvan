@@ -7,7 +7,11 @@ var assert = require("assert");
 function delayByCycling(schedule, cycleCount, f) {
   var cyclesExecuted = 0;
   (function cycle(f) {
-	(++cyclesExecuted < cycleCount) ? schedule(cycle, f) : f();
+	if(++cyclesExecuted < cycleCount) {
+	  schedule(cycle, f);
+	} else {
+	  f();
+	}
   })(f);
 }
 
@@ -57,7 +61,7 @@ TimeForwarder.prototype.enable = function(config) {
   this.config = {
     requestedCyclesAroundSetImmediateQueue: config.requestedCyclesAroundSetImmediateQueue,
 	maxAllowedSetImmediateBatchSize: config.maxAllowedSetImmediateBatchSize
-  }
+  };
 };
 
 TimeForwarder.prototype.disable = function() {
@@ -94,7 +98,7 @@ TimeForwarder.prototype.advanceTime = function(timeToForward) {
 	// or just increase the counter from configuration parameters
 	delayByCycling(that.schedule.EndOfQueue, that.config.requestedCyclesAroundSetImmediateQueue, fireTimersOneByOne);
 	
-	var currentSetImmediateBatchSize = 0
+	var currentSetImmediateBatchSize = 0;
     function fireTimersOneByOne() {
       if(that.immediateInterceptor.areAwaiting()) {
 	    if(++currentSetImmediateBatchSize >= that.config.maxAllowedSetImmediateBatchSize) {

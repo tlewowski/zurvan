@@ -76,7 +76,7 @@ Zurvan.prototype.resetSubcomponents = function() {
   
   this.processTimerInterceptor = new ProcessTimerInterceptor(this.timeServer);
   this.dateInterceptor = new DateInterceptor(this.timeServer);
-}
+};
 
 Zurvan.prototype.interceptTimers = function(config) {
   var newConfig = Configuration.merge(config, this.globalConfig);
@@ -198,10 +198,10 @@ var forcedReleaseSteps = [
 
 Zurvan.prototype.releaseTimers = function() {
   return sequentialScenario(this, releaseSteps);
-}
+};
 Zurvan.prototype.forcedReleaseTimers = function() {
   return sequentialScenario(this, forcedReleaseSteps);
-}
+};
 
 Zurvan.prototype.setSystemTime = function(newSystemTime) {
   return this.timeServer.setSystemTime(newSystemTime);

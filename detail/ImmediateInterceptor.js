@@ -51,7 +51,7 @@ ImmediateInterceptor.prototype.release = function(forced) {
 
 ImmediateInterceptor.prototype.startDroppingImmediates = function() {
   this.dropImmediates = true;
-}
+};
 
 ImmediateInterceptor.prototype.addImmediate = function(callback) {
   var uid = this.uidManager.getUid();
@@ -103,6 +103,6 @@ ImmediateInterceptor.prototype.endOfQueueScheduler = function() {
 
 ImmediateInterceptor.prototype.internalScheduler = function() {
   return this.enqueue;
-}
+};
 
 module.exports = ImmediateInterceptor;
