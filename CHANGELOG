@@ -1,4 +1,7 @@
-0.3.3:
+0.4.1:
+ - *BREAKING CHANGE* implemented #36 - withDefaultConfiguration called without parameters will reset configuration for new zurvan instance
+
+0.4.0:
  - *BREAKING CHANGE* implemented #42 - sufficiently long chain of setImmediates will cause a rejection (configurable via maxSetImmediateBatchSize) - global state will be unknown after this exception
  - *BREAKING CHANGE* dropped support for Node below 4 - new releases will be tested on node >= 4
  - added a configuration parameter - requestedCyclesAroundSetImmediateQueue - in case you encoutered a weird scenario which is not handled by zurvan by default, you can increment it as a workaround (should work). Please, report such scenarios

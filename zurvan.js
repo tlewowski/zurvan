@@ -219,7 +219,7 @@ function createZurvanAPI(newDefaultConfig) {
   var api = APICreator.createAPI(new Zurvan(configuration), apiFunctions);
   
   api.withDefaultConfiguration = function(config) {
-    return createZurvanAPI(Configuration.merge(config, configuration));
+    return createZurvanAPI(config ? Configuration.merge(config, configuration) : Configuration.defaultConfiguration());
   };
   
   return api;

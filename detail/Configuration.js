@@ -5,6 +5,7 @@ var NodeVersion = require("./utils/NodeVersion");
 function mergeConfigurations(localConfiguration, globalConfiguration) {
   var finalConfiguration = {};
   
+
   Object.keys(globalConfiguration).forEach(function(key) {
     finalConfiguration[key] = globalConfiguration[key];
   });

@@ -21,7 +21,7 @@ contact me.
 
 Multiple testcases cannot be ran in parallel when using _Zurvan_, as there is only a single time stream for forwarding.
 
-_Zurvan_ will *NOT* work properly (at least in release 0.4.0) if test code uses real I/O (filesystem, sockets etc.).
+_Zurvan_ will *NOT* work properly (at least in release 0.4.1) if test code uses real I/O (filesystem, sockets etc.).
 To be exact, `waitForEmptyQueue` will not be able to work, since there will be no scheduled tasks on the queue, despite the fact that I/O is not done.
 It is possible to use _Zurvan_ in such cases, but additional `Promise`s are required. It is generally preferred to use preloaded data and mock I/O via 
 usual async actions (`setImmediate/process.nextTick`).
@@ -94,7 +94,7 @@ Return values are the the same as in `zurvan.releaseTimers()`, except `remaining
 `size` of other keys, each corresponding to one dropped immediate. Value of these keys are stacks pointing to location where setting the immediate was requested.
 
  
-#### `zurvan.withDefaultConfiguration(config)`
+#### `zurvan.withDefaultConfiguration([config])`
 
 Returns a new library object (new `zurvan` instance) with modified default configuration. 
 This means that after calling `.withDefaultConfiguration`, there are two instances of `zurvan`. However, they should not be used in parallel,
@@ -102,6 +102,8 @@ i.e. only one of them should intercept timers at the same time. If another one a
 Chain of `withDefaultConfiguration(config)` causes all `config`s to be merged (newer configurations override their fields, rest is taken from previous).
 
 Configuration options are described in <a href="doc/configuration.md">configuration documentation</a>.
+
+If called without arguments, returned instance will be created with default parameters.
 
 #### `zurvan.advanceTime(timeToAdvance)`
 
@@ -244,7 +246,7 @@ If you're trying to run on Node.js older than 0.10 - you will have trouble, as i
 
 ## Notes
 
-As of version 0.4.0, _Zurvan_ is tested on all main node versions starting from 4.0.
+As of version 0.4.1, _Zurvan_ is tested on all main node versions starting from 4.0.
 As for versions below 4.0, either use _Zurvan_ 0.3.2 or try the new one - I'm doing my best not to make breaking changes, but some new features (such as infinite immediate loop detection) may not work in 0.10. They may also not work depending on
 Promise library used - they are only tested with _Zurvan_ in vanilla Promise mode, and definitely do not work if _Zurvan_ uses _bluebird_ as its scheduler (application may use _bluebird_, that's not a problem). It will generally not work with
 any internal scheduler that relies on setImmediate to schedule promises. It's best not to mess with internal scheduler - it was added to satisfy need of node 0.10 and possibly some web browsers, but should not be used in newer node versions.
