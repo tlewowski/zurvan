@@ -54,6 +54,7 @@ TimerInterceptor.prototype.createCallback = function(callback, args) {
 };
 
 var MINIMUM_CALL_DELAY = 1;
+var MAX_CALL_DELAY = Math.pow(2,31) - 1; // int32 boundary
 TimerInterceptor.prototype.createCallDelay = function(requestedCallDelay) {
   if(!TypeChecks.isNumber(requestedCallDelay)) {
     if(this.config.denyImplicitTimer) {
@@ -69,6 +70,14 @@ TimerInterceptor.prototype.createCallDelay = function(requestedCallDelay) {
 	}
 	
 	return MINIMUM_CALL_DELAY;
+  }
+  
+  if(requestedCallDelay > MAX_CALL_DELAY) {
+	  if(this.config.denyTimersLongerThanInt32) {
+		  throw new Error("Call delay in timer must be <= " + MAX_CALL_DELAY + ". Given: << " + requestedCallDelay + " >>");
+	  }
+	  
+	  return MINIMUM_CALL_DELAY;
   }
   
   return requestedCallDelay;

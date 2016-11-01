@@ -1,5 +1,6 @@
 0.4.1:
  - *BREAKING CHANGE* implemented #36 - withDefaultConfiguration called without parameters will reset configuration for new zurvan instance
+ - added a configuration parameter - denyTimersLongerThanInt32 - to throw if timer delay is longer than allowed in Node (2^31 - 1). #67 in lolex
 
 0.4.0:
  - *BREAKING CHANGE* implemented #42 - sufficiently long chain of setImmediates will cause a rejection (configurable via maxSetImmediateBatchSize) - global state will be unknown after this exception

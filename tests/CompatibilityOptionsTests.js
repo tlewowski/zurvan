@@ -46,6 +46,17 @@ describe('zurvan', function() {
         assert.equal(process.uptime(), 0.001);
       }).then(done, done);
     });
+
+    it('executes after 1 millisecond when setting timer with more than int32', function(done) {
+      var called;
+      setTimeout(function() {called = true;}, Math.pow(2, 33));
+      assert.equal(0, process.uptime());
+      
+      zurvan.expireAllTimeouts().then(function() {
+        assert(called === true);
+        assert.equal(process.uptime(), 0.001);
+      }).then(done, done);
+    });
   });
   
 
@@ -109,7 +120,18 @@ describe('zurvan', function() {
 	  return zurvan.interceptTimers({denyTimersShorterThan1Ms: true}).then(function() {
         setTimeout(function(){called = true;}, -1);
       }).then(function() {
-        throw new Error("Implicit timer shall be denied and setting timer shall throw");
+        throw new Error("Negative timer shall be denied and setting timer shall throw");
+      }, function() {
+        return zurvan.releaseTimers();
+      });
+    });
+	
+	it('denies time over Int32 (by default set to 1 millisecond) - it is likely an error', function() {
+	  var called;
+	  return zurvan.interceptTimers({denyTimersLongerThanInt32: true}).then(function() {
+        setTimeout(function(){called = true;}, Math.pow(2, 33));
+      }).then(function() {
+        throw new Error("Too long timer shall be denied and setting timer shall throw");
       }, function() {
         return zurvan.releaseTimers();
       });
