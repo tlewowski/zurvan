@@ -36,4 +36,6 @@
  This parameter can be used as a quick-and-dirty hack if you encounter a scenario which is not managed well by zurvan (i.e., some  events happen after queue is assumed to be empty). If you encounter such scenario, please report it 
  as a bug on GitHub. It is recommended not to change this value.
  - `fakeNodeDedicatedTimers` - a `boolean`. If `true`, timers returned by `require('timers')` are faked as well as global ones, otherwise they are left untouched. Default value is `true`, should not be changed in node, 
- may require changes for the browser.
+ may require changes for the browser. Node timers are handled by the same queues as global ones (they are in fact aliases)
+ - `rejectOnCallbackFailure` - a `boolean`. If `true`, all promises returned by time forwarding functions will be rejected if any of callbacks exit with an exception. In such case promises will be rejected with an array of
+ objects representing failure time, delay of timeout (second argument of `setTimeout`/`setInterval`) and exception. If `false`, promises will be resolved with same argument. By default `false`, it is recommended to set it to `true`

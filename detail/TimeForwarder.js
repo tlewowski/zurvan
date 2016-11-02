@@ -58,10 +58,7 @@ TimeForwarder.prototype.enable = function(config) {
     EndOfQueue: this.immediateInterceptor.endOfQueueScheduler(),
 	Internal: this.immediateInterceptor.internalScheduler()
   };
-  this.config = {
-    requestedCyclesAroundSetImmediateQueue: config.requestedCyclesAroundSetImmediateQueue,
-	maxAllowedSetImmediateBatchSize: config.maxAllowedSetImmediateBatchSize
-  };
+  this.config = config;
 };
 
 TimeForwarder.prototype.disable = function() {
@@ -98,6 +95,7 @@ TimeForwarder.prototype.advanceTime = function(timeToForward) {
 	// or just increase the counter from configuration parameters
 	delayByCycling(that.schedule.EndOfQueue, that.config.requestedCyclesAroundSetImmediateQueue, fireTimersOneByOne);
 	
+	var executionErrors = [];
 	var currentSetImmediateBatchSize = 0;
     function fireTimersOneByOne() {
       if(that.immediateInterceptor.areAwaiting()) {
@@ -125,7 +123,12 @@ TimeForwarder.prototype.advanceTime = function(timeToForward) {
         closestTimer.clear();
         that.timeServer.currentTime.setTo(closestTimer.dueTime);
         that.schedule.EndOfQueue(function() {
-          closestTimer.expire();
+		  try {
+            closestTimer.expire();			  
+		  }
+		  catch(err) {
+			executionErrors.push({failedAt: closestTimer.dueTime, error: err, timerCallDelay: closestTimer.callDelay.toMilliseconds()});
+		  }
           that.schedule.EndOfQueue(function() {
             fireTimersOneByOne();
           });
@@ -134,7 +137,12 @@ TimeForwarder.prototype.advanceTime = function(timeToForward) {
       else {
         that.timeServer.currentTime.setTo(that.timeServer.targetTime);
         that.stopExpiringEvents();
-        resolve();
+		if(that.config.rejectOnCallbackFailure && executionErrors.length > 0) {
+		  reject(executionErrors);
+		}
+		else {
+          resolve(executionErrors);			
+		}
       }
     }
   });

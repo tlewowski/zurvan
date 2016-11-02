@@ -11,7 +11,7 @@ describe('zurvan', function() {
 	  return zurvan.releaseTimers();
 	});
 	
-	it('can integrate advancing time and blocking', function(done) {
+	it('can integrate advancing time and blocking', function() {
 	  var calls = [];
 	  setTimeout(function() {
 	    calls.push(1);
@@ -29,14 +29,14 @@ describe('zurvan', function() {
 	  
 	  zurvan.blockSystem(45);
 	  
-	  zurvan.waitForEmptyQueue().then(function() {
+	  return zurvan.waitForEmptyQueue().then(function() {
 	    return zurvan.advanceTime(40);
 	  }).then(function() {
 	    assert.deepEqual([1,2,3,4,2,2], calls);
-	  }).then(done, done);
+	  });
 	});
 	
-	it('can block system while time is being advanced', function(done) {
+	it('can block system while time is being advanced', function() {
 	  var calls = [];
 	  setTimeout(function() {
 	    assert.deepEqual([5, 0], process.hrtime());
@@ -50,13 +50,13 @@ describe('zurvan', function() {
 		calls.push(2);
 	  }, 5000);
 	  
-	  zurvan.advanceTime(7000).then(function() {
+	  return zurvan.advanceTime(7000).then(function() {
 	    assert.deepEqual(7, process.uptime());
 		assert.deepEqual([1,2], calls);
-	  }).then(done, done);
+	  });
 	});
 	
-	it('cannot block system for longer than requested advance time', function(done) {
+	it('cannot block system for longer than requested advance time', function() {
 	  setTimeout(function() {
     	assert.throws(zurvan.blockSystem.bind(zurvan, 2000));
 	  }, 50);
@@ -65,10 +65,10 @@ describe('zurvan', function() {
 	    assert.equal(0.1, process.uptime());
 	  }, 100);
 	  
-	  zurvan.advanceTime(1000).then(done, done);
+	  return zurvan.advanceTime(1000);
 	});
 	
-	it('when system is blocked, time cannot be additionally forwarded', function(done) {
+	it('when system is blocked, time cannot be additionally forwarded', function() {
 	  var rejected;
 	  setTimeout(function() {
 	    assert.equal(2, process.uptime());
@@ -80,10 +80,10 @@ describe('zurvan', function() {
 	  }, 1000);
 	  
 	  zurvan.blockSystem(2000);
-	  zurvan.waitForEmptyQueue().then(function() {
+	  return zurvan.waitForEmptyQueue().then(function() {
 	    assert.equal(2, process.uptime());
 		assert(rejected);
-	  }).then(done, done);
+	  });
 	});
   });
 });

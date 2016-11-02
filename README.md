@@ -109,7 +109,9 @@ If called without arguments, returned instance will be created with default para
 
 Returns a `Promise` that is resolved when time is forwarded by given time and all timers with this dueTime are expired,
 or rejected it time cannot be forwarded (e.g. timers were not intercepted yet).
-Resolution value is `undefined` and rejection `Error` with proper message.
+Resolution value is array of callbacks that exited with an exception (if everything went smoothly, it should be empty). If you want `zurvan` to reject 
+the `Promise` in such case, turn `rejectOnCallbackFailure` configuration option to `true`. If you do, it'll be rejected with the array of failed callbacks.
+However, if the reason for rejection is different than failed callbacks, it will be rejected with `Error` with proper message.
 
 Argument may be either a number (it is then interpreted as millisecond) or a `TimeUnit` object.
 
@@ -139,12 +141,16 @@ function f() {
 ```
 
 Returns a `Promise` that is resolved when all timeouts are already called or rejected it time cannot be forwarded (e.g. timers were not intercepted yet).
-Resolution value is `undefined` and rejection `Error` with proper message.
+Resolution value is array of callbacks that exited with an exception (if everything went smoothly, it should be empty). If you want `zurvan` to reject 
+the `Promise` in such case, turn `rejectOnCallbackFailure` configuration option to `true`. If you do, it'll be rejected with the array of failed callbacks.
+However, if the reason for rejection is different than failed callbacks, it will be rejected with `Error` with proper message.
 
 #### `zurvan.forwardTimeToNextTimer()`
 
 Forwards the time to the nearest timer and exipires all timers with same due time.
-Resolution value is `undefined` and rejection `Error` with proper message.
+Resolution value is array of callbacks that exited with an exception (if everything went smoothly, it should be empty). If you want `zurvan` to reject 
+the `Promise` in such case, turn `rejectOnCallbackFailure` configuration option to `true`. If you do, it'll be rejected with the array of failed callbacks.
+However, if the reason for rejection is different than failed callbacks, it will be rejected with `Error` with proper message.
 
 Returns a `Promise` that is resolved when all callbacks are executed and event queue is empty or rejected it time cannot be forwarded (e.g. timers were not intercepted yet)..
 
@@ -152,7 +158,10 @@ Returns a `Promise` that is resolved when all callbacks are executed and event q
 
 Returns a `Promise` that is resolved when all immediates are already called or rejected it time cannot be forwarded (e.g. timers were not intercepted yet).
 Also timers with zero time will be expired.
-Resolution value is `undefined` and rejection `Error` with proper message.
+
+Resolution value is array of callbacks that exited with an exception (if everything went smoothly, it should be empty). If you want `zurvan` to reject 
+the `Promise` in such case, turn `rejectOnCallbackFailure` configuration option to `true`. If you do, it'll be rejected with the array of failed callbacks.
+However, if the reason for rejection is different than failed callbacks, it will be rejected with `Error` with proper message.
 
 ### TimeUnit
 

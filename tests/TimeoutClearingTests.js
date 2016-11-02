@@ -26,7 +26,7 @@ describe('zurvan', function() {
 	  clearImmediate(a);
 	});
 	
-	it('does not call cleared timeouts/intervals', function(done) {
+	it('does not call cleared timeouts/intervals', function() {
 	  var calls = [];
 	  var a = setTimeout(function() {
 	    calls.push(1);
@@ -42,7 +42,7 @@ describe('zurvan', function() {
 	  
 	  clearTimeout(a);
 	  clearInterval(b);
-	  zurvan.advanceTime(100).then(done, done);
+	  return zurvan.advanceTime(100);
 	});
 
 	it('creates unstrigifiable handles', function(done) {
@@ -58,9 +58,9 @@ describe('zurvan', function() {
   });
   
   describe('after requesting to intercept timers', function() {	
-	it('rejects if time has not yet passed', function(done) {
+	it('rejects if time has not yet passed', function() {
 	  var rejected;
-	  zurvan.interceptTimers().then(function() {
+	  return zurvan.interceptTimers().then(function() {
 	    setTimeout(function() {
 	      zurvan.releaseTimers().then(function(err) {
             rejected = false;
@@ -74,10 +74,6 @@ describe('zurvan', function() {
 	    assert.equal(process.uptime(), 0.05);
         assert(rejected === true);
 		return zurvan.releaseTimers();
-	  }).then(function() {
-	    done();
-	  }, function(err) {
-	    done(err);
 	  });
 	});
 	

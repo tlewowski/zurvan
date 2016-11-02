@@ -11,7 +11,7 @@ describe('zurvan', function() {
 	afterEach(function() {
 	  return zurvan.releaseTimers();
 	});
-	it('supports any combination of setTimeout, setImmediate and process.nextTick', function(done) {
+	it('supports any combination of setTimeout, setImmediate and process.nextTick', function() {
 	  var calls = [];
 	  process.nextTick(function() {
 	    calls.push(1);
@@ -72,13 +72,12 @@ describe('zurvan', function() {
         calls.push(18);
 	  }, 30);
 	  
-	  zurvan.advanceTime(TimeUnit.milliseconds(30)).then(function() {
+	  return zurvan.advanceTime(TimeUnit.milliseconds(30)).then(function() {
 	    assert.deepEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18], calls);
-		done();
 	  });
 	});
 	
-	it('supports arbitrary combination of sets/clears immediates/timeouts/intervals', function(done) {
+	it('supports arbitrary combination of sets/clears immediates/timeouts/intervals', function() {
 	  var calls = [];
 	  var knownHrtime;
 	  var immediate1 = setImmediate(function() {
@@ -128,7 +127,7 @@ describe('zurvan', function() {
 		});
 	  }, 50);
 	  
-	  zurvan.advanceTime(200).then(done);
+	  return zurvan.advanceTime(200);
 	});
 	
 	it('handles setImmediates and process.nextTick always properly', function(done) {
@@ -150,8 +149,8 @@ describe('zurvan', function() {
 		  calls.push(0.5);
 		});
 		
-		zurvan.advanceTime(100).then(function() {
-		  assert.deepEqual([0,0.5,1,2,3,4,5,6], calls);
+		return zurvan.advanceTime(100).then(function() {
+  		  assert.deepEqual([0,0.5,1,2,3,4,5,6], calls);
 		}).then(done, done);
 	  });
 	  
@@ -167,7 +166,7 @@ describe('zurvan', function() {
 	  }, 50);
 	});
 	
-	it('can intersperse timeouts and immediates', function(done) {
+	it('can intersperse timeouts and immediates', function() {
 	  var calls = [];
 	  var immediate1 = setImmediate(function() {
 	    calls.push(1);
@@ -188,9 +187,9 @@ describe('zurvan', function() {
 	    calls.push(3);
 	  }, 200);
 	  
-	  zurvan.advanceTime(200).then(function() {
+	  return zurvan.advanceTime(200).then(function() {
 	    assert.deepEqual([2, 3], calls);		
-	  }).then(done, done);
+	  });
 	});
   });
 });

@@ -1,6 +1,8 @@
 0.4.1:
  - *BREAKING CHANGE* implemented #36 - withDefaultConfiguration called without parameters will reset configuration for new zurvan instance
  - *BREAKING CHANGE* fixed bug reported in sinonjs/lolex as #83 - require('timers') was not faked during timer interception
+ - *BREAKING CHANGE* promises returned by queue management function are resolved or rejected with an array of failed callbacks
+ - added a configuration parameter - rejectOnCallbackFailure - if any of callbacks passed to setTimeout/setImmediate/setInterval exited with an exception, time forwarding promise will be rejected
  - added a configuration parameter - fakeNodeDedicatedTimers - not to break the flow for the browsers
  - added a configuration parameter - denyTimersLongerThanInt32 - to throw if timer delay is longer than allowed in Node (2^31 - 1). #67 in lolex
 
