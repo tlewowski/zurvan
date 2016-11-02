@@ -22,11 +22,25 @@ TimerInterceptor.prototype.intercept = function(config, uidGenerator) {
   this.timerRepository = new TimerRepository(this.config, uidGenerator);
   this.setTimers = new FieldOverrider(this.timerType.context, this.timerType.setName, this.addTimer.bind(this, this.timerType.type));
   this.clearTimers = new FieldOverrider(this.timerType.context, this.timerType.clearName, this.clearTimer.bind(this));
+  
+  if(this.config.fakeNodeDedicatedTimers) {
+	var nodeTimers = require('timers');
+
+    this._nodeSetterOverrider = new FieldOverrider(nodeTimers, this.timerType.setName, this.addTimer.bind(this, this.timerType.type));
+    this._nodeClearerOverrider = new FieldOverrider(nodeTimers, this.timerType.clearName, this.clearTimer.bind(this));
+  }
 };
 
 TimerInterceptor.prototype.release = function() {
   this.setTimers.restore();
   this.clearTimers.restore();
+  
+  
+  if(this.config.fakeNodeDedicatedTimers) {
+    this._nodeSetterOverrider.restore();
+    this._nodeClearerOverrider.restore();
+  }
+  
   return this.timerRepository.releaseAll();
 };
 
