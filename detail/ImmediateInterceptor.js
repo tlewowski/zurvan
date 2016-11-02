@@ -15,6 +15,13 @@ ImmediateInterceptor.prototype.intercept = function(config) {
   
   this.setImmediates = new FieldOverrider(global, "setImmediate", this.addImmediate.bind(this));
   this.clearImmediates = new FieldOverrider(global, "clearImmediate", this.removeImmediate.bind(this));
+
+  if(this.config.fakeNodeDedicatedTimers) {
+	  var timers = require('timers');
+	  this.nodeSetImmediates = new FieldOverrider(timers, 'setImmediate', setImmediate.bind(global));
+	  this.nodeClearImmediates = new FieldOverrider(timers, 'clearImmediate', setImmediate.bind(global));
+  }
+
   this.enqueue = this.setImmediates.oldValue;
   this.dequeue = this.clearImmediates.oldValue;
   
@@ -36,6 +43,12 @@ ImmediateInterceptor.prototype.release = function(forced) {
 
   this.setImmediates.restore();
   this.clearImmediates.restore();
+  
+  if(this.config.fakeNodeDedicatedTimers) {
+	  this.nodeSetImmediates.restore();
+	  this.nodeClearImmediates.restore();
+  }
+
   this.uidManager.clear();
   
   if(this.previousBluebirdScheduler) {

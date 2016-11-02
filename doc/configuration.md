@@ -35,3 +35,5 @@
  (assuming setImmediates, setTimeouts and setIntervals are all intercepted and managed by zurvan - immediates may be on queue, but will not expire without zurvan's intervention). 
  This parameter can be used as a quick-and-dirty hack if you encounter a scenario which is not managed well by zurvan (i.e., some  events happen after queue is assumed to be empty). If you encounter such scenario, please report it 
  as a bug on GitHub. It is recommended not to change this value.
+ - `fakeNodeDedicatedTimers` - a `boolean`. If `true`, timers returned by `require('timers')` are faked as well as global ones, otherwise they are left untouched. Default value is `true`, should not be changed in node, 
+ may require changes for the browser.

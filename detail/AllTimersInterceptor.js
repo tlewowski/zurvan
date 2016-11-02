@@ -3,6 +3,8 @@ var TimerInterceptor = require("./TimerInterceptor");
 var SequenceGenerator = require("./utils/SequenceGenerator");
 var TimerTypes = require("./timers/TimerTypes");
 
+var FieldOverrider = require("./utils/FieldOverrider");
+
 function AllTimersInterceptor(timeServer) {
   this._sequenceGenerator = new SequenceGenerator();
   this._timeoutInterceptor = new TimerInterceptor(timeServer, TimerTypes.timeout);
@@ -12,12 +14,29 @@ function AllTimersInterceptor(timeServer) {
 AllTimersInterceptor.prototype.intercept = function(config) {
   this._timeoutInterceptor.intercept(config, this._sequenceGenerator);
   this._intervalInterceptor.intercept(config, this._sequenceGenerator);
+  this._fakeNodeDedicatedTimers = config.fakeNodeDedicatedTimers;
+  
+  if(this._fakeNodeDedicatedTimers)   {
+    var nodeTimers = require('timers');
+
+    this._nodeSetTimeoutOverrider = new FieldOverrider(nodeTimers, 'setTimeout', setTimeout.bind(global));
+    this._nodeClearTimeoutOverrider = new FieldOverrider(nodeTimers, 'clearTimeout', clearTimeout.bind(global));
+    this._nodeSetIntervalOverrider = new FieldOverrider(nodeTimers, 'setInterval', setInterval.bind(global));
+    this._nodeClearIntervalOverrider = new FieldOverrider(nodeTimers, 'clearInterval', clearInterval.bind(global));	  
+  }
 };
 
 AllTimersInterceptor.prototype.release = function() {
   var timers = {};
   timers.timeouts = this._timeoutInterceptor.release();
   timers.intervals = this._intervalInterceptor.release();
+  
+  if(this._fakeNodeDedicatedTimers) {
+    this._nodeSetTimeoutOverrider.restore();
+    this._nodeClearTimeoutOverrider.restore();
+    this._nodeSetIntervalOverrider.restore();
+    this._nodeClearIntervalOverrider.restore();	  
+  }
   
   return timers;
 };

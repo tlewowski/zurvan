@@ -43,7 +43,8 @@ function defaultConfiguration() {
     throwOnInvalidClearTimer: false,
     promiseScheduler: Promise,
 	requestedCyclesAroundSetImmediateQueue: 4,
-	maxAllowedSetImmediateBatchSize: 500
+	maxAllowedSetImmediateBatchSize: 500,
+	fakeNodeDedicatedTimers: true
   };
 }
 
