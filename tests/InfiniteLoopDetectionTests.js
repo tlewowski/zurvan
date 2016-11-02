@@ -54,4 +54,4 @@ describe('zurvan', function() {
 	  });
 	});
   });
-})
+});

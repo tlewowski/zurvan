@@ -32,37 +32,6 @@ describe('zurvan', function() {
 	  });
 	});
 	
-	it('after configuration reset only new instance has default configuration (old configuration is not modified)', function() {
-		var zurvanForwardedStart = zurvan.withDefaultConfiguration({timeSinceStartup: 100});
-		var zurvanDefault = zurvanForwardedStart.withDefaultConfiguration();
-		
-		return zurvanForwardedStart.interceptTimers()
-          .then(function() {
-		    assert.equal(100, process.uptime());
-			return zurvanForwardedStart.releaseTimers();
-		  })
-		  .then(function() {
-			  return zurvanDefault.interceptTimers();
-		  })
-		  .then(function() {
-			  assert.equal(0, process.uptime());
-			  return zurvanDefault.releaseTimers();
-		  })
-		  .then(function() {
-			  return zurvanForwardedStart.interceptTimers();
-		  })
-		  .then(function() {
-			  assert.equal(100, process.uptime());
-			  return zurvanDefault.releaseTimers();
-		  })
-		  .then(function() {
-			 return zurvanForwardedStart.releaseTimers()
-			   .then(Promise.reject);
-		  }, function(err) {
-			  return zurvanForwardedStart.releaseTimers();			  
-		  });
-	});
-	
 	it('runs at any required system time', function() {
 	  return zurvan.interceptTimers({systemTime: Date.UTC(2015, 0, 5)}).then(function() {
 	    var nowDate = new Date();
