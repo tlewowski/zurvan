@@ -14,3 +14,11 @@ module.exports.isString = function(s) {
 module.exports.isObject = function(o) {
   return typeof o === 'object' && o !== null;
 };
+
+module.exports.isBoolean = function(b) {
+  return typeof b === 'boolean';
+};
+
+module.exports.isInteger = function(i) {
+  return typeof i === 'number' && parseInt(i) === i;
+};

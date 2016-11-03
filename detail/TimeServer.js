@@ -21,10 +21,7 @@ TimeServer.prototype.setupTime = function(timeSinceStartup, systemTime) {
 };
 
 TimeServer.prototype.setSystemTime = function(value) {
-  if(TypeChecks.isString(value)) {
-    value = new Date(value);
-  }
-  else if(TypeChecks.isNumber(value)) {
+  if(TypeChecks.isString(value) || TypeChecks.isNumber(value)) {
     value = new Date(value);
   }
   

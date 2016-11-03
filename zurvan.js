@@ -86,6 +86,12 @@ Zurvan.prototype.interceptTimers = function(config) {
   if(missingRuntimeDependencies) {
     throw new Error(missingStartupDependencies);
   }
+  
+  // also synchronous, to keep configuration check before going into the loop
+  var validationResult = Configuration.validate(newConfig);
+  if(validationResult.length > 0) {
+	  throw new Error(validationResult.join('\n'));
+  }
 
   var interceptionStack = new Error().stack;
   var that = this;

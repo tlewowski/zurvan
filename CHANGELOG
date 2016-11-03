@@ -1,3 +1,7 @@
+0.4.2:
+ - configuration sanity is now verified (#25)
+ - minor documentation fixes
+ 
 0.4.1:
  - *BREAKING CHANGE* implemented #36 - withDefaultConfiguration called without parameters will reset configuration for new zurvan instance
  - *BREAKING CHANGE* fixed bug reported in sinonjs/lolex as #83 - require('timers') was not faked during timer interception

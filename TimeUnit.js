@@ -94,6 +94,7 @@ standardTimers.minutes = standardTime(60 * standardTimers.seconds.coefficient);
 standardTimers.hours = standardTime(60 * standardTimers.minutes.coefficient);
 standardTimers.days = standardTime(24 * standardTimers.hours.coefficient);
 standardTimers.weeks = standardTime(7 * standardTimers.days.coefficient);
+standardTimers.isInstance = function(x) { return x instanceof TimeUnit; };
 
 
 module.exports = standardTimers;
