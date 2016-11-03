@@ -54,6 +54,19 @@
 	"jshint": "jshint --exclude node_modules,coverage .",
     "ci": "npm run-script madge && npm run-script mocha && grunt mocha_istanbul"
   },
+
+  "testling": {
+    "harness": "mocha-bdd",
+	"files": "tests/**.js",
+	"browsers": [
+	  "ie/latest",
+	  "chrome/latest",
+	  "safari/latest",
+	  "edge/latest",
+	  "opera/latest",
+	  "firefox/latest"
+    ]
+  },
   
   "main": "zurvan.js"
 }
