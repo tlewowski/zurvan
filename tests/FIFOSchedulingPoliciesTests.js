@@ -2,30 +2,8 @@
 var assert = require("assert");
 var zurvan = require("../zurvan");
 var TimeUnit = require("../TimeUnit");
+var TimersForPolicyTesting = require("./helpers/TimersForPolicyTesting");
 
-function setTestTimers(calls) {
-  setTimeout(function() {
-    calls.push(1);
-  }, 100);
-  setInterval(function() {
-    calls.push(2);
-  }, 100);
-  setTimeout(function() {
-    calls.push(3);
-  },100);
-  setTimeout(function() {
-    calls.push(4);
-  },100);
-  setTimeout(function() {
-    calls.push(6);
-  },200);
-  setTimeout(function() {
-    calls.push(7);
-  },300);
-  setInterval(function() {
-    calls.push(5);
-  }, 100);
-}
 
 describe('zurvan schedules timers at same dueTime', function() {
   function expectOrdering(name, policyName, expectedCalls) {
@@ -33,14 +11,14 @@ describe('zurvan schedules timers at same dueTime', function() {
       var calls = [];
       return zurvan.interceptTimers(policyName ? { timerExpirationPolicy: policyName } : undefined)
         .then(function() {
-          setTestTimers(calls);
+        TimersForPolicyTesting.setTestTimers(calls);
           return zurvan.expireAllTimeouts();
         })
         .then(function() {
           assert.deepEqual(calls, expectedCalls);
 	        return zurvan.releaseTimers();
         });  
-    })    
+    });
   }
   
   expectOrdering('by default in FIFO order', undefined, [1,2,3,4,5,6,2,5,7,2,5]);
