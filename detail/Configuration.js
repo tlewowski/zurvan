@@ -106,8 +106,13 @@ var validators = [
   requestPositiveInteger('requestedCyclesAroundSetImmediateQueue'),
   function(config) {
     if(isNaN(new Date(config.systemTime).getTime())) {
-		return 'systemTime must be an argument of new Date resulting in valid date (given: ' + config.systemTime + ')';
-	}
+      return 'systemTime must be an argument of new Date resulting in valid date (given: ' + config.systemTime + ')';
+    }
+  },
+  function(config) {
+    if(!TimerExpirationPolicies[config.timerExpirationPolicy]) {
+      return 'timerExpirationPolicy must be one of defined policies (no custom ones available now - report an issue if you need them)';
+    }
   }
 ];
 

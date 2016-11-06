@@ -99,4 +99,12 @@ describe('zurvan throws at wrong configuration, like ', function() {
     'systemTime must be an argument of new Date resulting in valid date',
 	{ systemTime: NaN }
   ); 
+  wrongConfigurationExample('function timerExpirationPolicy',
+    'timerExpirationPolicy must be one of defined policies',
+	{ timerExpirationPolicy: function() {} }
+  ); 
+  wrongConfigurationExample('unknown timerExpirationPolicy',
+    'timerExpirationPolicy must be one of defined policies',
+	{ timerExpirationPolicy: "Interspersed" }
+  ); 
 });
