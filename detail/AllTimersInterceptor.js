@@ -2,6 +2,7 @@
 var TimerInterceptor = require("./TimerInterceptor");
 var SequenceGenerator = require("./utils/SequenceGenerator");
 var TimerTypes = require("./timers/TimerTypes");
+var TimerExpirationPolicies = require("./TimerExpirationPolicies");
 
 var FieldOverrider = require("./utils/FieldOverrider");
 
@@ -14,6 +15,8 @@ function AllTimersInterceptor(timeServer) {
 AllTimersInterceptor.prototype.intercept = function(config) {
   this._timeoutInterceptor.intercept(config, this._sequenceGenerator);
   this._intervalInterceptor.intercept(config, this._sequenceGenerator);
+  
+  this._timerExpirationPolicy = TimerExpirationPolicies[config.timerExpirationPolicy];
 };
 
 AllTimersInterceptor.prototype.release = function() {
@@ -24,39 +27,36 @@ AllTimersInterceptor.prototype.release = function() {
   return timers;
 };
 
-AllTimersInterceptor.prototype.timerOrderingResolution = function(timeout, interval) {
-  if(timeout.sequenceNumber < interval.sequenceNumber) {
-    return timeout;
-  }
-  
-  return interval;
-};
-
 AllTimersInterceptor.prototype.lastTimeout = function() {
   return this._timeoutInterceptor.lastTimer();
 };
 
+AllTimersInterceptor.prototype._nextTimersGroup = function(nextTimeouts, nextIntervals) {
+  
+  if(!nextTimeouts[0]) {
+    return nextIntervals;
+  }
+  
+  if(!nextIntervals[0]) {
+	return nextTimeouts;
+  }
+  
+  if(nextTimeouts[0].dueTime.isShorterThan(nextIntervals[0].dueTime)) {
+	  return nextTimeouts;
+  }
+  
+  if(nextTimeouts[0].dueTime.isEqualTo(nextIntervals[0].dueTime)) {
+	  return this._timerExpirationPolicy.selectGroup(nextTimeouts, nextIntervals);
+  }
+  
+  return nextIntervals;
+}
+
 AllTimersInterceptor.prototype.nextTimer = function() {
-  var nextTimeout = this._timeoutInterceptor.nextTimer();
-  var nextInterval = this._intervalInterceptor.nextTimer();
+  var nextTimeouts = this._timeoutInterceptor.nextTimers();
+  var nextIntervals = this._intervalInterceptor.nextTimers();
   
-  if(!nextTimeout) {
-    return nextInterval;
-  }
-  
-  if(!nextInterval) {
-	return nextTimeout;	  
-  }
-  
-  if(nextTimeout.dueTime.isShorterThan(nextInterval.dueTime)) {
-	return nextTimeout;
-  }
-  
-  if(nextTimeout.dueTime.isEqualTo(nextInterval.dueTime)) {
-	return this.timerOrderingResolution(nextTimeout, nextInterval);
-  }
-  
-  return nextInterval;
+  return this._timerExpirationPolicy.selectElement(this._nextTimersGroup(nextTimeouts, nextIntervals));
 };
 
 module.exports = AllTimersInterceptor;

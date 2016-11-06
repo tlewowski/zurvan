@@ -49,8 +49,13 @@ TimerRepository.prototype.releaseAll = function() {
   return earlierTimers;
 };
 
-TimerRepository.prototype.nextTimer = function() {
-  return this.timers[0];
+TimerRepository.prototype.nextTimers = function() {
+  var firstTimer = this.timers[0];
+  if(!firstTimer) {
+    return [];
+  }
+  
+  return this.timers.filter(function(timer) { return timer.dueTime.isEqualTo(firstTimer.dueTime); });
 };
 
 TimerRepository.prototype.lastTimer = function() {

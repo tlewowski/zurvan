@@ -44,8 +44,8 @@ TimerInterceptor.prototype.release = function() {
   return this.timerRepository.releaseAll();
 };
 
-TimerInterceptor.prototype.nextTimer = function() {
-  return this.timerRepository.nextTimer();
+TimerInterceptor.prototype.nextTimers = function() {
+  return this.timerRepository.nextTimers();
 };
 
 TimerInterceptor.prototype.lastTimer = function() {

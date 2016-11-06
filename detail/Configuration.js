@@ -4,6 +4,8 @@ var NodeVersion = require("./utils/NodeVersion");
 var TypeChecks = require("./utils/TypeChecks");
 var TimeUnit = require("../TimeUnit");
 
+var TimerExpirationPolicies = require("./TimerExpirationPolicies");
+
 function mergeConfigurations(localConfiguration, globalConfiguration) {
   var finalConfiguration = {};
   
@@ -39,16 +41,17 @@ function defaultConfiguration() {
     acceptEvalTimers: false,
     denyImplicitTimer: false,
     denyTimersShorterThan1Ms: false,
-	denyTimersLongerThanInt32: false,
+	  denyTimersLongerThanInt32: false,
     ignoreProcessTimers: false,
     ignoreDate: false,
     fakeOriginalSetImmediateMethods: false,
     throwOnInvalidClearTimer: false,
     promiseScheduler: Promise,
-	requestedCyclesAroundSetImmediateQueue: 4,
-	maxAllowedSetImmediateBatchSize: 500,
-	fakeNodeDedicatedTimers: true,
-	rejectOnCallbackFailure: false
+	  requestedCyclesAroundSetImmediateQueue: 4,
+	  maxAllowedSetImmediateBatchSize: 500,
+	  fakeNodeDedicatedTimers: true,
+	  rejectOnCallbackFailure: false,
+    timerExpirationPolicy: "FIFO"
   };
 }
 
