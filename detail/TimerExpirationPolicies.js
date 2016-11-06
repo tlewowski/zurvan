@@ -33,6 +33,6 @@ var policies = {
     selectGroup: function(_, intervals) { return intervals; },
     selectElement: randomElement
   }
-}
+};
 
 module.exports = policies;

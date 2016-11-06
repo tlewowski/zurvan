@@ -32,7 +32,6 @@ AllTimersInterceptor.prototype.lastTimeout = function() {
 };
 
 AllTimersInterceptor.prototype._nextTimersGroup = function(nextTimeouts, nextIntervals) {
-  
   if(!nextTimeouts[0]) {
     return nextIntervals;
   }
@@ -50,7 +49,7 @@ AllTimersInterceptor.prototype._nextTimersGroup = function(nextTimeouts, nextInt
   }
   
   return nextIntervals;
-}
+};
 
 AllTimersInterceptor.prototype.nextTimer = function() {
   var nextTimeouts = this._timeoutInterceptor.nextTimers();
