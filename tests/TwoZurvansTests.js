@@ -3,6 +3,7 @@ var TimeUnit = require("../TimeUnit");
 var zurvan = require("../zurvan").withDefaultConfiguration({systemTime: "2015-09-01T00:00:00.000Z"});
 
 var assert = require("assert");
+var Promise = Promise || require('bluebird');
 
 describe('second zurvan', function() {
   it('shall reject intercepting timers if they are already intercepted', function() {
@@ -101,7 +102,7 @@ describe('second zurvan', function() {
 	  })
       .then(function() {
         return zurvanForwardedStart.releaseTimers()
-	      .then(Promise.reject);
+  	      .then(Promise.reject);
 	  }, function(err) {
 	    return zurvanForwardedStart.releaseTimers();			  
 	  });

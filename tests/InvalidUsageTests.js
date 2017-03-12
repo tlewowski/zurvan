@@ -3,6 +3,7 @@ var assert = require("assert");
 var TimeUnit = require("../TimeUnit");
 var zurvan = require("../zurvan");
 
+var Promise = Promise || require('bluebird');
 
 describe('during wrong usage', function() {
   it('throws if releasing is attempted before event queue is cleared', function() {

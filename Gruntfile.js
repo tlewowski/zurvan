@@ -16,10 +16,6 @@ module.exports = function(grunt) {
   var allFiles = productionFiles.concat(testFiles);
   
   grunt.initConfig({
-    watch : {
-      files : allFiles,
-      tasks : 'default'
-    },
     mocha_istanbul: {
       coverage: {
         src: testFiles

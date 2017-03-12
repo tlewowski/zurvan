@@ -3,6 +3,8 @@ var assert = require("assert");
 var zurvan = require("../zurvan");
 var TimeUnit = require("../TimeUnit");
 
+var Promise = Promise || require('bluebird');
+
 describe('zurvan during runtime exception', function() {
   function fail() {
 	throw new Error("I shall fail");

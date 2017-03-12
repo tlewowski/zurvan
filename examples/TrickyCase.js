@@ -3,6 +3,8 @@ var assert = require("assert");
 var zurvan = require("../zurvan");
 var TimeUnit = require("../TimeUnit");
 
+var Promise = Promise || require('bluebird');
+
 /*
   Example below is the trickies case zurvan may be used - all async methods (setImmediate/process.nextTick and Promise)
   are used. I suppose it _might_ be possible to bypass zurvan's waitForEmptyQueue mechanism
