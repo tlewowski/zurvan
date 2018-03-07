@@ -58,7 +58,7 @@
     "coverage": "grunt mocha_istanbul",
     "madge": "madge -c . -x node_modules",
     "jshint": "jshint --exclude node_modules,coverage .",
-    "ci": "npm run-script madge && npm run-script tests && grunt mocha_istanbul"
+    "ci": "npm run-script madge && npm run-script test && grunt mocha_istanbul"
   },
   "main": "zurvan.js"
 }
