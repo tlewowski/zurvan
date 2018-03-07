@@ -1,6 +1,6 @@
 # Zurvan 
 
-[![Build Status](https://travis-ci.org/tlewowski/zurvan.svg?branch=master)](https://travis-ci.org/Lewerow/zurvan)
+[![Build Status](https://travis-ci.org/tlewowski/zurvan.svg?branch=master)](https://travis-ci.org/tlewowski/zurvan)
 [![Code Climate](https://codeclimate.com/github/Lewerow/Zurvan/badges/gpa.svg)](https://codeclimate.com/github/Lewerow/Zurvan)
 [![codebeat badge](https://codebeat.co/badges/489f95fd-f719-4334-9fce-f7fed2873a56)](https://codebeat.co/projects/github-com-tlewowski-zurvan-master)
 [![Test Coverage](https://codeclimate.com/github/Lewerow/Zurvan/badges/coverage.svg)](https://codeclimate.com/github/Lewerow/Zurvan/coverage)
