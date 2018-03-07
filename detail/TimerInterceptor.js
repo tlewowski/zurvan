@@ -69,10 +69,15 @@ TimerInterceptor.prototype.createCallback = function(callback, args) {
 
 var MINIMUM_CALL_DELAY = 1;
 var MAX_CALL_DELAY = Math.pow(2,31) - 1; // int32 boundary
+
+function timerCreateErrorMessage(mustBe, given) {
+  return "Call delay in timer call must be " + mustBe + " given: << " + given + " >>";
+}
+
 TimerInterceptor.prototype.createCallDelay = function(requestedCallDelay) {
   if(!TypeChecks.isNumber(requestedCallDelay)) {
     if(this.config.denyImplicitTimer) {
-      throw new Error("Call delay in timer call must be a numeric value, given: << " + requestedCallDelay + " >>");
+      throw new Error(timerCreateErrorMessage("a numeric value", requestedCallDelay));
 	}
 	
 	return MINIMUM_CALL_DELAY;
@@ -80,7 +85,7 @@ TimerInterceptor.prototype.createCallDelay = function(requestedCallDelay) {
   
   if(requestedCallDelay < MINIMUM_CALL_DELAY) {
     if(this.config.denyTimersShorterThan1Ms) {
-	  throw new Error("Call delay in timer must be >= " + MINIMUM_CALL_DELAY + ". Given: << " + requestedCallDelay + " >>");
+        throw new Error(timerCreateErrorMessage(">= " + MINIMUM_CALL_DELAY, requestedCallDelay));
 	}
 	
 	return MINIMUM_CALL_DELAY;
@@ -88,7 +93,7 @@ TimerInterceptor.prototype.createCallDelay = function(requestedCallDelay) {
   
   if(requestedCallDelay > MAX_CALL_DELAY) {
 	  if(this.config.denyTimersLongerThanInt32) {
-		  throw new Error("Call delay in timer must be <= " + MAX_CALL_DELAY + ". Given: << " + requestedCallDelay + " >>");
+          throw new Error(timerCreateErrorMessage("<= " + MAX_CALL_DELAY, requestedCallDelay));
 	  }
 	  
 	  return MINIMUM_CALL_DELAY;
