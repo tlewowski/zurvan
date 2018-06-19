@@ -1,25 +1,22 @@
 module.exports = function(config) {
   config.set({
     frameworks: ['browserify', 'mocha'],
-    files: [
-      'tests/**.js',
-      'examples/**.js'
-    ],
+    files: ['tests/**.js', 'examples/**.js'],
     preprocessors: {
-        'tests/**.js': ['browserify'],
-        'examples/**.js': ['browserify']
+      'tests/**.js': ['browserify'],
+      'examples/**.js': ['browserify']
     },
-    client: {      
-        mocha: {
-            reporter: 'html'
-        }
+    client: {
+      mocha: {
+        reporter: 'html'
+      }
     },
     browsers: ['PhantomJS'],
     phantomjsLauncher: {
-        exitOnResourceError: true
+      exitOnResourceError: true
     },
     browserify: {
-        debug: true
+      debug: true
     }
   });
 };

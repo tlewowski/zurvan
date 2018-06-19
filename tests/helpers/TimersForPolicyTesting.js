@@ -7,16 +7,16 @@ module.exports.setTestTimers = function(calls) {
   }, 100);
   setTimeout(function() {
     calls.push(3);
-  },100);
+  }, 100);
   setTimeout(function() {
     calls.push(4);
-  },100);
+  }, 100);
   setTimeout(function() {
     calls.push(6);
-  },200);
+  }, 200);
   setTimeout(function() {
     calls.push(7);
-  },300);
+  }, 300);
   setInterval(function() {
     calls.push(5);
   }, 100);

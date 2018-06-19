@@ -1,13 +1,14 @@
-"use strict";
-var assert = require("assert");
-var zurvan = require("../zurvan");
-var TimeUnit = require("../TimeUnit");
-var TimersForPolicyTesting = require("./helpers/TimersForPolicyTesting");
+'use strict';
+var assert = require('assert');
+var zurvan = require('../zurvan');
+var TimeUnit = require('../TimeUnit');
+var TimersForPolicyTesting = require('./helpers/TimersForPolicyTesting');
 
 describe('zurvan schedules timers at same dueTime', function() {
   it('can expire timeouts first in random order', function() {
     var calls = [];
-    return zurvan.interceptTimers({ timerExpirationPolicy: "Timeouts-First-Random" })
+    return zurvan
+      .interceptTimers({ timerExpirationPolicy: 'Timeouts-First-Random' })
       .then(function() {
         TimersForPolicyTesting.setTestTimers(calls);
         return zurvan.advanceTime(TimeUnit.milliseconds(100));
@@ -42,10 +43,11 @@ describe('zurvan schedules timers at same dueTime', function() {
         return zurvan.releaseTimers();
       });
   });
-    
+
   it('can expire intervals first in random order', function() {
     var calls = [];
-    return zurvan.interceptTimers({ timerExpirationPolicy: "Intervals-First-Random" })
+    return zurvan
+      .interceptTimers({ timerExpirationPolicy: 'Intervals-First-Random' })
       .then(function() {
         TimersForPolicyTesting.setTestTimers(calls);
         return zurvan.advanceTime(TimeUnit.milliseconds(100));
@@ -77,31 +79,32 @@ describe('zurvan schedules timers at same dueTime', function() {
         return zurvan.releaseTimers();
       });
   });
-  
+
   it('can expire timeouts at random', function() {
     var calls = [];
     function checkAndCleanUp(elems) {
       elems.forEach(function(x) {
-        assert(calls.indexOf(x) !== -1);        
+        assert(calls.indexOf(x) !== -1);
       });
       calls.splice(0, calls.length);
     }
-    
-    return zurvan.interceptTimers({ timerExpirationPolicy: "Random" })
+
+    return zurvan
+      .interceptTimers({ timerExpirationPolicy: 'Random' })
       .then(function() {
         TimersForPolicyTesting.setTestTimers(calls);
         return zurvan.advanceTime(TimeUnit.milliseconds(100));
       })
       .then(function() {
-        checkAndCleanUp([1,2,3,4,5]);
+        checkAndCleanUp([1, 2, 3, 4, 5]);
         return zurvan.advanceTime(TimeUnit.milliseconds(100));
       })
       .then(function() {
-        checkAndCleanUp([2,5,6]);
+        checkAndCleanUp([2, 5, 6]);
         return zurvan.advanceTime(TimeUnit.milliseconds(100));
       })
       .then(function() {
-        checkAndCleanUp([2,5,7]);
+        checkAndCleanUp([2, 5, 7]);
         return zurvan.releaseTimers();
       });
   });

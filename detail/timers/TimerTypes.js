@@ -1,18 +1,18 @@
-"use strict";
-var IntervalTimer = require("./IntervalTimer");
-var TimeoutTimer = require("./TimeoutTimer");
+'use strict';
+var IntervalTimer = require('./IntervalTimer');
+var TimeoutTimer = require('./TimeoutTimer');
 
 var timeout = {
   context: global,
-  setName: "setTimeout",
-  clearName: "clearTimeout",
+  setName: 'setTimeout',
+  clearName: 'clearTimeout',
   type: TimeoutTimer
 };
 
 var interval = {
   context: global,
-  setName: "setInterval",
-  clearName: "clearInterval",
+  setName: 'setInterval',
+  clearName: 'clearInterval',
   type: IntervalTimer
 };
 

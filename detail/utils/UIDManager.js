@@ -1,26 +1,25 @@
-"use strict";
-var TypeChecks = require("./TypeChecks");
-var SequenceGenerator = require("./SequenceGenerator");
+'use strict';
+var TypeChecks = require('./TypeChecks');
+var SequenceGenerator = require('./SequenceGenerator');
 
 function UIDManager() {
-  this._sequenceGenerator = new SequenceGenerator();  
+  this._sequenceGenerator = new SequenceGenerator();
   this._issuedUids = {};
 }
 
 function serialize(value) {
   var serialized;
   try {
-	serialized = JSON.stringify(value);
-    if(!serialized) {
-  	  serialized = value.toString();
+    serialized = JSON.stringify(value);
+    if (!serialized) {
+      serialized = value.toString();
     }
+  } catch (err) {
+    serialized = 'not easily serializable: <<' + value + '>>';
   }
-  catch(err) {
-	serialized = "not easily serializable: <<" + value + ">>";
-  }
-	  
+
   return serialized;
-}    
+}
 
 function failure(reason) {
   return {
@@ -42,24 +41,29 @@ UIDManager.prototype.setUp = function(throwOnValidationFailure, uidUser) {
 
 UIDManager.prototype.isAcceptableUidImpl = function(uid) {
   if (!TypeChecks.isObject(uid)) {
-    return failure(serialize(uid) + " is not an object");
+    return failure(serialize(uid) + ' is not an object');
   }
-  
-  if(this._issuedUids[uid.uid] !== uid) {
-    return failure(serialize(uid) + " was not issued");
+
+  if (this._issuedUids[uid.uid] !== uid) {
+    return failure(serialize(uid) + ' was not issued');
   }
-  
+
   return success();
 };
 
 UIDManager.prototype.isAcceptableUid = function(uid) {
   var uidValidation = this.isAcceptableUidImpl(uid);
-  if(!uidValidation.passed) {
-	if(this._throwOnValidationFailure) {
-	  throw new Error("Invalid UID during clearing " + this._uidUser + ". Reason: " + uidValidation.failureReason);
-	}
-	
-	return false;
+  if (!uidValidation.passed) {
+    if (this._throwOnValidationFailure) {
+      throw new Error(
+        'Invalid UID during clearing ' +
+          this._uidUser +
+          '. Reason: ' +
+          uidValidation.failureReason
+      );
+    }
+
+    return false;
   }
   return true;
 };
@@ -67,14 +71,13 @@ UIDManager.prototype.isAcceptableUid = function(uid) {
 UIDManager.prototype.getUid = function() {
   var sequenceNumber = this._sequenceGenerator.generate();
 
-  var uid = {uid: sequenceNumber};
+  var uid = { uid: sequenceNumber };
   uid.ref = uid;
-  
+
   this._issuedUids[uid.uid] = uid;
-	
+
   return uid;
 };
-
 
 UIDManager.prototype.clear = function() {
   this._issuedUids = {};

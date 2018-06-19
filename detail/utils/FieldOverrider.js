@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 function FieldOverrider(objectRef, fieldName, newValue) {
   this.objectRef = objectRef;
   this.fieldName = fieldName;
