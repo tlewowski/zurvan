@@ -15,7 +15,6 @@ describe('zurvan', function() {
       .then(function() {
         assert(messages.length === 1);
         assert(messages[0] === 'intercepting timers');
-      }).then(function() {
         return zurvan.releaseTimers();
       }).then(function() {
         assert(messages.length === 2);
@@ -30,10 +29,30 @@ describe('zurvan', function() {
     };
 	  return zurvan.interceptTimers({debugLogger: logger})
       .then(function() {
+        assert(messages.length === 1);
+        assert(messages[0] === 'intercepting timers');
         return zurvan.forcedReleaseTimers();
       }).then(function() {
         assert(messages.length === 2);
         assert(messages[1] === 'releasing timers (forced)');
+      });
+  });
+
+	it('logs on advancing time', function() {
+    var messages = []
+    var logger = function(message) {
+      messages.push(message);
+    };
+	  return zurvan.interceptTimers({debugLogger: logger})
+      .then(function() {
+        assert(messages.length === 2);
+        assert(messages[0] === 'intercepting timers');
+        assert(messages[1] === 'advancing time to 0ns');
+        return zurvan.advanceTime(1000);
+      }).then(function() {
+        assert(messages.length === 3);
+        assert(messages[2] === 'advancing time to 1000000000ns');
+        return zurvan.releaseTimers();
       });
   });
   });

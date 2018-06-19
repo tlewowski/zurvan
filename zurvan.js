@@ -72,7 +72,11 @@ Zurvan.prototype.resetSubcomponents = function() {
   this.immediateInterceptor = new ImmediateInterceptor();
   this.allTimersInterceptor = new AllTimersInterceptor(this.timeServer);
   
-  this.timeForwarder = new TimeForwarder(this.timeServer, this.allTimersInterceptor, this.immediateInterceptor);
+  this.timeForwarder = new TimeForwarder(
+    this.timeServer,
+    this.allTimersInterceptor,
+    this.immediateInterceptor,
+    function(message) { this.config.debugLogger(message); });
   
   this.processTimerInterceptor = new ProcessTimerInterceptor(this.timeServer);
   this.dateInterceptor = new DateInterceptor(this.timeServer);

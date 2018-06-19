@@ -15,11 +15,12 @@ function delayByCycling(schedule, cycleCount, f) {
   })(f);
 }
 
-function TimeForwarder(timeServer, timerInterceptor, immediateInterceptor) {
+function TimeForwarder(timeServer, timerInterceptor, immediateInterceptor, debugLogger) {
   this.forwardingStartedSavedStack = undefined;
   this.timerInterceptor = timerInterceptor;  
   this.timeServer = timeServer;
   this.immediateInterceptor = immediateInterceptor; 
+  this.debugLogger = debugLogger;
 }
 
 TimeForwarder.prototype.prepareTimeReport = function() {
@@ -88,6 +89,7 @@ TimeForwarder.prototype.advanceTime = function(timeToForward) {
     }
 
     that.timeServer.targetTime = that.timeServer.currentTime.extended(advanceStep);
+    that.debugLogger('advancing time to ' + that.timeServer.targetTime.toNanoseconds() + 'ns');
     that.startExpiringEvents();
 	
     // that's a workaround - in certain cases I believe this might not work (pathological chains of setImmediate/process.nextTick)
