@@ -15,11 +15,12 @@ function delayByCycling(schedule, cycleCount, f) {
   })(f);
 }
 
-function TimeForwarder(timeServer, timerInterceptor, immediateInterceptor) {
+function TimeForwarder(timeServer, timerInterceptor, immediateInterceptor, debugLogger) {
   this.forwardingStartedSavedStack = undefined;
   this.timerInterceptor = timerInterceptor;  
   this.timeServer = timeServer;
   this.immediateInterceptor = immediateInterceptor; 
+  this.debugLogger = debugLogger;
 }
 
 TimeForwarder.prototype.prepareTimeReport = function() {
@@ -88,6 +89,7 @@ TimeForwarder.prototype.advanceTime = function(timeToForward) {
     }
 
     that.timeServer.targetTime = that.timeServer.currentTime.extended(advanceStep);
+    that.debugLogger('advancing time to ' + that.timeServer.targetTime.toNanoseconds() + 'ns');
     that.startExpiringEvents();
 	
     // that's a workaround - in certain cases I believe this might not work (pathological chains of setImmediate/process.nextTick)
@@ -191,6 +193,7 @@ TimeForwarder.prototype.blockSystem = function(timeToBlock) {
   if(!this.isExpiringEvents()) {
     assert(this.timeServer.targetTime.isEqualTo(this.timeServer.currentTime));
     this.timeServer.targetTime.add(blockStep);
+    this.debugLogger('simulating blocking call until ' + this.timeServer.targetTime.toNanoseconds() + 'ns');
   }
   else if(this.timeServer.targetTime.isShorterThan(this.timeServer.currentTime.extended(blockStep))) {
     throw new Error("Cannot block system during advancing for longer than requested advance time. Currently at: << " + 
