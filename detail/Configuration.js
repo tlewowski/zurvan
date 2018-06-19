@@ -51,6 +51,7 @@ function defaultConfiguration() {
 	  maxAllowedSetImmediateBatchSize: 500,
 	  fakeNodeDedicatedTimers: true,
 	  rejectOnCallbackFailure: false,
+    debugLogger: function(message) {},
     timerExpirationPolicy: "FIFO"
   };
 }

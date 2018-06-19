@@ -80,6 +80,7 @@ Zurvan.prototype.resetSubcomponents = function() {
 
 Zurvan.prototype.interceptTimers = function(config) {
   var newConfig = Configuration.merge(config, this.globalConfig);
+  newConfig.debugLogger('intercepting timers');
 
   // this error has to be synchronous, since we do not know yet whether the system supports Promises
   var missingRuntimeDependencies = Dependencies.missingAtIntercept(newConfig);
@@ -203,9 +204,11 @@ var forcedReleaseSteps = [
 ];
 
 Zurvan.prototype.releaseTimers = function() {
+  this.config.debugLogger('releasing timers');
   return sequentialScenario(this, releaseSteps);
 };
 Zurvan.prototype.forcedReleaseTimers = function() {
+  this.config.debugLogger('releasing timers (forced)');
   return sequentialScenario(this, forcedReleaseSteps);
 };
 
