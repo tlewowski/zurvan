@@ -193,6 +193,7 @@ TimeForwarder.prototype.blockSystem = function(timeToBlock) {
   if(!this.isExpiringEvents()) {
     assert(this.timeServer.targetTime.isEqualTo(this.timeServer.currentTime));
     this.timeServer.targetTime.add(blockStep);
+    this.debugLogger('simulating blocking call until ' + this.timeServer.targetTime.toNanoseconds() + 'ns');
   }
   else if(this.timeServer.targetTime.isShorterThan(this.timeServer.currentTime.extended(blockStep))) {
     throw new Error("Cannot block system during advancing for longer than requested advance time. Currently at: << " + 
