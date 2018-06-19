@@ -41,9 +41,10 @@
  objects representing failure time, delay of timeout (second argument of `setTimeout`/`setInterval`) and exception. If `false`, promises will be resolved with same argument. By default `false`, it is recommended to set it to `true`
  - `timerSchedulingPolicy` - a `string`. It is a name of policy used to schedule timers that have same due time. Default value is "FIFO" (timers will expire in same order as they were set up), it is recommended to keep it this way 
  or change to "Random". Available options:
-  - FIFO - timers with same due time will expire in the same order as they were set up
-  - Random - timers with same due time will expire in random order
-  - Timeouts-First-FIFO - timeouts with same due time will be executed before intervals, in both groups FIFO ordering will be used
-  - Intervals-First-FIFO - intervals with same due time will be executed before timeouts, in both groups FIFO ordering will be used
-  - Timeouts-First-Random - timeouts with same due time will be executed before intervals, in both groups random ordering will be used
-  - Intervals-First-Random - intervals with same due time will be executed before timeouts, in both groups random ordering will be used
+
+   - `FIFO` - timers with same due time will expire in the same order as they were set up
+   - `Random` - timers with same due time will expire in random order
+   - `Timeouts-First-FIFO` - timeouts with same due time will be executed before intervals, in both groups FIFO ordering will be used
+   - `Intervals-First-FIFO` - intervals with same due time will be executed before timeouts, in both groups FIFO ordering will be used
+   - `Timeouts-First-Random` - timeouts with same due time will be executed before intervals, in both groups random ordering will be used
+   - `Intervals-First-Random` - intervals with same due time will be executed before timeouts, in both groups random ordering will be used
