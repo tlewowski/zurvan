@@ -1,7 +1,13 @@
+0.8.0:
+ - experimental TypeScript types
+ - updated versions of dependency libraries
+ - enabled coverage again
+
+0.5.2:
+ - added debugger (thanks to djmitche https://github.com/djmitche)
+
 0.5.1:
  - update release - updated versions of dependency libraries, added codebeat code analysis
-
-
 0.5.0:
  - added a configuration parameter - timerExpirationPolicy (#17) - to allow non-FIFO expiration of timers with same due time. Default value remains FIFO
  - configuration sanity is now verified (#25)

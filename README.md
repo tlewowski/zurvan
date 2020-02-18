@@ -268,9 +268,13 @@ As for versions below 4.0, either use _Zurvan_ 0.3.2 or try the new one - I'm do
 Promise library used - they are only tested with _Zurvan_ in vanilla Promise mode, and definitely do not work if _Zurvan_ uses _bluebird_ as its scheduler (application may use _bluebird_, that's not a problem). It will generally not work with
 any internal scheduler that relies on setImmediate to schedule promises. It's best not to mess with internal scheduler - it was added to satisfy need of node 0.10 and possibly some web browsers, but should not be used in newer node versions.
 
+## TypeScript
+Experimental types for usage with TypeScript are provided with the package. 
+They are not thoroughly tested, so there may be problems. Please report any trouble you encounter with them as an issue on GitHub.
+
 ## Other
 
-_Zurvan_ is available as package on NPM
+_Zurvan_ is available as package on NPM. 
 
 Name is taken after babilonian deity of infinite time, _Zurvan_. For more details see: <https://en.wikipedia.org/wiki/Zurvanism>
 
