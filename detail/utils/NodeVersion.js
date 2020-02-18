@@ -15,7 +15,7 @@ var version = {
 
 var features = {};
 features.hasPromise = version.major > 0 || version.minor > 10;
-features.hasMicroqueuedNextTick = features.hasPromise;
+features.hasMicroqueuedNextTick = features.hasPromise && version.major < 12;
 
 version.features = features;
 
