@@ -1,5 +1,6 @@
 language: node_js
 script: npm run-script ci
+os: ["linux"]
 env:
   global:
     - CC_TEST_REPORTER_ID=6daf1df58d7bd37ca679d2e53201320fe4babe51334fb456dd35673d4a857d37
@@ -8,10 +9,9 @@ before_script:
   - chmod +x ./cc-test-reporter
   - ./cc-test-reporter before-build
 node_js:
- - 'node'
- - '8'
- - '10'
- - '12
-sudo: false
+  - 'node'
+  - '8'
+  - '10'
+  - '12'
 after_script:
   - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
