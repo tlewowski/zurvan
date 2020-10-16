@@ -13,6 +13,5 @@ node_js:
   - '10'
   - '12'
   - '14'
-  - '16'
 after_script:
   - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
