@@ -10,8 +10,9 @@ before_script:
   - ./cc-test-reporter before-build
 node_js:
   - 'node'
-  - '8'
   - '10'
   - '12'
+  - '14'
+  - '16'
 after_script:
   - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
