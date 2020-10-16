@@ -43,6 +43,9 @@
     "mocha": "^8.0.0",
     "watchify": "^3.11.1"
   },
+  "optionalDependencies": {
+    "bluebird": "^3.7.0"
+  },
   "bugs": "https://github.com/tlewowski/zurvan/issues",
   "engines": {
     "node": ">=4.0.0"
