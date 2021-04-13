@@ -39,7 +39,7 @@
     "karma-browserify": "^7.0.0",
     "karma-mocha": "^2.0.0",
     "karma-phantomjs-launcher": "^1.0.4",
-    "madge": "^3.7.0",
+    "madge": "^4.0.1",
     "mocha": "^8.0.0",
     "watchify": "^3.11.1"
   },
